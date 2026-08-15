@@ -1,28 +1,27 @@
 package com.mrh0.createaddition.energy;
 
-import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.mrh0.createaddition.transfer.EnergyTransferable;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.jetbrains.annotations.Nullable;
+import team.reborn.energy.api.EnergyStorage;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.List;
 
-public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
+public abstract class AbstractElectricBlockEntity extends SmartBlockEntity implements EnergyTransferable {
 
 	protected final InternalEnergyStorage localEnergy;
 
-	private final EnumSet<Direction> invalidSides = EnumSet.allOf(Direction.class);
-	private final EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> escacheMap = new EnumMap<>(Direction.class);
+	private final EnumMap<Direction, BlockApiCache<EnergyStorage, Direction>> escacheMap = new EnumMap<>(Direction.class);
 
 	public AbstractElectricBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
 		super(tileEntityTypeIn, pos, state);
@@ -30,25 +29,33 @@ public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
 		setLazyTickRate(20);
 	}
 
-	public abstract int getCapacity();
-	public abstract int getMaxIn();
-	public abstract int getMaxOut();
+	public abstract long getCapacity();
+	public abstract long getMaxIn();
+	public abstract long getMaxOut();
 
 	@Override
-	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {}
+	public void addBehaviours(List<BlockEntityBehaviour<?>> behaviours) {}
+
+	@Nullable
+	@Override
+	public EnergyStorage getEnergyStorage(@Nullable Direction side) {
+		if(isEnergyInput(side) || isEnergyOutput(side))
+			return localEnergy;
+		return null;
+	}
 
 	public abstract boolean isEnergyInput(Direction side);
 	public abstract boolean isEnergyOutput(Direction side);
 
 	@Override
-	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-		super.read(tag, registries, clientPacket);
+	protected void read(ValueInput tag, boolean clientPacket) {
+		super.read(tag, clientPacket);
 		localEnergy.read(tag);
 	}
 
 	@Override
-	public void writeSafe(CompoundTag tag, HolderLookup.Provider registries) {
-		super.writeSafe(tag, registries);
+	public void writeSafe(ValueOutput tag) {
+		super.writeSafe(tag);
 		localEnergy.write(tag);
 	}
 
@@ -61,44 +68,19 @@ public abstract class AbstractElectricBlockEntity extends SmartBlockEntity {
 		}
 	}
 
-	@Override
-	public void tick() {
-		super.tick();
-		if(!invalidSides.isEmpty()) {
-			invalidSides.forEach(this::updateCache);
-			invalidSides.clear();
-		}
+	public boolean ignoreCapSide() {
+		return false;
 	}
 
-	public void updateCache(Direction side) {
-		if (level == null) return;
-		if (level.isClientSide()) return;
-		if (!level.isLoaded(worldPosition.relative(side))) {
-			escacheMap.put(side, null);
-			return;
-		}
-		/*
-		BlockEntity te = level.getBlockEntity(worldPosition.relative(side));
-		if(te == null) {
-			setCache(side, LazyOptional.empty());
-			return;
-		}
-		LazyOptional<IEnergyStorage> le = te.getCapability(ForgeCapabilities.ENERGY, side.getOpposite());
-		if(ignoreCapSide() && !le.isPresent()) le = te.getCapability(ForgeCapabilities.ENERGY);
-		// Make sure the side isn't already cached.
-		if (le.equals(getCachedEnergy(side))) return;
-		setCache(side, le);
-		le.addListener((es) -> invalidCache(side));
-		*/
-
-		var cache = BlockCapabilityCache.create(
-				Capabilities.EnergyStorage.BLOCK, // capability to cache
-				(ServerLevel) level, // level
-				getBlockPos().relative(side),
-				side.getOpposite(),
-				() -> !this.isRemoved(), // validity check (because the cache might outlive the object it belongs to)
-				() -> { invalidSides.add(side); } // invalidation listener
-		);
-		escacheMap.put(side, cache);
+	@Nullable
+	public EnergyStorage getCachedEnergy(Direction side) {
+		if(!(getLevel() instanceof ServerLevel serverLevel))
+			return null;
+		BlockApiCache<EnergyStorage, Direction> cache = escacheMap.computeIfAbsent(side,
+				side1 -> BlockApiCache.create(EnergyStorage.SIDED, serverLevel, getBlockPos().relative(side1)));
+		EnergyStorage es = cache.find(side.getOpposite());
+		if(es == null && ignoreCapSide())
+			es = cache.find(null);
+		return es;
 	}
 }

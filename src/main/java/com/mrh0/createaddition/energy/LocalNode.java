@@ -2,8 +2,9 @@ package com.mrh0.createaddition.energy;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 
 /**
  * A class representing a node connected to a {@link IWireNode}.
@@ -50,15 +51,15 @@ public class LocalNode {
 		this.relativePos = position.subtract(entity.getBlockPos());
 	}
 
-	public LocalNode(BlockEntity entity, CompoundTag tag) {
+	public LocalNode(BlockEntity entity, ValueInput tag) {
 		this.entity = entity;
-		this.index = tag.getInt(ID);
-		this.otherIndex = tag.getInt(OTHER);
-		this.type = WireType.fromIndex(tag.getInt(TYPE));
-		this.relativePos = new Vec3i(tag.getInt(X), tag.getInt(Y), tag.getInt(Z));
+		this.index = tag.getIntOr(ID, 0);
+		this.otherIndex = tag.getIntOr(OTHER, 0);
+		this.type = WireType.fromIndex(tag.getIntOr(TYPE, 0));
+		this.relativePos = new Vec3i(tag.getIntOr(X, 0), tag.getIntOr(Y, 0), tag.getIntOr(Z, 0));
 	}
 
-	public void write(CompoundTag tag) {
+	public void write(ValueOutput tag) {
 		tag.putInt(ID, this.index);
 		tag.putInt(OTHER, this.otherIndex);
 		tag.putInt(TYPE, this.type.getIndex());

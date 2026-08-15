@@ -1,18 +1,11 @@
 package com.mrh0.createaddition.blocks.connector;
 
-import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlock;
-import com.mrh0.createaddition.blocks.connector.base.ConnectorMode;
-import com.mrh0.createaddition.blocks.connector.base.ConnectorVariant;
 import com.mrh0.createaddition.energy.NodeRotation;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
-import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
 import net.createmod.catnip.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
@@ -24,9 +17,6 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.client.model.generators.BlockModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
-import net.neoforged.neoforge.client.model.generators.MultiPartBlockStateBuilder;
 
 public class SmallLightConnectorBlock extends AbstractConnectorBlock<SmallLightConnectorBlockEntity> {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
@@ -69,90 +59,5 @@ public class SmallLightConnectorBlock extends AbstractConnectorBlock<SmallLightC
     @Override
     public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
         return state.getValue(POWERED) ? 15 : 0;
-    }
-
-    public static void makeBlockState(DataGenContext<Block, SmallLightConnectorBlock> ctx, RegistrateBlockstateProvider provider) {
-        BlockModelProvider models = provider.models();
-        String basePath = "block/connector/";
-        String basePathSmall = basePath + "small_light/";
-        MultiPartBlockStateBuilder builder = provider.getMultipartBuilder(ctx.get());
-
-        ModelFile.ExistingModelFile noneModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "none"));
-        ModelFile.ExistingModelFile pushModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "push"));
-        ModelFile.ExistingModelFile pullModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "pull"));
-        ModelFile.ExistingModelFile noneOffModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "none_off"));
-        ModelFile.ExistingModelFile pushOffModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "push_off"));
-        ModelFile.ExistingModelFile pullOffModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePathSmall + "pull_off"));
-        ModelFile.ExistingModelFile girderBaseModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "girder_base"));
-
-        for(Direction direction: Direction.values()) {
-            int horizontalAngle = direction == Direction.UP ? 180 : direction == Direction.DOWN ? 0 : 90;
-            int  verticalAngle = ((int) direction.toYRot() + (direction.getAxis()
-                    .isVertical() ? 180 : 0))% 360;
-            builder.part()
-                    .modelFile(noneModel)
-                    .rotationX(horizontalAngle)
-                    .rotationY(verticalAngle)
-                    .addModel()
-                    .condition(SmallLightConnectorBlock.FACING, direction)
-                    .condition(SmallLightConnectorBlock.MODE, ConnectorMode.None)
-                    .condition(SmallLightConnectorBlock.POWERED, Boolean.TRUE)
-                    .end()
-                    .part()
-                    .modelFile(pushModel)
-                    .rotationX(horizontalAngle)
-                    .rotationY(verticalAngle)
-                    .addModel()
-                    .condition(SmallLightConnectorBlock.FACING, direction)
-                    .condition(SmallLightConnectorBlock.MODE, ConnectorMode.Push)
-                    .condition(SmallLightConnectorBlock.POWERED, Boolean.TRUE)
-                    .end()
-                    .part()
-                    .modelFile(pullModel)
-                    .rotationX(horizontalAngle)
-                    .rotationY(verticalAngle)
-                    .addModel()
-                    .condition(SmallLightConnectorBlock.FACING, direction)
-                    .condition(SmallLightConnectorBlock.MODE, ConnectorMode.Pull)
-                    .condition(SmallLightConnectorBlock.POWERED, Boolean.TRUE)
-                    .end()
-                    .part()
-                    .modelFile(noneOffModel)
-                    .rotationX(horizontalAngle)
-                    .rotationY(verticalAngle)
-                    .addModel()
-                    .condition(SmallLightConnectorBlock.FACING, direction)
-                    .condition(SmallLightConnectorBlock.MODE, ConnectorMode.None)
-                    .condition(SmallLightConnectorBlock.POWERED, Boolean.FALSE)
-                    .end()
-                    .part()
-                    .modelFile(pullOffModel)
-                    .rotationX(horizontalAngle)
-                    .rotationY(verticalAngle)
-                    .addModel()
-                    .condition(SmallLightConnectorBlock.FACING, direction)
-                    .condition(SmallLightConnectorBlock.MODE, ConnectorMode.Pull)
-                    .condition(SmallLightConnectorBlock.POWERED, Boolean.FALSE)
-                    .end()
-                    .part()
-                    .modelFile(pushOffModel)
-                    .rotationX(horizontalAngle)
-                    .rotationY(verticalAngle)
-                    .addModel()
-                    .condition(SmallLightConnectorBlock.FACING, direction)
-                    .condition(SmallLightConnectorBlock.MODE, ConnectorMode.Push)
-                    .condition(SmallLightConnectorBlock.POWERED, Boolean.FALSE)
-                    .end();
-
-            builder.part()
-                    .modelFile(girderBaseModel)
-                    .rotationX(horizontalAngle)
-                    .rotationY(verticalAngle)
-                    .addModel()
-                    .condition(SmallLightConnectorBlock.FACING, direction)
-                    .condition(SmallLightConnectorBlock.VARIANT, ConnectorVariant.Girder)
-                    .end();
-
-        }
     }
 }

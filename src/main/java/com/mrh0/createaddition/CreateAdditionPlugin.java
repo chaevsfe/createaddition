@@ -1,5 +1,7 @@
 package com.mrh0.createaddition;
 
+import com.mrh0.createaddition.index.CABlocks;
+import com.mrh0.createaddition.index.CAFluids;
 import com.zurrtum.create.api.registry.CreateRegisterPlugin;
 
 public final class CreateAdditionPlugin implements CreateRegisterPlugin {
@@ -11,6 +13,8 @@ public final class CreateAdditionPlugin implements CreateRegisterPlugin {
         if (blocksRegistered) {
             throw new IllegalStateException("Create Fly invoked Crafts & Additions block registration more than once");
         }
+        CABlocks.register();
+        CAFluids.registerFluidBlocks();
         blocksRegistered = true;
     }
 
@@ -20,6 +24,7 @@ public final class CreateAdditionPlugin implements CreateRegisterPlugin {
             throw new IllegalStateException("Create Fly invoked Crafts & Additions fluid registration more than once");
         }
         fluidsRegistered = true;
+        CAFluids.register();
     }
 
     public static void verifyEarlyRegistrationComplete() {

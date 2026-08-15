@@ -3,23 +3,19 @@ package com.mrh0.createaddition.energy;
 import java.util.HashMap;
 import java.util.Set;
 
-import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.connector.ConnectorType;
-import com.mrh0.createaddition.compat.sable.SableUtil;
 import com.mrh0.createaddition.energy.network.EnergyNetwork;
 import com.mrh0.createaddition.index.CAItems;
 import com.mrh0.createaddition.util.Util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.Containers;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -342,45 +338,6 @@ public interface IWireNode {
 		return changed;
 	}
 
-	// Convert NBT
-
-	default void convertOldNbt(CompoundTag nbt) {
-		// Only try to convert if it isn't a client packet.
-		ListTag list = new ListTag();
-		for (int i = 0; i < getNodeCount(); i++) {
-			if (nbt.contains("node" + i)) {
-				if (nbt.getInt("node" + i) == -1) {
-					// No data, just remove the node.
-					nbt.remove("node" + i);
-					nbt.remove("type" + i);
-					continue;
-				}
-				// We found some data!
-				// Get the node data.
-				int other = nbt.getInt("node" + i);
-				WireType type = WireType.fromIndex(nbt.getInt("type" + i));
-				BlockPos pos = new BlockPos(nbt.getInt("x" + i), nbt.getInt("y" + i), nbt.getInt("z" + i)).subtract(getPos());
-				// Remove the data.
-				nbt.remove("node" + i);
-				nbt.remove("type" + i);
-				nbt.remove("x" + i);
-				nbt.remove("y" + i);
-				nbt.remove("z" + i);
-				// Create the new data.
-				CompoundTag tag = new CompoundTag();
-				tag.putInt(LocalNode.ID, i);
-				tag.putInt(LocalNode.OTHER, other);
-				tag.putInt(LocalNode.TYPE, type.getIndex());
-				tag.putInt(LocalNode.X, pos.getX());
-				tag.putInt(LocalNode.Y, pos.getY());
-				tag.putInt(LocalNode.Z, pos.getZ());
-				list.add(tag);
-			}
-		}
-		// Add the new data.
-		nbt.put(LocalNode.NODES, list);
-	}
-
 	// Item
 
 	default void handleWireCache(Level level, Set<LocalNode> toDrop) {
@@ -467,10 +424,10 @@ public interface IWireNode {
 
 	/**
 	 * Get the position of the node at the given index by reading the
-	 * {@link CompoundTag}.
+	 * {@link ValueInput}.
 	 *
 	 * @param   nbt
-	 *          The {@link CompoundTag} to read from.
+	 *          The {@link ValueInput} to read from.
 	 * @param   index
 	 *          The index of the node.
 	 * @param   origin
@@ -480,65 +437,62 @@ public interface IWireNode {
 	 *          exist.
 	 */
 	@Nullable
-	static BlockPos readNodeBlockPos(CompoundTag nbt, int index, BlockPos origin) {
-		CompoundTag node = getNbtNode(nbt, index);
+	static BlockPos readNodeBlockPos(ValueInput nbt, int index, BlockPos origin) {
+		ValueInput node = getNbtNode(nbt, index);
 		if (node == null) return null;
-		return origin.offset(node.getInt(LocalNode.X), node.getInt(LocalNode.Y), node.getInt(LocalNode.Z));
+		return origin.offset(node.getIntOr(LocalNode.X, 0), node.getIntOr(LocalNode.Y, 0), node.getIntOr(LocalNode.Z, 0));
 	}
 
 	/**
 	 * Get the {@link WireType} of the node at the given index by reading the
-	 * {@link CompoundTag}.
+	 * {@link ValueInput}.
 	 *
 	 * @param   nbt
-	 *          The {@link CompoundTag} to read from.
+	 *          The {@link ValueInput} to read from.
 	 * @param   index
 	 *          The index of the node.
 	 *
 	 * @return  The {@link WireType} of the node, or null if the node doesn't
 	 *          exist.
 	 */
-	static WireType readNodeWireType(CompoundTag nbt, int index) {
-		CompoundTag node = getNbtNode(nbt, index);
+	static WireType readNodeWireType(ValueInput nbt, int index) {
+		ValueInput node = getNbtNode(nbt, index);
 		if (node == null) return null;
-		return WireType.fromIndex(node.getInt(LocalNode.TYPE));
+		return WireType.fromIndex(node.getIntOr(LocalNode.TYPE, 0));
 	}
 
 	/**
 	 * Get the index of the other node connected to the given index by reading
-	 * the {@link CompoundTag}.
+	 * the {@link ValueInput}.
 	 *
 	 * @param   nbt
-	 *          The {@link CompoundTag} to read from.
+	 *          The {@link ValueInput} to read from.
 	 * @param   index
 	 *          The index of the node.
 	 *
 	 * @return  The index of the other node, or -1 if the node doesn't exist.
 	 */
-	static int readNodeOtherIndex(CompoundTag nbt, int index) {
-		CompoundTag node = getNbtNode(nbt, index);
+	static int readNodeOtherIndex(ValueInput nbt, int index) {
+		ValueInput node = getNbtNode(nbt, index);
 		if (node == null) return -1;
-		return node.getInt(LocalNode.OTHER);
+		return node.getIntOr(LocalNode.OTHER, -1);
 	}
 
 	/**
-	 * Get the {@link CompoundTag} for the node at the given index.
+	 * Get the {@link ValueInput} for the node at the given index.
 	 *
 	 * @param   nbt
-	 *          The {@link CompoundTag} to read from.
+	 *          The {@link ValueInput} to read from.
 	 * @param   index
 	 *          The index of the node.
 	 *
-	 * @return  The {@link CompoundTag} for the node, with all the data inside,
+	 * @return  The {@link ValueInput} for the node, with all the data inside,
 	 *          or null if the node doesn't exist.
 	 */
 	@Nullable
-	static CompoundTag getNbtNode(CompoundTag nbt, int index) {
-		if (!nbt.contains(LocalNode.NODES)) return null;
-		ListTag nodes = nbt.getList(LocalNode.NODES, Tag.TAG_COMPOUND);
-		for (Tag t : nodes) {
-			CompoundTag node = (CompoundTag) t;
-			if (node.getInt(LocalNode.ID) == index) {
+	static ValueInput getNbtNode(ValueInput nbt, int index) {
+		for (ValueInput node : nbt.childrenListOrEmpty(LocalNode.NODES)) {
+			if (node.getIntOr(LocalNode.ID, -1) == index) {
 				return node;
 			}
 		}
@@ -559,15 +513,7 @@ public interface IWireNode {
 
 		int maxLength = Math.min(wn1.getMaxWireLength(), wn2.getMaxWireLength());
 
-		if (CreateAddition.SABLE_ACTIVE) {
-			double distSq = SableUtil.localNodeDistSq(
-					world,
-					wn1.getPos(), wn1.getNodeOffset(node1),
-					wn2.getPos(), wn2.getNodeOffset(node2));
-			if (distSq > (double) maxLength * maxLength) return WireConnectResult.LONG;
-		} else {
-			if (pos1.distSqr(pos2) > maxLength * maxLength) return WireConnectResult.LONG;
-		}
+		if (pos1.distSqr(pos2) > maxLength * maxLength) return WireConnectResult.LONG;
 		if (wn1.hasConnectionTo(pos2)) return WireConnectResult.EXISTS;
 		if(wn1.getConnectorType() == ConnectorType.Large && wn2.getConnectorType() == ConnectorType.Large) {
 			if(type == WireType.COPPER || type == WireType.FESTIVE) return WireConnectResult.REQUIRES_HIGH_CURRENT;

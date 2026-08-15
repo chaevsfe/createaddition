@@ -1,121 +1,108 @@
 package com.mrh0.createaddition.index;
 
+import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.alternator.AlternatorBlockEntity;
-import com.mrh0.createaddition.blocks.alternator.AlternatorVisual;
 import com.mrh0.createaddition.blocks.connector.LargeConnectorBlockEntity;
 import com.mrh0.createaddition.blocks.connector.SmallConnectorBlockEntity;
 import com.mrh0.createaddition.blocks.connector.SmallLightConnectorBlockEntity;
-import com.mrh0.createaddition.blocks.connector.base.ConnectorRenderer;
 import com.mrh0.createaddition.blocks.creative_energy.CreativeEnergyBlockEntity;
 import com.mrh0.createaddition.blocks.digital_adapter.DigitalAdapterBlockEntity;
-import com.mrh0.createaddition.blocks.electric_motor.*;
-import com.mrh0.createaddition.blocks.servo_motor.ServoMotorBlockEntity;
-import com.mrh0.createaddition.blocks.servo_motor.ServoMotorRenderer;
-import com.mrh0.createaddition.blocks.servo_motor.ServoMotorVisual;
-import com.mrh0.createaddition.blocks.liquid_blaze_burner.*;
+import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlockEntity;
+import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerBlockEntity;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockEntity;
-import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorRenderer;
-import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceRenderer;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceBlockEntity;
-import com.mrh0.createaddition.blocks.portable_energy_interface.PEIVisual;
 import com.mrh0.createaddition.blocks.redstone_relay.RedstoneRelayBlockEntity;
 import com.mrh0.createaddition.blocks.rolling_mill.RollingMillBlockEntity;
+import com.mrh0.createaddition.blocks.servo_motor.ServoMotorBlockEntity;
 import com.mrh0.createaddition.blocks.tesla_coil.TeslaCoilBlockEntity;
-import com.mrh0.createaddition.CreateAddition;
-import com.mrh0.createaddition.blocks.alternator.*;
-import com.mrh0.createaddition.blocks.rolling_mill.*;
-import com.mrh0.createaddition.blocks.redstone_relay.*;
-import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.content.kinetics.base.OrientedRotatingVisual;
-import com.tterrag.registrate.util.entry.BlockEntityEntry;
+
+import java.util.Set;
+
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public class CABlockEntities {
-	public static final BlockEntityEntry<ElectricMotorBlockEntity> ELECTRIC_MOTOR = CreateAddition.REGISTRATE
-			.blockEntity("electric_motor", ElectricMotorBlockEntity::new)
-			.visual(() -> OrientedRotatingVisual.of(AllPartialModels.SHAFT_HALF), false)
-			.validBlocks(CABlocks.ELECTRIC_MOTOR)
-			.renderer(() -> ElectricMotorRenderer::new)
-			.register();
-	
-	public static final BlockEntityEntry<ServoMotorBlockEntity> SERVO_MOTOR = CreateAddition.REGISTRATE
-			.blockEntity("servo_motor", ServoMotorBlockEntity::new)
-			.visual(() -> ServoMotorVisual::new, false)
-			.validBlocks(CABlocks.SERVO_MOTOR)
-			.renderer(() -> ServoMotorRenderer::new)
-			.register();
 
-	public static final BlockEntityEntry<AlternatorBlockEntity> ALTERNATOR = CreateAddition.REGISTRATE
-			.blockEntity("alternator", AlternatorBlockEntity::new)
-			.visual(() -> AlternatorVisual::new, false)
-			.validBlocks(CABlocks.ALTERNATOR)
-			.renderer(() -> AlternatorRenderer::new)
-			.register();
-	
-	public static final BlockEntityEntry<RollingMillBlockEntity> ROLLING_MILL = CreateAddition.REGISTRATE
-			.blockEntity("rolling_mill", RollingMillBlockEntity::new)
-			.visual(() -> RollingMillVisual::new)
-			.validBlocks(CABlocks.ROLLING_MILL)
-			.renderer(() -> RollingMillRenderer::new)
-			.register();
-	
-	public static final BlockEntityEntry<CreativeEnergyBlockEntity> CREATIVE_ENERGY = CreateAddition.REGISTRATE
-			.blockEntity("creative_energy", CreativeEnergyBlockEntity::new)
-			.validBlocks(CABlocks.CREATIVE_ENERGY)
-			.register();
-	
-	public static final BlockEntityEntry<SmallConnectorBlockEntity> SMALL_CONNECTOR = CreateAddition.REGISTRATE
-			.blockEntity("connector", SmallConnectorBlockEntity::new)
-			.validBlocks(CABlocks.SMALL_CONNECTOR)
-			.renderer(() -> ConnectorRenderer::new)
-			.register();
+	public static final BlockEntityType<ElectricMotorBlockEntity> ELECTRIC_MOTOR = register(
+			"electric_motor",
+			(pos, state) -> new ElectricMotorBlockEntity(CABlockEntities.ELECTRIC_MOTOR, pos, state),
+			CABlocks.ELECTRIC_MOTOR);
 
-	public static final BlockEntityEntry<SmallLightConnectorBlockEntity> SMALL_LIGHT_CONNECTOR = CreateAddition.REGISTRATE
-			.blockEntity("small_light_connector", SmallLightConnectorBlockEntity::new)
-			.validBlocks(CABlocks.SMALL_LIGHT_CONNECTOR)
-			.renderer(() -> ConnectorRenderer::new)
-			.register();
+	public static final BlockEntityType<ServoMotorBlockEntity> SERVO_MOTOR = register(
+			"servo_motor",
+			(pos, state) -> new ServoMotorBlockEntity(CABlockEntities.SERVO_MOTOR, pos, state),
+			CABlocks.SERVO_MOTOR);
 
-	public static final BlockEntityEntry<LargeConnectorBlockEntity> LARGE_CONNECTOR = CreateAddition.REGISTRATE
-			.blockEntity("large_connector", LargeConnectorBlockEntity::new)
-			.validBlocks(CABlocks.LARGE_CONNECTOR)
-			.renderer(() -> ConnectorRenderer::new)
-			.register();
-	
-	public static final BlockEntityEntry<RedstoneRelayBlockEntity> REDSTONE_RELAY = CreateAddition.REGISTRATE
-			.blockEntity("redstone_relay", RedstoneRelayBlockEntity::new)
-			.validBlocks(CABlocks.REDSTONE_RELAY)
-			.renderer(() -> RedstoneRelayRenderer::new)
-			.register();
-	
-	public static final BlockEntityEntry<TeslaCoilBlockEntity> TESLA_COIL = CreateAddition.REGISTRATE
-			.blockEntity("tesla_coil", TeslaCoilBlockEntity::new)
-			.validBlocks(CABlocks.TESLA_COIL)
-			.register();
-	
-	public static final BlockEntityEntry<LiquidBlazeBurnerBlockEntity> LIQUID_BLAZE_BURNER = CreateAddition.REGISTRATE
-			.blockEntity("liquid_blaze_burner", LiquidBlazeBurnerBlockEntity::new)
-			.visual(() -> LiquidBlazeBurnerVisual::new, false)
-			.validBlocks(CABlocks.LIQUID_BLAZE_BURNER)
-			.renderer(() -> LiquidBlazeBurnerRenderer::new)
-			.register();
-	
-	public static final BlockEntityEntry<ModularAccumulatorBlockEntity> MODULAR_ACCUMULATOR = CreateAddition.REGISTRATE
-			.blockEntity("modular_accumulator", ModularAccumulatorBlockEntity::new)
-			.validBlocks(CABlocks.MODULAR_ACCUMULATOR)
-			.renderer(() -> ModularAccumulatorRenderer::new)
-			.register();
+	public static final BlockEntityType<AlternatorBlockEntity> ALTERNATOR = register(
+			"alternator",
+			(pos, state) -> new AlternatorBlockEntity(CABlockEntities.ALTERNATOR, pos, state),
+			CABlocks.ALTERNATOR);
 
-	public static final BlockEntityEntry<PortableEnergyInterfaceBlockEntity> PORTABLE_ENERGY_INTERFACE = CreateAddition.REGISTRATE
-			.blockEntity("portable_energy_interface", PortableEnergyInterfaceBlockEntity::new)
-			.visual(() -> PEIVisual::new)
-			.validBlocks(CABlocks.PORTABLE_ENERGY_INTERFACE)
-			.renderer(() -> PortableEnergyInterfaceRenderer::new)
-			.register();
+	public static final BlockEntityType<RollingMillBlockEntity> ROLLING_MILL = register(
+			"rolling_mill",
+			(pos, state) -> new RollingMillBlockEntity(CABlockEntities.ROLLING_MILL, pos, state),
+			CABlocks.ROLLING_MILL);
 
-	public static final BlockEntityEntry<DigitalAdapterBlockEntity> DIGITAL_ADAPTER = CreateAddition.REGISTRATE
-			.blockEntity("digital_adapter", DigitalAdapterBlockEntity::new)
-			.validBlocks(CABlocks.DIGITAL_ADAPTER)
-			.register();
-	
-	public static void register() {}
+	public static final BlockEntityType<CreativeEnergyBlockEntity> CREATIVE_ENERGY = register(
+			"creative_energy",
+			(pos, state) -> new CreativeEnergyBlockEntity(CABlockEntities.CREATIVE_ENERGY, pos, state),
+			CABlocks.CREATIVE_ENERGY);
+
+	public static final BlockEntityType<SmallConnectorBlockEntity> SMALL_CONNECTOR = register(
+			"connector",
+			(pos, state) -> new SmallConnectorBlockEntity(CABlockEntities.SMALL_CONNECTOR, pos, state),
+			CABlocks.SMALL_CONNECTOR);
+
+	public static final BlockEntityType<SmallLightConnectorBlockEntity> SMALL_LIGHT_CONNECTOR = register(
+			"small_light_connector",
+			(pos, state) -> new SmallLightConnectorBlockEntity(CABlockEntities.SMALL_LIGHT_CONNECTOR, pos, state),
+			CABlocks.SMALL_LIGHT_CONNECTOR);
+
+	public static final BlockEntityType<LargeConnectorBlockEntity> LARGE_CONNECTOR = register(
+			"large_connector",
+			(pos, state) -> new LargeConnectorBlockEntity(CABlockEntities.LARGE_CONNECTOR, pos, state),
+			CABlocks.LARGE_CONNECTOR);
+
+	public static final BlockEntityType<RedstoneRelayBlockEntity> REDSTONE_RELAY = register(
+			"redstone_relay",
+			(pos, state) -> new RedstoneRelayBlockEntity(CABlockEntities.REDSTONE_RELAY, pos, state),
+			CABlocks.REDSTONE_RELAY);
+
+	public static final BlockEntityType<TeslaCoilBlockEntity> TESLA_COIL = register(
+			"tesla_coil",
+			(pos, state) -> new TeslaCoilBlockEntity(CABlockEntities.TESLA_COIL, pos, state),
+			CABlocks.TESLA_COIL);
+
+	public static final BlockEntityType<LiquidBlazeBurnerBlockEntity> LIQUID_BLAZE_BURNER = register(
+			"liquid_blaze_burner",
+			(pos, state) -> new LiquidBlazeBurnerBlockEntity(CABlockEntities.LIQUID_BLAZE_BURNER, pos, state),
+			CABlocks.LIQUID_BLAZE_BURNER);
+
+	public static final BlockEntityType<ModularAccumulatorBlockEntity> MODULAR_ACCUMULATOR = register(
+			"modular_accumulator",
+			(pos, state) -> new ModularAccumulatorBlockEntity(CABlockEntities.MODULAR_ACCUMULATOR, pos, state),
+			CABlocks.MODULAR_ACCUMULATOR);
+
+	public static final BlockEntityType<PortableEnergyInterfaceBlockEntity> PORTABLE_ENERGY_INTERFACE = register(
+			"portable_energy_interface",
+			(pos, state) -> new PortableEnergyInterfaceBlockEntity(CABlockEntities.PORTABLE_ENERGY_INTERFACE, pos, state),
+			CABlocks.PORTABLE_ENERGY_INTERFACE);
+
+	public static final BlockEntityType<DigitalAdapterBlockEntity> DIGITAL_ADAPTER = register(
+			"digital_adapter",
+			(pos, state) -> new DigitalAdapterBlockEntity(CABlockEntities.DIGITAL_ADAPTER, pos, state),
+			CABlocks.DIGITAL_ADAPTER);
+
+	private static <T extends BlockEntity> BlockEntityType<T> register(String id, BlockEntityType.BlockEntitySupplier<T> factory, Block... blocks) {
+		return Registry.register(
+				BuiltInRegistries.BLOCK_ENTITY_TYPE,
+				CreateAddition.asResource(id),
+				new BlockEntityType<>(factory, Set.of(blocks)));
+	}
+
+	public static void register() {
+	}
 }
