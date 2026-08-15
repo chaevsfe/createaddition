@@ -22,9 +22,11 @@ repositories {
 }
 
 loom {
+    splitEnvironmentSourceSets()
     mods {
         create("createaddition") {
             sourceSet(sourceSets.main.get())
+            sourceSet(sourceSets["client"])
         }
     }
 }
@@ -32,22 +34,8 @@ loom {
 sourceSets {
     main {
         java.exclude(
-            "com/mrh0/createaddition/blocks/**/*Renderer.java",
-            "com/mrh0/createaddition/blocks/**/*Visual.java",
-            "com/mrh0/createaddition/blocks/**/*Instance.java",
-            "com/mrh0/createaddition/blocks/**/*CTBehaviour.java",
             "com/mrh0/createaddition/compat/**",
-            "com/mrh0/createaddition/debug/**",
-            "com/mrh0/createaddition/event/ClientEventHandler.java",
             "com/mrh0/createaddition/index/CAAdvancements.java",
-            "com/mrh0/createaddition/index/CAEntities.java",
-            "com/mrh0/createaddition/index/CALang.java",
-            "com/mrh0/createaddition/index/CAPartials.java",
-            "com/mrh0/createaddition/index/CAPonders.java",
-            "com/mrh0/createaddition/index/CASpriteShifts.java",
-            "com/mrh0/createaddition/ponder/**",
-            "com/mrh0/createaddition/rendering/**",
-            "com/mrh0/createaddition/sound/**",
         )
     }
 }
