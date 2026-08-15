@@ -1,71 +1,38 @@
 package com.mrh0.createaddition.compat.computercraft;
 
-import com.mrh0.createaddition.blocks.digital_adapter.DigitalAdapterBlockEntity;
-import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockEntity;
-import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceBlockEntity;
-import com.mrh0.createaddition.blocks.redstone_relay.RedstoneRelayBlockEntity;
-
-import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlockEntity;
 import com.mrh0.createaddition.index.CABlockEntities;
-import dan200.computercraft.api.peripheral.PeripheralCapability;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.api.peripheral.PeripheralLookup;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+
+import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.function.Function;
 
 public class Peripherals {
-	public static void registerPeripheralCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(
-				PeripheralCapability.get(),
-				CABlockEntities.ELECTRIC_MOTOR.get(),
-				(be, dir) -> createElectricMotorPeripheral(be)
-		);
+	private static final Map<BlockEntity, WeakReference<IPeripheral>> CACHE = Collections.synchronizedMap(new WeakHashMap<>());
 
-		event.registerBlockEntity(
-				PeripheralCapability.get(),
-				CABlockEntities.PORTABLE_ENERGY_INTERFACE.get(),
-				(be, dir) -> createPortableEnergyInterfacePeripheral(be)
-		);
-
-		event.registerBlockEntity(
-				PeripheralCapability.get(),
-				CABlockEntities.MODULAR_ACCUMULATOR.get(),
-				(be, dir) -> createModularAccumulatorPeripheral(be)
-		);
-
-		event.registerBlockEntity(
-				PeripheralCapability.get(),
-				CABlockEntities.REDSTONE_RELAY.get(),
-				(be, dir) -> createRedstoneRelayPeripheral(be)
-		);
-
-		event.registerBlockEntity(
-				PeripheralCapability.get(),
-				CABlockEntities.DIGITAL_ADAPTER.get(),
-				(be, dir) -> createDigitalAdapterPeripheral(be)
-		);
-
-		event.registerBlockEntity(
-				PeripheralCapability.get(),
-				CABlockEntities.SERVO_MOTOR.get(),
-				(be, dir) -> new ServoMotorPeripheral(be)
-		);
-	}
-	
-	public static ElectricMotorPeripheral createElectricMotorPeripheral(ElectricMotorBlockEntity te) {
-		return new ElectricMotorPeripheral("electric_motor", te);
+	public static void register() {
+		register(CABlockEntities.ELECTRIC_MOTOR, be -> new ElectricMotorPeripheral("electric_motor", be));
+		register(CABlockEntities.SERVO_MOTOR, ServoMotorPeripheral::new);
+		register(CABlockEntities.PORTABLE_ENERGY_INTERFACE, be -> new PortableEnergyInterfacePeripheral("portable_energy_interface", be));
+		register(CABlockEntities.MODULAR_ACCUMULATOR, be -> new ModularAccumulatorPeripheral("modular_accumulator", be));
+		register(CABlockEntities.REDSTONE_RELAY, be -> new RedstoneRelayPeripheral("redstone_relay", be));
+		register(CABlockEntities.DIGITAL_ADAPTER, be -> new DigitalAdapterPeripheral("digital_adapter", be));
 	}
 
-	public static PortableEnergyInterfacePeripheral createPortableEnergyInterfacePeripheral(PortableEnergyInterfaceBlockEntity te) {
-		return new PortableEnergyInterfacePeripheral("portable_energy_interface", te);
-	}
-
-	public static ModularAccumulatorPeripheral createModularAccumulatorPeripheral(ModularAccumulatorBlockEntity te) {
-		return new ModularAccumulatorPeripheral("modular_accumulator", te);
-	}
-
-	public static RedstoneRelayPeripheral createRedstoneRelayPeripheral(RedstoneRelayBlockEntity te) {
-		return new RedstoneRelayPeripheral("redstone_relay", te);
-	}
-
-	public static DigitalAdapterPeripheral createDigitalAdapterPeripheral(DigitalAdapterBlockEntity te) {
-		return new DigitalAdapterPeripheral("digital_adapter", te);
+	private static <T extends BlockEntity> void register(BlockEntityType<T> type, Function<T, IPeripheral> factory) {
+		PeripheralLookup.get().registerForBlockEntity((blockEntity, direction) -> {
+			WeakReference<IPeripheral> reference = CACHE.get(blockEntity);
+			IPeripheral peripheral = reference == null ? null : reference.get();
+			if (peripheral == null) {
+				peripheral = factory.apply(blockEntity);
+				CACHE.put(blockEntity, new WeakReference<>(peripheral));
+			}
+			return peripheral;
+		}, type);
 	}
 }

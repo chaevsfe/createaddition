@@ -50,7 +50,11 @@ public class InternalEnergyStorage extends SnapshotParticipant<Long> implements 
     }
 
     public void write(ValueOutput nbt) {
-        nbt.putInt("energy", (int) amount);
+        if (amount > Integer.MAX_VALUE) {
+            nbt.putLong("energy", amount);
+        } else {
+            nbt.putInt("energy", (int) amount);
+        }
     }
 
     public void read(ValueInput nbt) {

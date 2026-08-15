@@ -2,22 +2,6 @@
   "sources": [
     {
       "type": "single",
-      "resource": "createaddition:fluid/bioethanol_flow"
-    },
-    {
-      "type": "single",
-      "resource": "createaddition:fluid/bioethanol_still"
-    },
-    {
-      "type": "single",
-      "resource": "createaddition:fluid/seed_oil_flow"
-    },
-    {
-      "type": "single",
-      "resource": "createaddition:fluid/seed_oil_still"
-    },
-	{
-      "type": "single",
       "resource": "createaddition:entity/liquid_hat"
     },
     {

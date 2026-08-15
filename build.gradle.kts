@@ -19,6 +19,9 @@ repositories {
     maven("https://maven.modmuss50.me/") {
         content { includeGroup("teamreborn") }
     }
+    maven("https://maven.squiddev.cc") {
+        content { includeGroup("cc.tweaked") }
+    }
 }
 
 loom {
@@ -34,7 +37,7 @@ loom {
 sourceSets {
     main {
         java.exclude(
-            "com/mrh0/createaddition/compat/**",
+            "com/mrh0/createaddition/compat/jei/**",
             "com/mrh0/createaddition/index/CAAdvancements.java",
         )
     }
@@ -48,6 +51,7 @@ dependencies {
     implementation(include("teamreborn:energy:${property("team_reborn_energy_version")}")!!)
 
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly("cc.tweaked:cc-tweaked-26.2-fabric-api:1.120.2")
 }
 
 java {

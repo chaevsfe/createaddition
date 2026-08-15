@@ -26,6 +26,9 @@
     ],
     "create_plugin": [
       "com.mrh0.createaddition.CreateAdditionPlugin"
+    ],
+    "client": [
+      "com.mrh0.createaddition.CreateAdditionClient"
     ]
   },
   "mixins": [

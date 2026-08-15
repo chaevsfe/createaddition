@@ -1,5 +1,6 @@
 package com.mrh0.createaddition;
 
+import com.mrh0.createaddition.compat.computercraft.Peripherals;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.event.GameEvents;
 import com.mrh0.createaddition.commands.CCApiCommand;
@@ -14,6 +15,7 @@ import com.mrh0.createaddition.index.CARegistration;
 import com.mrh0.createaddition.index.CASounds;
 import com.mrh0.createaddition.index.CATransfer;
 import com.mrh0.createaddition.network.CANetwork;
+import com.mrh0.createaddition.trains.schedule.CASchedule;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
@@ -42,8 +44,10 @@ public class CreateAddition implements ModInitializer {
         CARecipes.register();
         CATransfer.register();
         CARegistration.register();
+        CASchedule.register();
         CANetwork.register();
         GameEvents.initCommon();
+        if (CC_ACTIVE) Peripherals.register();
         CCApiCommand.register();
         LOGGER.info("Create Crafts & Additions Initialized!");
     }

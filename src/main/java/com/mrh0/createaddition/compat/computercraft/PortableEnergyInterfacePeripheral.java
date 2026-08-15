@@ -34,12 +34,12 @@ public class PortableEnergyInterfacePeripheral implements IPeripheral {
 	}
 
 	@LuaFunction(mainThread = true)
-	public final int getEnergy() {
+	public final long getEnergy() {
 		return this.tileEntity.getEnergy();
 	}
 
 	@LuaFunction(mainThread = true)
-	public final int getCapacity() {
+	public final long getCapacity() {
 		return this.tileEntity.getCapacity();
 	}
 

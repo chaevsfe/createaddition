@@ -45,7 +45,7 @@ public class RedstoneRelayPeripheral implements IPeripheral {
     }
 
     @LuaFunction(mainThread = true)
-    public final int getThroughput() {
+    public final long getThroughput() {
         return this.tileEntity.getThroughput();
     }
 

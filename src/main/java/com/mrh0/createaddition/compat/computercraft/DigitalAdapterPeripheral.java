@@ -2,18 +2,18 @@ package com.mrh0.createaddition.compat.computercraft;
 
 import com.mrh0.createaddition.blocks.digital_adapter.DigitalAdapterBlockEntity;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlockEntity;
-import com.simibubi.create.content.contraptions.elevator.ElevatorColumn;
-import com.simibubi.create.content.contraptions.elevator.ElevatorContactBlock;
-import com.simibubi.create.content.contraptions.elevator.ElevatorContraption;
-import com.simibubi.create.content.contraptions.elevator.ElevatorPulleyBlockEntity;
-import com.simibubi.create.infrastructure.config.AllConfigs;
+import com.zurrtum.create.content.contraptions.elevator.ElevatorColumn;
+import com.zurrtum.create.content.contraptions.elevator.ElevatorContactBlock;
+import com.zurrtum.create.content.contraptions.elevator.ElevatorContraption;
+import com.zurrtum.create.content.contraptions.elevator.ElevatorPulleyBlockEntity;
+import com.zurrtum.create.infrastructure.config.AllConfigs;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import net.createmod.catnip.data.IntAttached;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -188,8 +188,13 @@ public class DigitalAdapterPeripheral implements IPeripheral {
         var ec = getElevatorContraption(ep);
         if(ec == null) return 0;
 
+        Level level = ep.getLevel();
+        if(level == null) return 0;
+        Integer currentTargetY = ec.getCurrentTargetY(level);
+        if(currentTargetY == null) return 0;
+
         for(int i = 0; i < ec.namesList.size(); ++i) {
-            if ((int) ec.namesList.get(i).getFirst() == ec.getCurrentTargetY(ep.getLevel())) return i;
+            if ((int) ec.namesList.get(i).getFirst() == currentTargetY.intValue()) return i;
         }
         return 0;
     }
@@ -242,13 +247,15 @@ public class DigitalAdapterPeripheral implements IPeripheral {
         if(index >= ec.namesList.size()) return 0;
         if(index < 0) return 0;
 
-        var level = this.tileEntity.getLevel();
+        Level level = this.tileEntity.getLevel();
+        if(level == null) return 0;
 
-        int oldTargetY = ec.getCurrentTargetY(level);
+        Integer oldTargetY = ec.getCurrentTargetY(level);
+        if(oldTargetY == null) return 0;
         int targetY = ec.namesList.get(index).getFirst();
 
         ElevatorColumn elevatorColumn = ElevatorColumn.get(level, ec.getGlobalColumn());
-        if (!ec.isTargetUnreachable(targetY)) {
+        if (elevatorColumn != null && !ec.isTargetUnreachable(targetY)) {
             BlockPos pos = elevatorColumn.contactAt(targetY);
             BlockState blockState = level.getBlockState(pos);
             Block block = blockState.getBlock();

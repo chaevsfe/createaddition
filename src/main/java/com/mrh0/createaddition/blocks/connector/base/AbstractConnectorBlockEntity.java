@@ -17,6 +17,7 @@ import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiCache;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext;
+import net.fabricmc.fabric.api.transfer.v1.transaction.base.SnapshotParticipant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -64,15 +65,23 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		return Math.min(getMaxIn(), getMaxOut());
 	}
 
-	private class InterfaceEnergyHandler implements EnergyStorage {
+	private class InterfaceEnergyHandler extends SnapshotParticipant<long[]> implements EnergyStorage {
+
+		private long pendingIn;
+		private long pendingOut;
 
 		@Override
 		public long insert(long maxAmount, TransactionContext transaction) {
 			if(!CACommonConfig.COMMON.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
 			if(getMode() != ConnectorMode.Pull) return 0;
 			if (network == null) return 0;
-			maxAmount = Math.min(maxAmount, getMaxIn());
-			return network.push(maxAmount);
+			maxAmount = Math.min(maxAmount, getMaxIn() - pendingIn);
+			if (maxAmount <= 0) return 0;
+			long accepted = network.push(maxAmount, true);
+			if (accepted <= 0) return 0;
+			updateSnapshots(transaction);
+			pendingIn += accepted;
+			return accepted;
 		}
 
 		@Override
@@ -80,8 +89,34 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 			if(!CACommonConfig.COMMON.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
 			if(getMode() != ConnectorMode.Push) return 0;
 			if (network == null) return 0;
-			maxAmount = Math.min(maxAmount, getMaxOut());
-			return network.pull(maxAmount);
+			maxAmount = Math.min(maxAmount, getMaxOut() - pendingOut);
+			if (maxAmount <= 0) return 0;
+			long extracted = network.pull(maxAmount, true);
+			if (extracted <= 0) return 0;
+			updateSnapshots(transaction);
+			pendingOut += extracted;
+			return extracted;
+		}
+
+		@Override
+		protected long[] createSnapshot() {
+			return new long[]{pendingIn, pendingOut};
+		}
+
+		@Override
+		protected void readSnapshot(long[] snapshot) {
+			pendingIn = snapshot[0];
+			pendingOut = snapshot[1];
+		}
+
+		@Override
+		protected void onFinalCommit() {
+			if (network != null) {
+				if (pendingIn > 0) network.push(pendingIn);
+				if (pendingOut > 0) network.pull(pendingOut);
+			}
+			pendingIn = 0;
+			pendingOut = 0;
 		}
 
 		@Override
