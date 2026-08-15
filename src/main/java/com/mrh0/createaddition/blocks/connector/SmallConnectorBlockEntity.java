@@ -3,16 +3,10 @@ package com.mrh0.createaddition.blocks.connector;
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlock;
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlockEntity;
 import com.mrh0.createaddition.config.CACommonConfig;
-import com.mrh0.createaddition.index.CABlockEntities;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-
-import java.util.List;
 
 public class SmallConnectorBlockEntity extends AbstractConnectorBlockEntity {
 
@@ -28,24 +22,13 @@ public class SmallConnectorBlockEntity extends AbstractConnectorBlockEntity {
         super(blockEntityTypeIn, pos, state);
     }
 
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
-                CABlockEntities.SMALL_CONNECTOR.get(),
-                (be, context) -> be.internal
-        );
-    }
-
     @Override
-    public void addBehaviours(List<BlockEntityBehaviour> list) {}
-
-    @Override
-    public int getMaxIn() {
+    public long getMaxIn() {
         return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_INPUT.get();
     }
 
     @Override
-    public int getMaxOut() {
+    public long getMaxOut() {
         return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_OUTPUT.get();
     }
 

@@ -1,13 +1,13 @@
 package com.mrh0.createaddition.blocks.digital_adapter;
 
-import com.simibubi.create.content.contraptions.bearing.MechanicalBearingBlockEntity;
-import com.simibubi.create.content.contraptions.elevator.ElevatorPulleyBlockEntity;
-import com.simibubi.create.content.contraptions.piston.MechanicalPistonBlockEntity;
-import com.simibubi.create.content.contraptions.pulley.PulleyBlockEntity;
-import com.simibubi.create.content.fluids.hosePulley.HosePulleyBlockEntity;
-import com.simibubi.create.content.kinetics.gauge.SpeedGaugeBlockEntity;
-import com.simibubi.create.content.kinetics.gauge.StressGaugeBlockEntity;
-import com.simibubi.create.content.kinetics.speedController.SpeedControllerBlockEntity;
+import com.zurrtum.create.content.contraptions.bearing.MechanicalBearingBlockEntity;
+import com.zurrtum.create.content.contraptions.elevator.ElevatorPulleyBlockEntity;
+import com.zurrtum.create.content.contraptions.piston.MechanicalPistonBlockEntity;
+import com.zurrtum.create.content.contraptions.pulley.PulleyBlockEntity;
+import com.zurrtum.create.content.fluids.hosePulley.HosePulleyBlockEntity;
+import com.zurrtum.create.content.kinetics.gauge.SpeedGaugeBlockEntity;
+import com.zurrtum.create.content.kinetics.gauge.StressGaugeBlockEntity;
+import com.zurrtum.create.content.kinetics.speedController.SpeedControllerBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -24,26 +24,11 @@ public class DigitalAdapterBlockEntity extends BlockEntity {
     public static final int MAX_LINES = 16;
     public static final MutableComponent EMPTY_LINE = Component.literal("");
 
-    //protected LazyOptional<DigitalAdapterPeripheral> peripheral;
-
-    public DigitalAdapterBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
-        super(tileEntityTypeIn, pos, state);
+    public DigitalAdapterBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         textLines = new ArrayList<>();
         for(int i = 0; i < MAX_LINES; i++) textLines.add(EMPTY_LINE);
-
-        //if (CreateAddition.CC_ACTIVE)
-        //    this.peripheral = LazyOptional.of(() -> Peripherals.createDigitalAdapterPeripheral(this));
     }
-
-    /*
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
-                CABlockEntities.ALTERNATOR.get(),
-                (be, context) -> be.capability
-        );
-    }
-    */
 
     private int line = 1;
 
@@ -81,13 +66,6 @@ public class DigitalAdapterBlockEntity extends BlockEntity {
     public int setLine(int ln) {
         return line = ln < 1 || ln > DigitalAdapterBlockEntity.MAX_LINES ? line : ln;
     }
-
-    //@Nonnull
-    //@Override
-    //public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @javax.annotation.Nullable Direction side) {
-    //    if (CreateAddition.CC_ACTIVE && Peripherals.isPeripheral(cap)) return this.peripheral.cast();
-    //    return super.getCapability(cap, side);
-    //}
 
     public SpeedControllerBlockEntity getSpeedController(Direction dir) {
         BlockEntity be = this.level.getBlockEntity(getBlockPos().relative(dir));

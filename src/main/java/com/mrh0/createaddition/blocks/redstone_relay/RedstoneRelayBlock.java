@@ -1,22 +1,19 @@
 package com.mrh0.createaddition.blocks.redstone_relay;
 
-import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.energy.IWireNode;
 import com.mrh0.createaddition.energy.NodeRotation;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
-import com.simibubi.create.api.contraption.transformable.TransformableBlock;
-import com.simibubi.create.content.contraptions.StructureTransform;
-import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.foundation.block.IBE;
+import com.zurrtum.create.api.contraption.transformable.TransformableBlock;
+import com.zurrtum.create.catnip.math.VoxelShaper;
+import com.zurrtum.create.content.contraptions.StructureTransform;
+import com.zurrtum.create.content.equipment.wrench.IWrenchable;
+import com.zurrtum.create.foundation.block.IBE;
+import com.zurrtum.create.foundation.block.RedStoneConnectBlock;
 
-import com.tterrag.registrate.providers.DataGenContext;
-import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
-import net.createmod.catnip.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
@@ -27,7 +24,6 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -40,25 +36,23 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.world.ticks.TickPriority;
-import net.neoforged.neoforge.client.model.generators.*;
 import org.jetbrains.annotations.Nullable;
 
-public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockEntity>, IWrenchable, TransformableBlock {
+public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockEntity>, IWrenchable, TransformableBlock, RedStoneConnectBlock {
 
 	public static final BooleanProperty VERTICAL = BooleanProperty.create("vertical");
-	public static final DirectionProperty HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
+	public static final EnumProperty<Direction> HORIZONTAL_FACING = BlockStateProperties.HORIZONTAL_FACING;
 	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
 	public static final VoxelShape HORIZONTAL_SHAPE_MAIN = Block.box(0, 0, 0, 16, 2, 16);
 	public static final VoxelShape HORIZONTAL_SHAPE_X = Shapes.or(HORIZONTAL_SHAPE_MAIN, Block.box(1, 0, 6, 5, 7, 10), Block.box(11, 0, 6, 15, 7, 10));
 	public static final VoxelShape HORIZONTAL_SHAPE_Z = Shapes.or(HORIZONTAL_SHAPE_MAIN, Block.box(6, 0, 1, 10, 7, 5), Block.box(6, 0, 11, 10, 7, 15));
-
-	//public static final VoxelShaper VERTICAL_SHAPE = CAShapes.shape(0, 0, 14, 16, 16, 16).add(1, 6, 9, 5, 10, 16).add(11, 6, 9, 15, 10, 16).forDirectional();
 
 	public static final VoxelShaper VERTICAL_SHAPE = CAShapes.shape(0, 0, 0, 16, 2, 16).add(1, 0, 6, 5, 7, 10).add(11, 0, 6, 15, 7, 10).forDirectional();
 
@@ -78,7 +72,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+	protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
 		Direction dir = state.getValue(HORIZONTAL_FACING);
 		if(state.getValue(VERTICAL))
 			return VERTICAL_SHAPE.get(dir.getOpposite());
@@ -93,7 +87,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 
 	@Override
 	public BlockEntityType<? extends RedstoneRelayBlockEntity> getBlockEntityType() {
-		return CABlockEntities.REDSTONE_RELAY.get();
+		return CABlockEntities.REDSTONE_RELAY;
 	}
 
 	@Override
@@ -110,7 +104,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	@Override
-	public void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
+	protected void tick(BlockState state, ServerLevel worldIn, BlockPos pos, RandomSource rand) {
 		boolean flag = state.getValue(POWERED);
 		boolean flag1 = this.shouldBePowered(worldIn, pos, state);
 		if (flag && !flag1) {
@@ -122,7 +116,7 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
+	protected void neighborChanged(BlockState state, Level worldIn, BlockPos pos, Block blockIn, Orientation orientation, boolean isMoving) {
 		if (state.canSurvive(worldIn, pos))
 			this.updateState(worldIn, pos, state);
 		else {
@@ -131,11 +125,12 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 			worldIn.removeBlock(pos, false);
 
 			for (Direction direction : Direction.values())
-				worldIn.updateNeighborsAt(pos.relative(direction), this);
+				worldIn.updateNeighborsAt(pos.relative(direction), this, null);
 		}
 	}
 
-	public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+	@Override
+	protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
 		boolean vertical = state.getValue(VERTICAL);
 		Direction direction = state.getValue(HORIZONTAL_FACING);
 		return canSupportCenter(world, vertical ? pos.relative(direction) : pos.below(), vertical ? direction.getOpposite() : Direction.UP);
@@ -239,8 +234,8 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	@Override
-	public boolean canConnectRedstone(@Nullable BlockState state,@Nullable BlockGetter world,@Nullable BlockPos pos,@Nullable Direction side) {
-		if(pos == null || side == null || state == null || world == null)
+	public boolean canConnectRedstone(BlockState state, @Nullable Direction side) {
+		if(side == null || state == null)
 			return false;
 		return !state.getValue(VERTICAL) && side.getAxis() != state.getValue(HORIZONTAL_FACING).getAxis();
 	}
@@ -250,47 +245,20 @@ public class RedstoneRelayBlock extends Block implements IBE<RedstoneRelayBlockE
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, Rotation direction) {
+	protected BlockState rotate(BlockState state, Rotation direction) {
 		return fromRotation(state, direction.rotate(state.getValue(HORIZONTAL_FACING)));
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, LevelAccessor world, BlockPos pos, Rotation direction) {
-		return rotate(state, direction);
-	}
-
-	@Override
-	public BlockState mirror(BlockState state, Mirror mirror) {
+	protected BlockState mirror(BlockState state, Mirror mirror) {
 		return fromRotation(state, mirror.mirror(state.getValue(HORIZONTAL_FACING)));
 	}
 
 	@Override
 	public BlockState transform(BlockState state, StructureTransform transform) {
 		NodeRotation rotation = NodeRotation.get(transform.rotationAxis, transform.rotation);
-		// Handle default rotation & mirroring.
 		if (transform.mirror != null) state = mirror(state, transform.mirror);
 		if (transform.rotationAxis == Axis.Y) state = rotate(state, transform.rotation);
-		// Set the rotation state, which will be used to update the nodes.
 		return state.setValue(NodeRotation.ROTATION, rotation);
-	}
-
-	@Override
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return CABlockEntities.REDSTONE_RELAY.create(pos, state);
-	}
-
-	public static void makeBlockState(DataGenContext<Block, RedstoneRelayBlock> ctx, RegistrateBlockstateProvider provider) {
-		BlockModelProvider models = provider.models();
-		String basePath = "block/redstone_relay/";
-		ModelFile.ExistingModelFile onModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "redstone_relay_on"));
-		ModelFile.ExistingModelFile offModel = models.getExistingFile(ResourceLocation.fromNamespaceAndPath(CreateAddition.MODID, basePath + "redstone_relay_off"));
-		VariantBlockStateBuilder builder = provider.getVariantBuilder(ctx.get());
-		builder.forAllStatesExcept(state -> ConfiguredModel.builder()
-				.modelFile(state.getValue(POWERED) ? onModel : offModel)
-				.rotationX(state.getValue(VERTICAL) ? 90 : 0)
-				.rotationY(((int) state.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot() + (state.getValue(VERTICAL) ? 0: 90)) % 360)
-				.build(),
-				NodeRotation.ROTATION
-		);
 	}
 }

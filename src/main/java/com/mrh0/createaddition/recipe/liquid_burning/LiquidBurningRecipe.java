@@ -1,49 +1,37 @@
 package com.mrh0.createaddition.recipe.liquid_burning;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mrh0.createaddition.index.CARecipes;
 import com.mrh0.createaddition.recipe.FluidRecipeWrapper;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
+import com.zurrtum.create.foundation.fluid.FluidIngredient;
+import com.zurrtum.create.foundation.recipe.CreateRecipe;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.material.Fluid;
-import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-import org.jetbrains.annotations.NotNull;
 
-public class LiquidBurningRecipe extends ProcessingRecipe<FluidRecipeWrapper, LiquidBurningRecipeParams> {
-    public static final IRecipeTypeInfo TYPE_INFO = new IRecipeTypeInfo() {
-        @Override
-        public ResourceLocation getId() {
-            return CARecipes.LIQUID_BURNING.getId();
-        }
-
-        @Override
-        public <T extends RecipeSerializer<?>> T getSerializer() {
-            return (T) CARecipes.LIQUID_BURNING.get();
-        }
-
-        @Override
-        public <V extends RecipeInput, R extends Recipe<V>> RecipeType<R> getType() {
-            return (RecipeType<R>) CARecipes.LIQUID_BURNING_TYPE.get();
-        }
-    };
-    protected int burnTime;
-    protected boolean superheated;
-
-    public LiquidBurningRecipe(LiquidBurningRecipeParams params) {
-        super(TYPE_INFO, params);
-        burnTime = params.getBurnTime();
-        superheated = params.isSuperheated();
-    }
+public record LiquidBurningRecipe(FluidIngredient fluidIngredient, int burnTime,
+                                  boolean superheated) implements CreateRecipe<FluidRecipeWrapper> {
+    public static final MapCodec<LiquidBurningRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        FluidIngredient.CODEC.fieldOf("fluid_ingredient").forGetter(LiquidBurningRecipe::fluidIngredient),
+        Codec.INT.fieldOf("burn_time").forGetter(LiquidBurningRecipe::burnTime),
+        Codec.BOOL.optionalFieldOf("superheated", false).forGetter(LiquidBurningRecipe::superheated)
+    ).apply(instance, LiquidBurningRecipe::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, LiquidBurningRecipe> STREAM_CODEC = StreamCodec.composite(
+        FluidIngredient.PACKET_CODEC,
+        LiquidBurningRecipe::fluidIngredient,
+        ByteBufCodecs.INT,
+        LiquidBurningRecipe::burnTime,
+        ByteBufCodecs.BOOL,
+        LiquidBurningRecipe::superheated,
+        LiquidBurningRecipe::new
+    );
+    public static final RecipeSerializer<LiquidBurningRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
 
     public int getBurnTime() {
         return burnTime;
@@ -53,89 +41,27 @@ public class LiquidBurningRecipe extends ProcessingRecipe<FluidRecipeWrapper, Li
         return superheated;
     }
 
-    @Override
-    public boolean matches(@NotNull FluidRecipeWrapper wrapper, @NotNull Level world) {
-        if (fluidIngredients == null) return false;
-        if (wrapper.fluid == null) return false;
-        return getFluidInput().test(wrapper.fluid);
-    }
-
-    public SizedFluidIngredient getFluidInput() {
-        if (fluidIngredients.isEmpty())
-            throw new IllegalStateException("Filling Recipe has no fluid ingredient!");
-        return fluidIngredients.get(0);
-    }
-
-
-    @Override
-    protected int getMaxInputCount() {
-        return 0;
+    public FluidIngredient getFluidInput() {
+        return fluidIngredient;
     }
 
     @Override
-    protected int getMaxOutputCount() {
-        return 0;
+    public boolean matches(FluidRecipeWrapper wrapper, Level level) {
+        return wrapper.fluid != null && fluidIngredient.test(wrapper.fluid);
     }
 
     @Override
-    protected int getMaxFluidInputCount() {
-        return 1;
+    public ItemStack assemble(FluidRecipeWrapper wrapper) {
+        return ItemStack.EMPTY;
     }
 
-    @FunctionalInterface
-    public interface Factory<R extends LiquidBurningRecipe> extends ProcessingRecipe.Factory<LiquidBurningRecipeParams, R> {
-        R create(LiquidBurningRecipeParams params);
+    @Override
+    public RecipeSerializer<LiquidBurningRecipe> getSerializer() {
+        return CARecipes.LIQUID_BURNING;
     }
 
-    public static class Builder<R extends LiquidBurningRecipe> extends ProcessingRecipeBuilder<LiquidBurningRecipeParams, R, LiquidBurningRecipe.Builder<R>> {
-        public Builder(LiquidBurningRecipe.Factory<R> factory, ResourceLocation recipeId) {
-            super(factory, recipeId);
-        }
-
-        @Override
-        protected LiquidBurningRecipeParams createParams() {
-            return new LiquidBurningRecipeParams();
-        }
-
-        @Override
-        public LiquidBurningRecipe.Builder<R> self() {
-            return this;
-        }
-
-
-        public LiquidBurningRecipe.Builder<R> fluid(TagKey<Fluid> fluidTag) {
-            return require(SizedFluidIngredient.of(fluidTag, 1000));
-        }
-
-        public LiquidBurningRecipe.Builder<R> burnTime(int burnTime) {
-            params.burnTime = burnTime;
-            return this;
-        }
-
-        public LiquidBurningRecipe.Builder<R> superheated() {
-            params.superheated = true;
-            return this;
-        }
+    @Override
+    public RecipeType<LiquidBurningRecipe> getType() {
+        return CARecipes.LIQUID_BURNING_TYPE;
     }
-
-    public static class Serializer<R extends LiquidBurningRecipe> implements RecipeSerializer<R> {
-        private final MapCodec<R> codec;
-        private final StreamCodec<RegistryFriendlyByteBuf, R> streamCodec;
-
-        public Serializer(ProcessingRecipe.Factory<LiquidBurningRecipeParams, R> factory) {
-            this.codec = ProcessingRecipe.codec(factory, LiquidBurningRecipeParams.CODEC);
-            this.streamCodec = ProcessingRecipe.streamCodec(factory, LiquidBurningRecipeParams.STREAM_CODEC);
-        }
-
-        @Override
-        public MapCodec<R> codec() {
-            return codec;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, R> streamCodec() {
-            return streamCodec;
-        }
-    }
-
 }

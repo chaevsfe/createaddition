@@ -2,12 +2,12 @@ package com.mrh0.createaddition.network;
 
 import com.mrh0.createaddition.CreateAddition;
 import io.netty.buffer.ByteBuf;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public record EnergyNetworkPacketPayload(BlockPos pos, int demand, int buff) implements CustomPacketPayload {
     public static double clientSaturation = 0;
@@ -38,7 +38,7 @@ public record EnergyNetworkPacketPayload(BlockPos pos, int demand, int buff) imp
     }
 
     public static boolean send(BlockPos pos, int demand, int buff, ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, new EnergyNetworkPacketPayload(pos, demand, buff));
+        ServerPlayNetworking.send(player, new EnergyNetworkPacketPayload(pos, demand, buff));
         return true;
     }
 }

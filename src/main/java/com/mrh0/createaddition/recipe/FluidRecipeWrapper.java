@@ -1,39 +1,20 @@
 package com.mrh0.createaddition.recipe;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.player.Player;
+import com.zurrtum.create.infrastructure.fluids.FluidStack;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.neoforged.neoforge.fluids.FluidStack;
-import org.jetbrains.annotations.NotNull;
 
-public class FluidRecipeWrapper implements Container, RecipeInput {
+public class FluidRecipeWrapper implements RecipeInput {
 
 	public FluidStack fluid;
-	
+
 	public FluidRecipeWrapper(FluidStack fluid) {
 		this.fluid = fluid;
 	}
-	
-	@Override
-	public void clearContent() {
-		//fluid = new FluidStack(Fluids.EMPTY.getFluid(), 0);
-	}
 
 	@Override
-	public int getContainerSize() {
-		return 0;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return false;
-	}
-
-	@Override
-	public @NotNull ItemStack getItem(int i) {
-		return new ItemStack(Items.AIR);
+	public ItemStack getItem(int slot) {
+		return ItemStack.EMPTY;
 	}
 
 	@Override
@@ -42,26 +23,7 @@ public class FluidRecipeWrapper implements Container, RecipeInput {
 	}
 
 	@Override
-	public @NotNull ItemStack removeItem(int p_70298_1_, int p_70298_2_) {
-		return new ItemStack(Items.AIR);
+	public boolean isEmpty() {
+		return fluid == null || fluid.isEmpty();
 	}
-
-	@Override
-	public @NotNull ItemStack removeItemNoUpdate(int p_70304_1_) {
-		return new ItemStack(Items.AIR);
-	}
-
-	@Override
-	public void setItem(int p_70299_1_, @NotNull ItemStack stack) {
-	}
-
-	@Override
-	public void setChanged() {
-	}
-
-	@Override
-	public boolean stillValid(@NotNull Player player) {
-		return true;
-	}
-
 }

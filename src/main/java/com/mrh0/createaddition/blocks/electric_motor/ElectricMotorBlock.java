@@ -2,10 +2,11 @@ package com.mrh0.createaddition.blocks.electric_motor;
 
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
-import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
-import com.simibubi.create.foundation.block.IBE;
+import com.zurrtum.create.catnip.math.VoxelShaper;
+import com.zurrtum.create.content.kinetics.base.DirectionalKineticBlock;
+import com.zurrtum.create.foundation.block.IBE;
+import com.zurrtum.create.foundation.block.RedStoneConnectBlock;
 
-import net.createmod.catnip.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
@@ -16,17 +17,17 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class ElectricMotorBlock extends DirectionalKineticBlock implements IBE<ElectricMotorBlockEntity> {
+public class ElectricMotorBlock extends DirectionalKineticBlock implements IBE<ElectricMotorBlockEntity>, RedStoneConnectBlock {
 
 	public static final VoxelShaper ELECTRIC_MOTOR_SHAPE = CAShapes.shape(0, 5, 0, 16, 11, 16).add(3, 0, 3, 13, 14, 13)
 			.forDirectional();
@@ -64,7 +65,7 @@ public class ElectricMotorBlock extends DirectionalKineticBlock implements IBE<E
 
 	@Override
 	public BlockEntityType<? extends ElectricMotorBlockEntity> getBlockEntityType() {
-		return CABlockEntities.ELECTRIC_MOTOR.get();
+		return CABlockEntities.ELECTRIC_MOTOR;
 	}
 
 	@Override
@@ -82,32 +83,18 @@ public class ElectricMotorBlock extends DirectionalKineticBlock implements IBE<E
 	}
 
 	@Override
-	public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side) {
+	public boolean canConnectRedstone(BlockState state, @Nullable Direction side) {
 		return true;
 	}
 
-    @Override
-    public boolean hideStressImpact() {
-        return true;
-    }
-
-	/*
 	@Override
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos from, boolean b) {
-		if (!world.isClientSide) {
-			boolean flag = state.getValue(POWERED);
-			if (flag != world.hasNeighborSignal(pos)) {
-				if (flag)
-					world.scheduleTick(pos, this, 4);
-				else
-					world.setBlock(pos, state.cycle(POWERED), 2);
-			}
-		}
+	public boolean hideStressImpact() {
+		return true;
 	}
-	*/
 
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos from, boolean b) {
-		if (!world.isClientSide) {
+	@Override
+	protected void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, @Nullable Orientation orientation, boolean b) {
+		if (!world.isClientSide()) {
 			boolean flag = state.getValue(POWERED);
 			if (flag != world.hasNeighborSignal(pos)) {
 				if (flag){
@@ -123,13 +110,8 @@ public class ElectricMotorBlock extends DirectionalKineticBlock implements IBE<E
 	}
 
 	@Override
-	public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource pRandom) {
+	protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
 		if (state.getValue(POWERED) && !world.hasNeighborSignal(pos))
 			world.setBlock(pos, state.cycle(POWERED), 2);
-	}
-
-	@Override
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return CABlockEntities.ELECTRIC_MOTOR.create(pos, state);
 	}
 }

@@ -2,10 +2,10 @@ package com.mrh0.createaddition.blocks.servo_motor;
 
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
-import com.simibubi.create.content.kinetics.base.DirectionalKineticBlock;
-import com.simibubi.create.foundation.block.IBE;
-
-import net.createmod.catnip.math.VoxelShaper;
+import com.zurrtum.create.catnip.math.VoxelShaper;
+import com.zurrtum.create.content.kinetics.base.DirectionalKineticBlock;
+import com.zurrtum.create.foundation.block.IBE;
+import com.zurrtum.create.foundation.block.RedStoneConnectBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,26 +13,25 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 import org.jetbrains.annotations.Nullable;
 
-public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<ServoMotorBlockEntity> {
+public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<ServoMotorBlockEntity>, RedStoneConnectBlock {
 
 	private static final VoxelShaper OCCLUSION_SHAPE = CAShapes.shape(0, 0, 0, 16, 12, 16).forDirectional();
 
@@ -59,7 +58,7 @@ public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<Serv
 	}
 
 	@Override
-	public VoxelShape getOcclusionShape(BlockState state, BlockGetter world, BlockPos pos) {
+	protected VoxelShape getOcclusionShape(BlockState state) {
 		return OCCLUSION_SHAPE.get(state.getValue(FACING));
 	}
 
@@ -80,19 +79,19 @@ public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<Serv
 
 	@Override
 	public BlockEntityType<? extends ServoMotorBlockEntity> getBlockEntityType() {
-		return CABlockEntities.SERVO_MOTOR.get();
+		return CABlockEntities.SERVO_MOTOR;
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
 			Player player, InteractionHand hand, BlockHitResult hitResult) {
 		if (!player.mayBuild())
-			return ItemInteractionResult.FAIL;
+			return InteractionResult.FAIL;
 		if (player.isShiftKeyDown())
-			return ItemInteractionResult.FAIL;
+			return InteractionResult.FAIL;
 		if (stack.isEmpty()) {
-			if (level.isClientSide)
-				return ItemInteractionResult.SUCCESS;
+			if (level.isClientSide())
+				return InteractionResult.SUCCESS;
 			withBlockEntityDo(level, pos, be -> {
 				if (be.isRunning()) {
 					be.disassemble();
@@ -100,9 +99,9 @@ public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<Serv
 				}
 				be.triggerAssemble();
 			});
-			return ItemInteractionResult.SUCCESS;
+			return InteractionResult.SUCCESS;
 		}
-		return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
 	public void setPowered(Level world, BlockPos pos, boolean powered) {
@@ -110,7 +109,7 @@ public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<Serv
 	}
 
 	@Override
-	public boolean canConnectRedstone(BlockState state, BlockGetter world, BlockPos pos, @Nullable Direction side) {
+	public boolean canConnectRedstone(BlockState state, @Nullable Direction side) {
 		return true;
 	}
 
@@ -120,8 +119,9 @@ public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<Serv
 	}
 
 	@Override
-	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos from, boolean b) {
-		if (!world.isClientSide) {
+	public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block,
+			@Nullable Orientation wireOrientation, boolean isMoving) {
+		if (!world.isClientSide()) {
 			boolean flag = state.getValue(POWERED);
 			if (flag != world.hasNeighborSignal(pos)) {
 				if (flag) {
@@ -136,13 +136,8 @@ public class ServoMotorBlock extends DirectionalKineticBlock implements IBE<Serv
 	}
 
 	@Override
-	public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource pRandom) {
+	protected void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource random) {
 		if (state.getValue(POWERED) && !world.hasNeighborSignal(pos))
 			world.setBlock(pos, state.cycle(POWERED), 2);
-	}
-
-	@Override
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return CABlockEntities.SERVO_MOTOR.create(pos, state);
 	}
 }

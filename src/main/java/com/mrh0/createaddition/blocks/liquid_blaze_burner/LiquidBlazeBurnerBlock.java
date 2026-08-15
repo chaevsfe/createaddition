@@ -1,56 +1,53 @@
 package com.mrh0.createaddition.blocks.liquid_blaze_burner;
 
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import com.mojang.serialization.MapCodec;
 import com.mrh0.createaddition.index.CABlockEntities;
-import com.simibubi.create.AllBlocks;
-import com.simibubi.create.AllItems;
-import com.simibubi.create.AllShapes;
-import com.simibubi.create.content.equipment.wrench.IWrenchable;
-import com.simibubi.create.content.processing.basin.BasinBlockEntity;
-import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
-import com.simibubi.create.foundation.block.IBE;
+import com.zurrtum.create.AllItems;
+import com.zurrtum.create.AllShapes;
+import com.zurrtum.create.api.entity.FakePlayerHandler;
+import com.zurrtum.create.content.equipment.wrench.IWrenchable;
+import com.zurrtum.create.content.processing.basin.BasinBlockEntity;
+import com.zurrtum.create.content.processing.burner.BlazeBurnerBlock;
+import com.zurrtum.create.foundation.block.IBE;
+import com.zurrtum.create.infrastructure.fluids.FluidInventory;
+import com.zurrtum.create.infrastructure.fluids.FluidInventoryProvider;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.util.FakePlayer;
+import org.jetbrains.annotations.Nullable;
 
-import static com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL;
+import static com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL;
 
-public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<LiquidBlazeBurnerBlockEntity>, IWrenchable {
+public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<LiquidBlazeBurnerBlockEntity>, IWrenchable, FluidInventoryProvider<LiquidBlazeBurnerBlockEntity> {
+
+	public static final MapCodec<LiquidBlazeBurnerBlock> CODEC = simpleCodec(LiquidBlazeBurnerBlock::new);
 
 	public LiquidBlazeBurnerBlock(Properties properties) {
 		super(properties);
 		registerDefaultState(defaultBlockState().setValue(HEAT_LEVEL, BlazeBurnerBlock.HeatLevel.NONE));
 	}
-
-	public static final MapCodec<BlazeBurnerBlock> CODEC = simpleCodec(BlazeBurnerBlock::new);
 
 	@Override
 	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
@@ -78,11 +75,11 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 	}
 
 	@Override
-	public void onPlace(BlockState state, Level world, BlockPos pos, BlockState p_220082_4_, boolean p_220082_5_) {
-		if (world.isClientSide) return;
-		BlockEntity tileEntity = world.getBlockEntity(pos.above());
-		if (!(tileEntity instanceof BasinBlockEntity basin)) return;
-        basin.notifyChangeOfContents();
+	public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean isMoving) {
+		if (world.isClientSide()) return;
+		BlockEntity blockEntity = world.getBlockEntity(pos.above());
+		if (!(blockEntity instanceof BasinBlockEntity basin)) return;
+		basin.notifyChangeOfContents();
 	}
 
 	@Override
@@ -92,80 +89,82 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 
 	@Override
 	public BlockEntityType<? extends LiquidBlazeBurnerBlockEntity> getBlockEntityType() {
-		return CABlockEntities.LIQUID_BLAZE_BURNER.get();
+		return CABlockEntities.LIQUID_BLAZE_BURNER;
 	}
 
-	@Nullable
 	@Override
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return IBE.super.newBlockEntity(pos, state);
+	public FluidInventory getFluidInventory(LevelAccessor world, BlockPos pos, BlockState state,
+		LiquidBlazeBurnerBlockEntity blockEntity, @Nullable Direction context) {
+		return blockEntity.getTank().getCapability();
 	}
 
 	@Override
 	public Item asItem() {
-		return AllBlocks.BLAZE_BURNER.get().asItem();
+		return AllItems.BLAZE_BURNER;
 	}
 
 	@Override
-	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-		ItemStack heldItem = player.getItemInHand(hand);
+	protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+		InteractionHand hand, BlockHitResult hitResult) {
 		BlazeBurnerBlock.HeatLevel heat = state.getValue(HEAT_LEVEL);
 
-		if (AllItems.GOGGLES.isIn(heldItem) && heat != BlazeBurnerBlock.HeatLevel.NONE)
+		if (stack.is(AllItems.GOGGLES) && heat != BlazeBurnerBlock.HeatLevel.NONE)
 			return onBlockEntityUseItemOn(level, pos, be -> {
-				if (be.goggles) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				if (be.goggles) return InteractionResult.TRY_WITH_EMPTY_HAND;
 				be.goggles = true;
 				be.notifyUpdate();
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			});
 
-		if (heldItem.isEmpty() && heat != BlazeBurnerBlock.HeatLevel.NONE)
+		if (stack.isEmpty() && heat != BlazeBurnerBlock.HeatLevel.NONE)
 			return onBlockEntityUseItemOn(level, pos, be -> {
-				if (!be.goggles) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				if (!be.goggles) return InteractionResult.TRY_WITH_EMPTY_HAND;
 				be.goggles = false;
 				be.notifyUpdate();
-				return ItemInteractionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			});
 
 		boolean doNotConsume = player.isCreative();
-		boolean forceOverflow = !(player instanceof FakePlayer);
+		boolean forceOverflow = !FakePlayerHandler.has(player);
 
-		InteractionResultHolder<ItemStack> res =
-			tryInsert(state, level, pos, heldItem, doNotConsume, forceOverflow, false);
-		ItemStack leftover = res.getObject();
-		if (!level.isClientSide && !doNotConsume && !leftover.isEmpty()) {
-			if (heldItem.isEmpty()) {
-				player.setItemInHand(hand, leftover);
-			} else if (!player.getInventory()
-				.add(leftover)) {
-				player.drop(leftover, false);
+		InteractionResult res = tryInsert(state, level, pos, stack, doNotConsume, forceOverflow, false);
+		if (res instanceof InteractionResult.Success success) {
+			ItemStack leftover = success.heldItemTransformedTo();
+			if (!level.isClientSide() && !doNotConsume && leftover != null && !leftover.isEmpty()) {
+				if (stack.isEmpty()) {
+					player.setItemInHand(hand, leftover);
+				} else if (!player.getInventory().add(leftover)) {
+					player.drop(leftover, false);
+				}
 			}
 		}
 
-		return res.getResult() == InteractionResult.SUCCESS ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		if (res.consumesAction()) return res;
+		return InteractionResult.TRY_WITH_EMPTY_HAND;
 	}
 
-	public static InteractionResultHolder<ItemStack> tryInsert(BlockState state, Level level, BlockPos pos,
+	public static InteractionResult tryInsert(BlockState state, Level level, BlockPos pos,
 		ItemStack stack, boolean doNotConsume, boolean forceOverflow, boolean simulate) {
-		if (!state.hasBlockEntity()) return InteractionResultHolder.fail(ItemStack.EMPTY);
+		if (!state.hasBlockEntity()) return InteractionResult.FAIL;
 
-		BlockEntity te = level.getBlockEntity(pos);
-		if (!(te instanceof LiquidBlazeBurnerBlockEntity burnerTE))
-			return InteractionResultHolder.fail(ItemStack.EMPTY);
+		BlockEntity be = level.getBlockEntity(pos);
+		if (!(be instanceof LiquidBlazeBurnerBlockEntity burnerBE))
+			return InteractionResult.FAIL;
 
-        if (burnerTE.isCreativeFuel(stack)) {
-			if (!simulate) burnerTE.applyCreativeFuel();
-			return InteractionResultHolder.success(ItemStack.EMPTY);
+		if (burnerBE.isCreativeFuel(stack)) {
+			if (!simulate) burnerBE.applyCreativeFuel();
+			return InteractionResult.SUCCESS.heldItemTransformedTo(ItemStack.EMPTY);
 		}
-		if (!burnerTE.tryUpdateFuel(stack, forceOverflow, simulate)) return InteractionResultHolder.fail(ItemStack.EMPTY);
+		if (!burnerBE.tryUpdateFuel(stack, forceOverflow, simulate)) return InteractionResult.FAIL;
 
 		if (!doNotConsume) {
-			ItemStack container = stack.hasCraftingRemainingItem() ? stack.getCraftingRemainingItem() : ItemStack.EMPTY;
-			if (!level.isClientSide) {stack.shrink(1);
+			ItemStackTemplate container = stack.getItem().getCraftingRemainder();
+			if (!level.isClientSide()) {
+				stack.shrink(1);
 			}
-			return InteractionResultHolder.success(container);
+			return InteractionResult.SUCCESS.heldItemTransformedTo(container != null ? container.create() : ItemStack.EMPTY);
 		}
-		return InteractionResultHolder.success(ItemStack.EMPTY);
+		return InteractionResult.SUCCESS.heldItemTransformedTo(ItemStack.EMPTY);
 	}
 
 	@Override
@@ -186,9 +185,8 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 	}
 
 	@Override
-	public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
-		return Math.max(0, state.getValue(HEAT_LEVEL)
-			.ordinal() - 1);
+	public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
+		return Math.max(0, state.getValue(HEAT_LEVEL).ordinal() - 1);
 	}
 
 	@Override
@@ -196,12 +194,12 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 		return false;
 	}
 
-	@OnlyIn(Dist.CLIENT)
-	public void animateTick(BlockState state, Level world, BlockPos pos, Random random) {
+	@Override
+	public void animateTick(BlockState state, Level world, BlockPos pos, RandomSource random) {
 		if (random.nextInt(10) != 0) return;
 		if (!state.getValue(HEAT_LEVEL).isAtLeast(BlazeBurnerBlock.HeatLevel.SMOULDERING)) return;
 		world.playLocalSound((float) pos.getX() + 0.5F, (float) pos.getY() + 0.5F,
-                (float) pos.getZ() + 0.5F, SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS,
+			(float) pos.getZ() + 0.5F, SoundEvents.CAMPFIRE_CRACKLE, SoundSource.BLOCKS,
 			0.5F + random.nextFloat(), random.nextFloat() * 0.7F + 0.6F, false);
 	}
 }

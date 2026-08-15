@@ -56,9 +56,9 @@ public class GameEvents {
 			BlockPos pos = hitResult.getBlockPos();
 			ItemStack item = player.getItemInHand(hand);
 			BlockState state = level.getBlockState(pos);
-			if(item.getItem() == CAItems.STRAW.get() && level.getBlockEntity(pos) instanceof BlazeBurnerBlockEntity) {
+			if(item.getItem() == CAItems.STRAW && level.getBlockEntity(pos) instanceof BlazeBurnerBlockEntity) {
 				if(state.is(AllBlocks.BLAZE_BURNER)) {
-					BlockState newState = CABlocks.LIQUID_BLAZE_BURNER.getDefaultState()
+					BlockState newState = CABlocks.LIQUID_BLAZE_BURNER.defaultBlockState()
 							.setValue(BlazeBurnerBlock.HEAT_LEVEL, BlazeBurnerBlock.HeatLevel.SMOULDERING)
 							.setValue(LiquidBlazeBurnerBlock.FACING, state.getValue(BlazeBurnerBlock.FACING));
 					level.setBlockAndUpdate(pos, newState);

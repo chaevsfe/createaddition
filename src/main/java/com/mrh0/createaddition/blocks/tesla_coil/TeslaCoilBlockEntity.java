@@ -1,51 +1,51 @@
 package com.mrh0.createaddition.blocks.tesla_coil;
 
-import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.AbstractElectricBlockEntity;
-import com.mrh0.createaddition.index.*;
+import com.mrh0.createaddition.index.CABlocks;
+import com.mrh0.createaddition.index.CADamageTypes;
+import com.mrh0.createaddition.index.CAEffects;
+import com.mrh0.createaddition.index.CARecipes;
+import com.mrh0.createaddition.index.CASounds;
 import com.mrh0.createaddition.network.IObserveBlockEntity;
 import com.mrh0.createaddition.network.ObservePacketPayload;
 import com.mrh0.createaddition.network.TimeRemainingPacketPayload;
 import com.mrh0.createaddition.recipe.charging.ChargingRecipe;
-import com.mrh0.createaddition.sound.CASoundScapes;
 import com.mrh0.createaddition.util.Util;
-import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
-import com.simibubi.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
-import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
-import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import net.createmod.catnip.platform.CatnipServices;
-import net.minecraft.ChatFormatting;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
+import com.zurrtum.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
+import com.zurrtum.create.content.kinetics.belt.transport.TransportedItemStack;
+import com.zurrtum.create.infrastructure.items.ItemStackHandler;
+
+import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
+import net.fabricmc.fabric.api.transfer.v1.item.base.SingleStackStorage;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import team.reborn.energy.api.EnergyStorage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements IHaveGoggleInformation, IObserveBlockEntity {
+public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements IObserveBlockEntity {
 
 	private Optional<RecipeHolder<ChargingRecipe>> recipeCache = Optional.empty();
 
@@ -58,33 +58,25 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 		inputInv = new ItemStackHandler(1);
 	}
 
-	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
-				CABlockEntities.TESLA_COIL.get(),
-				(be, context) -> be.localEnergy
-		);
-	}
-
 	@Override
-	public int getCapacity() {
+	public long getCapacity() {
 		return Util.max(CACommonConfig.COMMON.TESLA_COIL_CAPACITY.get(), CACommonConfig.COMMON.TESLA_COIL_CHARGE_RATE.get(), CACommonConfig.COMMON.TESLA_COIL_RECIPE_CHARGE_RATE.get());
 	}
 
 	@Override
-	public int getMaxIn() {
+	public long getMaxIn() {
 		return CACommonConfig.COMMON.TESLA_COIL_MAX_INPUT.get();
 	}
 
 	@Override
-	public int getMaxOut() {
+	public long getMaxOut() {
 		return 0;
 	}
 
 	public BeltProcessingBehaviour processingBehaviour;
 
 	@Override
-	public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
+	public void addBehaviours(List<BlockEntityBehaviour<?>> behaviours) {
 		super.addBehaviours(behaviours);
 		processingBehaviour =
 			new BeltProcessingBehaviour(this).whenItemEnters((s, i) -> TeslaCoilBeltCallbacks.onItemReceived(s, i, this))
@@ -102,17 +94,17 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 		return false;
 	}
 
-	public int getConsumption() {
+	public long getConsumption() {
 		return CACommonConfig.COMMON.TESLA_COIL_CHARGE_RATE.get();
 	}
 
-	protected float getItemCharge(IEnergyStorage energy) {
+	protected float getItemCharge(EnergyStorage energy) {
 		if (energy == null) return 0f;
-		return (float) energy.getEnergyStored() / (float) energy.getMaxEnergyStored();
+		return (float) energy.getAmount() / (float) energy.getCapacity();
 	}
 
 	protected BeltProcessingBehaviour.ProcessingResult onCharge(TransportedItemStack transported, TransportedItemStackHandlerBehaviour handler) {
-        return chargeCompoundAndStack(transported, handler);
+		return chargeCompoundAndStack(transported, handler);
 	}
 
 	private void doDmg() {
@@ -124,7 +116,8 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 			if(e == null) return;
 
 			boolean allChain = true;
-			for(ItemStack armor : e.getArmorSlots()) {
+			for(EquipmentSlot slot : new EquipmentSlot[] {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+				ItemStack armor = e.getItemBySlot(slot);
 				if(armor.is(Items.CHAINMAIL_BOOTS)) continue;
 				if(armor.is(Items.CHAINMAIL_LEGGINGS)) continue;
 				if(armor.is(Items.CHAINMAIL_CHESTPLATE)) continue;
@@ -141,10 +134,10 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 				time = CACommonConfig.COMMON.TESLA_COIL_HURT_EFFECT_TIME_PLAYER.get();
 			}
 
-			if(dmg > 0) {
-				e.hurt(CADamageTypes.teslaCoil(level), dmg);
+			if(dmg > 0 && level instanceof ServerLevel serverLevel) {
+				e.hurtServer(serverLevel, CADamageTypes.teslaCoil(level), dmg);
 				if (!zapped) {
-					if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) level.playSound(null, worldPosition, CASounds.LOUD_ZAP.get(), SoundSource.BLOCKS, 0.6f, 1f);
+					if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) level.playSound(null, worldPosition, CASounds.LOUD_ZAP, SoundSource.BLOCKS, 0.6f, 1f);
 					zapped = true;
 				}
 			}
@@ -159,34 +152,25 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 	public void tick() {
 		super.tick();
 		if(level == null) return;
+		if(level.isClientSide()) return;
 
-		if (level.isClientSide) {
-			CatnipServices.PLATFORM.executeOnClientOnly(() -> this::tickAudio);
-			return;
-		}
 		int signal = level.getBestNeighborSignal(getBlockPos());
-		if(signal > 0 && localEnergy.getEnergyStored() >= CACommonConfig.COMMON.TESLA_COIL_HURT_ENERGY_REQUIRED.get()) poweredTimer = 10;
+		if(signal > 0 && localEnergy.getAmount() >= CACommonConfig.COMMON.TESLA_COIL_HURT_ENERGY_REQUIRED.get()) poweredTimer = 10;
 
 		dmgTick++;
-		if((dmgTick%= CACommonConfig.COMMON.TESLA_COIL_HURT_FIRE_COOLDOWN.get()) == 0 && localEnergy.getEnergyStored() >= CACommonConfig.COMMON.TESLA_COIL_HURT_ENERGY_REQUIRED.get() && signal > 0) doDmg();
+		if((dmgTick %= CACommonConfig.COMMON.TESLA_COIL_HURT_FIRE_COOLDOWN.get()) == 0 && localEnergy.getAmount() >= CACommonConfig.COMMON.TESLA_COIL_HURT_ENERGY_REQUIRED.get() && signal > 0) doDmg();
 
 		if(poweredTimer > 0) {
 			if (zapTimer == 0) {
-				if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) level.playSound(null, worldPosition, CASounds.LITTLE_ZAP.get(), SoundSource.BLOCKS, 0.1f, 1f);
-				zapTimer = level.random.nextInt(100, 300);
+				if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) level.playSound(null, worldPosition, CASounds.LITTLE_ZAP, SoundSource.BLOCKS, 0.1f, 1f);
+				zapTimer = level.getRandom().nextInt(100, 300);
 			}
 			zapTimer--;
 
-			if(!isPoweredState()) CABlocks.TESLA_COIL.get().setPowered(level, getBlockPos(), true);
+			if(!isPoweredState()) CABlocks.TESLA_COIL.setPowered(level, getBlockPos(), true);
 			poweredTimer--;
 		}
-		else if(isPoweredState()) CABlocks.TESLA_COIL.get().setPowered(level, getBlockPos(), false);
-	}
-
-	@OnlyIn(Dist.CLIENT)
-	public void tickAudio() {
-		if (!isPoweredState()) return;
-		if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) CASoundScapes.play(CASoundScapes.AmbienceGroup.TESLA, worldPosition, 1f);
+		else if(isPoweredState()) CABlocks.TESLA_COIL.setPowered(level, getBlockPos(), false);
 	}
 
 	public boolean isPoweredState() {
@@ -209,11 +193,27 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 	}
 
 	protected boolean chargeStack(ItemStack stack, TransportedItemStack transported, TransportedItemStackHandlerBehaviour handler) {
-		IEnergyStorage es = stack.getCapability(Capabilities.EnergyStorage.ITEM);
+		ContainerItemContext context = ContainerItemContext.ofSingleSlot(new SingleStackStorage() {
+			@Override
+			protected ItemStack getStack() {
+				return transported.stack;
+			}
+
+			@Override
+			protected void setStack(ItemStack stack) {
+				transported.stack = stack;
+			}
+		});
+		EnergyStorage es = EnergyStorage.ITEM.find(transported.stack, context);
 		if (es == null) return false;
-		if(es.receiveEnergy(1, true) != 1) return false;
-		if(localEnergy.getEnergyStored() < stack.getCount()) return false;
-		localEnergy.internalConsumeEnergy(es.receiveEnergy(Math.min(getConsumption(), localEnergy.getEnergyStored()), false));
+		try(Transaction t = Transaction.openOuter()) {
+			if(es.insert(1, t) != 1) return false;
+		}
+		if(localEnergy.getAmount() < transported.stack.getCount()) return false;
+		try(Transaction t = Transaction.openOuter()) {
+			localEnergy.internalConsumeEnergy(es.insert(Math.min(getConsumption(), localEnergy.getAmount()), t));
+			t.commit();
+		}
 		return true;
 	}
 
@@ -224,9 +224,9 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 
 	private boolean chargeRecipe(ItemStack stack, TransportedItemStack transported, TransportedItemStackHandlerBehaviour handler) {
 		if(this.getLevel() == null) return false;
-		if(!inputInv.getStackInSlot(0).is(stack.getItem())) {
-			inputInv.setStackInSlot(0, stack);
-			recipeCache = find(new RecipeWrapper(inputInv), this.getLevel());
+		if(!inputInv.getItem(0).is(stack.getItem())) {
+			inputInv.setItem(0, stack);
+			recipeCache = find(new SingleRecipeInput(stack), this.getLevel());
 			chargeAccumulator = 0;
 			Arrays.fill(chargeRateHistory, 0);
 			chargeRateIndex = 0;
@@ -234,7 +234,7 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 		}
 		if(recipeCache.isPresent()) {
 			ChargingRecipe recipe = recipeCache.get().value();
-			energyRemoved = localEnergy.internalConsumeEnergy(Util.min(CACommonConfig.COMMON.TESLA_COIL_RECIPE_CHARGE_RATE.get(), recipe.getEnergy() - chargeAccumulator, recipe.getMaxChargeRate()));
+			energyRemoved = (int) localEnergy.internalConsumeEnergy(Util.min(CACommonConfig.COMMON.TESLA_COIL_RECIPE_CHARGE_RATE.get(), recipe.getEnergy() - chargeAccumulator, recipe.getMaxChargeRate()));
 			chargeRateHistory[chargeRateIndex] = energyRemoved;
 			chargeRateIndex = (chargeRateIndex + 1) % 20;
 			if (chargeRateSamples < 20) chargeRateSamples++;
@@ -242,45 +242,23 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 			if(chargeAccumulator >= recipe.getEnergy()) {
 				TransportedItemStack remainingStack = transported.copy();
 				TransportedItemStack result = transported.copy();
-				result.stack = recipe.getResultItem(this.getLevel().registryAccess()).copy();
+				result.stack = recipe.getResultStack();
 				remainingStack.stack.shrink(1);
 				List<TransportedItemStack> outList = new ArrayList<>();
 				outList.add(result);
 				handler.handleProcessingOnItem(transported, TransportedItemStackHandlerBehaviour.TransportedResult.convertToAndLeaveHeld(outList, remainingStack));
 				chargeAccumulator = 0;
 
-				if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) level.playSound(null, worldPosition, CASounds.LITTLE_ZAP.get(), SoundSource.BLOCKS, 0.1f, 1f);
+				if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) level.playSound(null, worldPosition, CASounds.LITTLE_ZAP, SoundSource.BLOCKS, 0.1f, 1f);
 			}
 			return true;
 		}
 		return false;
 	}
 
-	public Optional<RecipeHolder<ChargingRecipe>> find(RecipeWrapper wrapper, Level level) {
-		return level.getRecipeManager().getRecipeFor(CARecipes.CHARGING_TYPE.get(), wrapper, level);
-	}
-
-	@Override
-	public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-		if (level == null) return false;
-		ObservePacketPayload.send(worldPosition, 0);
-		// TODO Add networking
-		/*
-		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.consumption").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
-		CALang.builder().add(Component.literal(" " + Util.format(energyRemoved) + "⚡/t ").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
-		if (recipeCache.isPresent()) {
-			ChargingRecipe recipe = recipeCache.get().value();
-			CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.consumption").withStyle(ChatFormatting.GRAY)).forGoggles(tooltip);
-			CALang.builder().add(Component.literal(" " + Util.format(chargeAccumulator) + " / " + Util.format(recipe.getEnergy()) + "⚡").withStyle(ChatFormatting.AQUA)).forGoggles(tooltip);
-		}
-		*/
-		int tr = TimeRemainingPacketPayload.clientTimeRemaining;
-		if (tr == 0 || tr > 0 && tr <= 20) return false;
-		String timeStr = tr == -1 ? "∞" : Util.formatTime(tr);
-		CALang.builder().add(Component.translatable(CreateAddition.MODID + ".tooltip.charging.info").withStyle(ChatFormatting.WHITE)).forGoggles(tooltip);
-		CALang.builder().add(Component.literal(" ").append(Component.translatable(CreateAddition.MODID + ".tooltip.charging.time_remaining").withStyle(ChatFormatting.GRAY))
-			.append(Component.literal(" " + timeStr).withStyle(ChatFormatting.AQUA))).forGoggles(tooltip);
-		return true;
+	public Optional<RecipeHolder<ChargingRecipe>> find(SingleRecipeInput input, Level level) {
+		if(!(level instanceof ServerLevel serverLevel)) return Optional.empty();
+		return serverLevel.recipeAccess().getRecipeFor(CARecipes.CHARGING_TYPE, input, level);
 	}
 
 	@Override

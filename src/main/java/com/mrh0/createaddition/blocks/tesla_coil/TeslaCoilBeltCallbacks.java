@@ -1,8 +1,8 @@
 package com.mrh0.createaddition.blocks.tesla_coil;
 
-import com.simibubi.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
-import com.simibubi.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
-import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
+import com.zurrtum.create.content.kinetics.belt.behaviour.BeltProcessingBehaviour;
+import com.zurrtum.create.content.kinetics.belt.behaviour.TransportedItemStackHandlerBehaviour;
+import com.zurrtum.create.content.kinetics.belt.transport.TransportedItemStack;
 
 import net.minecraft.core.Direction;
 

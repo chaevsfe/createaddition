@@ -3,14 +3,14 @@ package com.mrh0.createaddition.energy;
 import com.mrh0.createaddition.index.*;
 
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;;
+import net.minecraft.world.item.ItemStack;
 
 public enum WireType {
-	COPPER(0, 256, 78, 37, 30, CAItems.COPPER_WIRE.asStack(4), CAItems.COPPER_SPOOL.asStack()),
-	GOLD(1, 1024, 98, 83, 29, CAItems.GOLD_WIRE.asStack(4), CAItems.GOLD_SPOOL.asStack()),
-	ELECTRUM(2, 8196, 88, 66, 37, CAItems.ELECTRUM_WIRE.asStack(4), CAItems.ELECTRUM_SPOOL.asStack()),
-	FESTIVE(3, 256, 26, 94, 12, CAItems.COPPER_WIRE.asStack(4), CAItems.FESTIVE_SPOOL.asStack());
-	//IRON(4, 256, 87, 87, 87, CAItems.IRON_WIRE.asStack(4), CAItems.IRON_SPOOL.asStack());
+	COPPER(0, 256, 78, 37, 30, new ItemStack(CAItems.COPPER_WIRE, 4), new ItemStack(CAItems.COPPER_SPOOL)),
+	GOLD(1, 1024, 98, 83, 29, new ItemStack(CAItems.GOLD_WIRE, 4), new ItemStack(CAItems.GOLD_SPOOL)),
+	ELECTRUM(2, 8196, 88, 66, 37, new ItemStack(CAItems.ELECTRUM_WIRE, 4), new ItemStack(CAItems.ELECTRUM_SPOOL)),
+	FESTIVE(3, 256, 26, 94, 12, new ItemStack(CAItems.COPPER_WIRE, 4), new ItemStack(CAItems.FESTIVE_SPOOL));
+	//IRON(4, 256, 87, 87, 87, new ItemStack(CAItems.IRON_WIRE, 4), new ItemStack(CAItems.IRON_SPOOL));
 
 	private final int ID, TRANSFER, CR, CG, CB;
 	private final ItemStack DROP;
@@ -70,15 +70,15 @@ public enum WireType {
 	}
 
 	public static WireType of(Item item) {
-		if(item == CAItems.COPPER_SPOOL.get())
+		if(item == CAItems.COPPER_SPOOL)
 			return WireType.COPPER;
-		if(item == CAItems.GOLD_SPOOL.get())
+		if(item == CAItems.GOLD_SPOOL)
 			return WireType.GOLD;
-		if(item == CAItems.FESTIVE_SPOOL.get())
+		if(item == CAItems.FESTIVE_SPOOL)
 			return WireType.FESTIVE;
-		//if(item == CAItems.IRON_SPOOL.get())
+		//if(item == CAItems.IRON_SPOOL)
 		//	return WireType.IRON;
-		if(item == CAItems.ELECTRUM_SPOOL.get())
+		if(item == CAItems.ELECTRUM_SPOOL)
 			return WireType.ELECTRUM;
 		return WireType.COPPER;
 	}

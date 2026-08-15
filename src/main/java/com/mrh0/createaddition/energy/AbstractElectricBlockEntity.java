@@ -54,6 +54,12 @@ public abstract class AbstractElectricBlockEntity extends SmartBlockEntity imple
 	}
 
 	@Override
+	protected void write(ValueOutput tag, boolean clientPacket) {
+		super.write(tag, clientPacket);
+		localEnergy.write(tag);
+	}
+
+	@Override
 	public void writeSafe(ValueOutput tag) {
 		super.writeSafe(tag);
 		localEnergy.write(tag);

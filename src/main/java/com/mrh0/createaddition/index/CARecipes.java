@@ -1,54 +1,39 @@
 package com.mrh0.createaddition.index;
 
-import com.mojang.serialization.MapCodec;
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.recipe.charging.ChargingRecipe;
-//import com.mrh0.createaddition.recipe.charging.DeoxidizingRecipe;
-import com.mrh0.createaddition.recipe.conditions.HasFluidTagCondition;
 import com.mrh0.createaddition.recipe.liquid_burning.LiquidBurningRecipe;
 import com.mrh0.createaddition.recipe.rolling.RollingRecipe;
-import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.conditions.ICondition;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-
-import java.util.function.Supplier;
 
 public class CARecipes {
-	public static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS =
-            DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, CreateAddition.MODID);
-	public static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, CreateAddition.MODID);
-	public static final DeferredRegister<MapCodec<? extends ICondition>> CONDITION_CODECS = DeferredRegister.create(NeoForgeRegistries.CONDITION_SERIALIZERS, CreateAddition.MODID);
+    public static final RecipeType<RollingRecipe> ROLLING_TYPE = registerType("rolling");
+    public static final RecipeType<ChargingRecipe> CHARGING_TYPE = registerType("charging");
+    public static final RecipeType<LiquidBurningRecipe> LIQUID_BURNING_TYPE = registerType("liquid_burning");
 
-	private static <T extends Recipe<?>> Supplier<RecipeType<T>> registerRecipeType(String id) {
-		return RECIPE_TYPES.register(id, () -> new RecipeType<T>() {
-			public String toString() { return id; }
-		});
-	}
+    public static final RecipeSerializer<RollingRecipe> ROLLING = registerSerializer("rolling", RollingRecipe.SERIALIZER);
+    public static final RecipeSerializer<ChargingRecipe> CHARGING = registerSerializer("charging", ChargingRecipe.SERIALIZER);
+    public static final RecipeSerializer<LiquidBurningRecipe> LIQUID_BURNING = registerSerializer("liquid_burning", LiquidBurningRecipe.SERIALIZER);
 
-	public static final Supplier<RecipeType<RollingRecipe>> ROLLING_TYPE = registerRecipeType("rolling");
-	public static DeferredHolder<RecipeSerializer<?>, RecipeSerializer<RollingRecipe>> ROLLING = SERIALIZERS.register("rolling", () -> new StandardProcessingRecipe.Serializer<>(RollingRecipe::new));
-
-	public static final Supplier<RecipeType<ChargingRecipe>> CHARGING_TYPE = registerRecipeType("charging");
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ChargingRecipe>> CHARGING = SERIALIZERS.register("charging", () -> new ChargingRecipe.Serializer<>(ChargingRecipe::new));
-	//public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DeoxidizingRecipe>> DEOXIDIZING = SERIALIZERS.register("deoxidizing", DeoxidizingRecipe.Serializer::new);
-
-	public static final Supplier<RecipeType<LiquidBurningRecipe>> LIQUID_BURNING_TYPE = registerRecipeType("liquid_burning");
-	public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<LiquidBurningRecipe>> LIQUID_BURNING = SERIALIZERS.register("liquid_burning", () -> new LiquidBurningRecipe.Serializer<>(LiquidBurningRecipe::new));
-
-	public static final Supplier<MapCodec<HasFluidTagCondition>> HAS_FLUID_TAG_CONDITION =
-			CONDITION_CODECS.register("has_fluid_tag", () -> HasFluidTagCondition.CODEC);
-
-    public static void register(IEventBus event) {
-    	SERIALIZERS.register(event);
-		RECIPE_TYPES.register(event);
-
-		CONDITION_CODECS.register(event);
+    private static <T extends Recipe<?>> RecipeType<T> registerType(String name) {
+        Identifier id = CreateAddition.asResource(name);
+        return Registry.register(
+            BuiltInRegistries.RECIPE_TYPE, id, new RecipeType<T>() {
+                public String toString() {
+                    return id.toString();
+                }
+            }
+        );
     }
+
+    private static <T extends Recipe<?>> RecipeSerializer<T> registerSerializer(String name, RecipeSerializer<T> serializer) {
+        return Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, CreateAddition.asResource(name), serializer);
+    }
+
+    public static void register() {}
 }

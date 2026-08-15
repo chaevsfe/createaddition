@@ -1,16 +1,9 @@
 package com.mrh0.createaddition.blocks.modular_accumulator;
 
-import java.util.List;
-
 import com.mrh0.createaddition.util.Util;
-import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
-import com.simibubi.create.content.redstone.displayLink.source.PercentOrProgressBarDisplaySource;
-import com.simibubi.create.foundation.gui.ModularGuiLineBuilder;
-
-import net.minecraft.network.chat.Component;
+import com.zurrtum.create.content.redstone.displayLink.DisplayLinkContext;
+import com.zurrtum.create.content.redstone.displayLink.source.PercentOrProgressBarDisplaySource;
 import net.minecraft.network.chat.MutableComponent;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 public class ModularAccumulatorDisplaySource extends PercentOrProgressBarDisplaySource {
@@ -25,7 +18,7 @@ public class ModularAccumulatorDisplaySource extends PercentOrProgressBarDisplay
 
 	private int getMode(DisplayLinkContext context) {
 		return context.sourceConfig()
-			.getInt("Mode");
+			.getIntOr("Mode", 0);
 	}
 
 	@Nullable
@@ -33,10 +26,10 @@ public class ModularAccumulatorDisplaySource extends PercentOrProgressBarDisplay
 	protected Float getProgress(DisplayLinkContext context) {
 		if (!(context.getSourceBlockEntity() instanceof ModularAccumulatorBlockEntity be)) return null;
 		be = be.getControllerBE();
-		if(be == null) return null;
+		if (be == null) return null;
 
-		float capacity = be.energyCapability.getMaxEnergyStored();
-		float stored = be.energyCapability.getEnergyStored();
+		float capacity = be.energyCapability.getCapacity();
+		float stored = be.energyCapability.getAmount();
 
 		if (capacity == 0) return 0f;
 
@@ -50,32 +43,13 @@ public class ModularAccumulatorDisplaySource extends PercentOrProgressBarDisplay
 	}
 
 	@Override
-	protected boolean allowsLabeling(DisplayLinkContext context) {
+	public boolean allowsLabeling(DisplayLinkContext context) {
 		return true;
 	}
 
 	@Override
 	protected boolean progressBarActive(DisplayLinkContext context) {
 		return getMode(context) == 0;
-	}
-
-	@Override
-	@OnlyIn(Dist.CLIENT)
-	public void initConfigurationWidgets(DisplayLinkContext context, ModularGuiLineBuilder builder,
-		boolean isFirstLine) {
-		super.initConfigurationWidgets(context, builder, isFirstLine);
-		if (isFirstLine)
-			return;
-		builder.addSelectionScrollInput(0, 120,
-			(si, l) -> si
-				.forOptions(List.of(
-							Component.translatable("createaddition.display_source.accumulator.progress_bar"),
-							Component.translatable("createaddition.display_source.accumulator.percent"),
-							Component.translatable("createaddition.display_source.accumulator.current"),
-							Component.translatable("createaddition.display_source.accumulator.max"),
-							Component.translatable("createaddition.display_source.accumulator.remaining")
-						)) // Lang.translatedOptions("display_source.kinetic_stress", "progress_bar", "percent", "current", "max", "remaining")
-				.titled(Component.translatable("createaddition.display_source.accumulator.display")), "Mode");
 	}
 
 	@Override

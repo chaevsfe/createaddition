@@ -1,75 +1,58 @@
 package com.mrh0.createaddition.blocks.creative_energy;
 
-import com.mrh0.createaddition.energy.CreativeEnergyStorage;
+import java.util.EnumMap;
 
-import com.mrh0.createaddition.index.CABlockEntities;
-import com.simibubi.create.content.logistics.crate.CrateBlockEntity;
+import com.mrh0.createaddition.energy.CreativeEnergyStorage;
+import com.mrh0.createaddition.transfer.EnergyTransferable;
+import com.zurrtum.create.content.logistics.crate.CrateBlockEntity;
+
+import net.fabricmc.fabric.api.lookup.v1.block.BlockApiCache;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.Nullable;
+import team.reborn.energy.api.EnergyStorage;
 
-import java.util.EnumMap;
-import java.util.EnumSet;
+public class CreativeEnergyBlockEntity extends CrateBlockEntity implements EnergyTransferable {
 
-public class CreativeEnergyBlockEntity extends CrateBlockEntity {
+	protected final CreativeEnergyStorage energy;
+	private final EnumMap<Direction, BlockApiCache<EnergyStorage, Direction>> escacheMap = new EnumMap<>(Direction.class);
 
-	protected final CreativeEnergyStorage capability;
-
-	private final EnumSet<Direction> invalidSides = EnumSet.allOf(Direction.class);
-	private final EnumMap<Direction, BlockCapabilityCache<IEnergyStorage, Direction>> cache = new EnumMap<>(Direction.class);
-	
 	public CreativeEnergyBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
 		super(tileEntityTypeIn, pos, state);
-		capability = new CreativeEnergyStorage();
+		energy = new CreativeEnergyStorage();
 	}
 
-	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(
-				Capabilities.EnergyStorage.BLOCK,
-				CABlockEntities.CREATIVE_ENERGY.get(),
-				(be, context) -> be.capability
-		);
-	}
-	
-	private boolean firstTickState = true;
-	
 	@Override
 	public void tick() {
 		super.tick();
 		if (level == null) return;
 		if (level.isClientSide()) return;
-		if (firstTickState) firstTick();
-		firstTickState = false;
-		
+
 		for (Direction d : Direction.values()) {
-			IEnergyStorage ies = cache.get(d).getCapability();
+			EnergyStorage ies = getCachedEnergy(d);
 			if (ies == null) continue;
-			ies.receiveEnergy(Integer.MAX_VALUE, false);
+			try(Transaction t = Transaction.openOuter()) {
+				ies.insert(Integer.MAX_VALUE, t);
+				t.commit();
+			}
 		}
 	}
-	
-	public void firstTick() {
-		updateCache();
+
+	@Nullable
+	public EnergyStorage getCachedEnergy(Direction side) {
+		if(!(getLevel() instanceof ServerLevel serverLevel))
+			return null;
+		BlockApiCache<EnergyStorage, Direction> cache = escacheMap.computeIfAbsent(side,
+				side1 -> BlockApiCache.create(EnergyStorage.SIDED, serverLevel, getBlockPos().relative(side1)));
+		return cache.find(side.getOpposite());
 	}
-	
-	public void updateCache() {
-		if (level == null) return;
-		if (level.isClientSide()) return;
-		for (Direction side : Direction.values()) {
-			cache.put(side, BlockCapabilityCache.create(
-				Capabilities.EnergyStorage.BLOCK,
-				(ServerLevel) level,
-				getBlockPos().relative(side),
-				side.getOpposite(),
-				() -> !this.isRemoved(),
-				() -> invalidSides.add(side)
-			));
-		}
+
+	@Override
+	public EnergyStorage getEnergyStorage(@Nullable Direction direction) {
+		return energy;
 	}
 }

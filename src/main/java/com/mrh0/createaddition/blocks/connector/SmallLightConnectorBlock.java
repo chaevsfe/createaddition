@@ -2,14 +2,12 @@ package com.mrh0.createaddition.blocks.connector;
 
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlock;
 import com.mrh0.createaddition.energy.NodeRotation;
-import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
-import net.createmod.catnip.math.VoxelShaper;
+import com.zurrtum.create.catnip.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -18,12 +16,14 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import com.mrh0.createaddition.index.CABlockEntities;
+
 public class SmallLightConnectorBlock extends AbstractConnectorBlock<SmallLightConnectorBlockEntity> {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     public static final VoxelShaper CONNECTOR_SHAPE = CAShapes.shape(6, 0, 6, 10, 5, 10).add(5, 4, 5, 11, 10, 11).forDirectional();
     public SmallLightConnectorBlock(Properties properties) {
-        super(properties);
+        super(properties.lightLevel(state -> state.getValue(POWERED) ? 15 : 0));
     }
 
     @Override
@@ -43,21 +43,11 @@ public class SmallLightConnectorBlock extends AbstractConnectorBlock<SmallLightC
 
     @Override
     public BlockEntityType<? extends SmallLightConnectorBlockEntity> getBlockEntityType() {
-        return CABlockEntities.SMALL_LIGHT_CONNECTOR.get();
+        return CABlockEntities.SMALL_LIGHT_CONNECTOR;
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return CABlockEntities.SMALL_LIGHT_CONNECTOR.create(pos, state);
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return CONNECTOR_SHAPE.get(state.getValue(FACING).getOpposite());
-    }
-
-    @Override
-    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
-        return state.getValue(POWERED) ? 15 : 0;
     }
 }

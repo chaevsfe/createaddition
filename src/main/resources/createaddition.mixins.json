@@ -6,8 +6,7 @@
     "mixins": [
         "BaseFireBlockMixin",
         "FireBlockInvoker",
-        "FireBlockMixin",
-        "FlowingFluidMixin"
+        "FireBlockMixin"
     ],
     "injectors": {
         "defaultRequire": 1

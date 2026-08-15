@@ -9,21 +9,17 @@ import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
-import com.simibubi.create.foundation.blockEntity.IMultiBlockEntityContainer;
-import net.createmod.catnip.data.Iterate;
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.mrh0.createaddition.energy.InternalEnergyStorage;
-
+import com.zurrtum.create.catnip.data.Iterate;
+import com.zurrtum.create.foundation.blockEntity.IMultiBlockEntityContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.capabilities.Capabilities;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 public class CAConnectivityHandler {
 
@@ -40,9 +36,6 @@ public class CAConnectivityHandler {
 		Set<BlockPos> visited = new HashSet<>();
 		Direction.Axis mainAxis = frontier.getFirst().getMainConnectionAxis();
 
-		// essentially, if it's a vertical multi then the search won't be restricted by
-		// Y
-		// alternately, a horizontal multi search shouldn't be restricted by X or Z
 		int minX = (mainAxis == Direction.Axis.Y ? Integer.MAX_VALUE : Integer.MIN_VALUE);
 		int minY = (mainAxis != Direction.Axis.Y ? Integer.MAX_VALUE : Integer.MIN_VALUE);
 		int minZ = (mainAxis == Direction.Axis.Y ? Integer.MAX_VALUE : Integer.MIN_VALUE);
@@ -139,7 +132,6 @@ public class CAConnectivityHandler {
 		if (level == null) return 0;
 		BlockPos origin = be.getBlockPos();
 
-		// optional energy handling
 		InternalEnergyStorage beEnergy = null;
 		if (be instanceof ModularAccumulatorBlockEntity ienergy && ienergy.hasAccumulator()) {
 			beEnergy = ienergy.getEnergy();
@@ -167,12 +159,12 @@ public class CAConnectivityHandler {
 
 					BlockPos conPos = controller.getBlockPos();
 					if (!conPos.equals(origin)) {
-						if (axis == Direction.Axis.Y) { // vertical multi, like a FluidTank
+						if (axis == Direction.Axis.Y) {
 							if (conPos.getX() < origin.getX()) break Search;
 							if (conPos.getZ() < origin.getZ()) break Search;
 							if (conPos.getX() + otherWidth > origin.getX() + width) break Search;
 							if (conPos.getZ() + otherWidth > origin.getZ() + width) break Search;
-						} else { // horizontal multi, like an ItemVault
+						} else {
 							if (axis == Direction.Axis.Z && conPos.getX() < origin.getX()) break Search;
 							if (conPos.getY() < origin.getY()) break Search;
 							if (axis == Direction.Axis.X && conPos.getZ() < origin.getZ()) break Search;
@@ -180,9 +172,6 @@ public class CAConnectivityHandler {
 							if (conPos.getY() + otherWidth > origin.getY() + width) break Search;
 							if (axis == Direction.Axis.X && conPos.getZ() + otherWidth > origin.getZ() + width) break Search;
 						}
-					}
-					if (controller instanceof ModularAccumulatorBlockEntity ienergyCon && ienergyCon.hasAccumulator()) {
-						//break Search;
 					}
 				}
 			}
@@ -211,15 +200,14 @@ public class CAConnectivityHandler {
 
 					if (part instanceof ModularAccumulatorBlockEntity ienergyPart && ienergyPart.hasAccumulator()) {
 						InternalEnergyStorage storageAt = ienergyPart.getEnergy();
-						int energyAt = storageAt.getEnergyStored();
+						long energyAt = storageAt.getAmount();
 						if (energyAt > 0) {
-							// making this generic would be a rather large mess, unfortunately
 							if (be instanceof ModularAccumulatorBlockEntity ienergyBE && ienergyBE.hasAccumulator()
 								&& beEnergy != null) {
 								beEnergy.internalProduceEnergy(energyAt);
 							}
 						}
-						storageAt.internalConsumeEnergy(storageAt.getMaxEnergyStored());
+						storageAt.internalConsumeEnergy(storageAt.getCapacity());
 					}
 
 					splitMultiAndInvalidate(part, cache, false);
@@ -241,7 +229,6 @@ public class CAConnectivityHandler {
 		splitMultiAndInvalidate(be, null, false);
 	}
 
-	// tryReconnect helps whenever only a few tanks have been removed
 	private static <T extends BlockEntity & IMultiBlockEntityContainer> void splitMultiAndInvalidate(T be,
 		@Nullable SearchCache<T> cache, boolean tryReconnect) {
 		Level level = be.getLevel();
@@ -258,11 +245,10 @@ public class CAConnectivityHandler {
 		List<T> frontier = new ArrayList<>();
 		Direction.Axis axis = be.getMainConnectionAxis();
 
-		// fluid handling, if present
-		int toDistribute = 0;
-		int maxCapacity = 0;
+		long toDistribute = 0;
+		long maxCapacity = 0;
 		if (be instanceof ModularAccumulatorBlockEntity ienergyBE && ienergyBE.hasAccumulator()) {
-			toDistribute = ienergyBE.getEnergy().getEnergyStored();
+			toDistribute = ienergyBE.getEnergy().getAmount();
 			maxCapacity = ienergyBE.getSize(0);
 
 			if (!be.isRemoved())
@@ -289,14 +275,12 @@ public class CAConnectivityHandler {
 					partAt.removeController(true);
 
 					if (partAt != be) {
-						int copy;
 						InternalEnergyStorage tank =
 							(partAt instanceof ModularAccumulatorBlockEntity ienergyPart ? ienergyPart.getEnergy() : null);
-							int split = Math.min(maxCapacity, toDistribute);
-							copy = split;
-							toDistribute -= split;
-							if (tank != null)
-								tank.internalProduceEnergy(copy);
+						long split = Math.min(maxCapacity, toDistribute);
+						toDistribute -= split;
+						if (tank != null)
+							tank.internalProduceEnergy(split);
 					}
 					if (tryReconnect) {
 						frontier.add(partAt);
@@ -309,10 +293,6 @@ public class CAConnectivityHandler {
 
 		if (be instanceof ModularAccumulatorBlockEntity ienergyBE && ienergyBE.hasAccumulator()) {
 			ienergyBE.getEnergy().setEnergy(toDistribute);
-		}
-
-		if (be instanceof ModularAccumulatorBlockEntity ienergy && ienergy.hasAccumulator()) {
-			be.getLevel().invalidateCapabilities(be.getBlockPos());
 		}
 
 		if (tryReconnect) formMulti(be.getType(), level, cache == null ? new SearchCache<>() : cache, frontier);

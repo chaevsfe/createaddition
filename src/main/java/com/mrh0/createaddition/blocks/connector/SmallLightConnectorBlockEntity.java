@@ -4,18 +4,12 @@ import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlock;
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlockEntity;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.network.EnergyNetwork;
-import com.mrh0.createaddition.index.CABlockEntities;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-
-import java.util.List;
 
 public class SmallLightConnectorBlockEntity extends AbstractConnectorBlockEntity {
 
@@ -35,36 +29,25 @@ public class SmallLightConnectorBlockEntity extends AbstractConnectorBlockEntity
         posTimeOffset = 10 + (Math.abs(pos.getX()*31 + pos.getY()*45 + pos.getZ()*33) % 7) * 3;
     }
 
-    public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
-                CABlockEntities.SMALL_LIGHT_CONNECTOR.get(),
-                (be, context) -> be.internal
-        );
+    @Override
+    protected void read(ValueInput view, boolean clientPacket) {
+        tickToggleTimer = view.getIntOr("tick_toggle_timer", 0);
+        super.read(view, clientPacket);
     }
 
     @Override
-    public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-        tickToggleTimer = nbt.getInt("tick_toggle_timer");
-        super.read(nbt, registries, clientPacket);
+    public void writeSafe(ValueOutput view) {
+        view.putInt("tick_toggle_timer", tickToggleTimer);
+        super.writeSafe(view);
     }
 
     @Override
-    public void writeSafe(CompoundTag nbt, HolderLookup.Provider registries) {
-        nbt.putInt("tick_toggle_timer", tickToggleTimer);
-        super.writeSafe(nbt, registries);
-    }
-
-    @Override
-    public void addBehaviours(List<BlockEntityBehaviour> list) {}
-
-    @Override
-    public int getMaxIn() {
+    public long getMaxIn() {
         return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_INPUT.get();
     }
 
     @Override
-    public int getMaxOut() {
+    public long getMaxOut() {
         return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_OUTPUT.get();
     }
 

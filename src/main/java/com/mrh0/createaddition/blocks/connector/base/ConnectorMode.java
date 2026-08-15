@@ -7,8 +7,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import team.reborn.energy.api.EnergyStorage;
 
 public enum ConnectorMode implements StringRepresentable {
 	Push("push"),
@@ -29,8 +28,6 @@ public enum ConnectorMode implements StringRepresentable {
 
 	public ConnectorMode getNext() {
         return switch (this) {
-            //case Passive:
-            //	return None;
             case None -> Pull;
             case Pull -> Push;
             case Push -> None;
@@ -54,13 +51,12 @@ public enum ConnectorMode implements StringRepresentable {
 	public static ConnectorMode test(Level level, BlockPos pos, Direction face) {
 		BlockEntity be = level.getBlockEntity(pos);
 		if(be == null) return None;
-		IEnergyStorage energy = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, face);
-		if (energy == null) energy = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, null);
+		EnergyStorage energy = EnergyStorage.SIDED.find(level, pos, face);
+		if (energy == null) energy = EnergyStorage.SIDED.find(level, pos, null);
 		if (energy == null) return None;
 
-		// if(e.canExtract() && e.canReceive()) return Passive;
-		if(energy.canExtract()) return Pull;
-		if(energy.canReceive()) return Push;
+		if(energy.supportsExtraction()) return Pull;
+		if(energy.supportsInsertion()) return Push;
 
 		return None;
 	}

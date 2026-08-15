@@ -3,10 +3,9 @@ package com.mrh0.createaddition.blocks.connector;
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlock;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
-import net.createmod.catnip.math.VoxelShaper;
+import com.zurrtum.create.catnip.math.VoxelShaper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -25,16 +24,11 @@ public class SmallConnectorBlock extends AbstractConnectorBlock<SmallConnectorBl
 
     @Override
     public BlockEntityType<? extends SmallConnectorBlockEntity> getBlockEntityType() {
-        return CABlockEntities.SMALL_CONNECTOR.get();
+        return CABlockEntities.SMALL_CONNECTOR;
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return CABlockEntities.SMALL_CONNECTOR.create(pos, state);
-    }
-
-    @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+    protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return CONNECTOR_SHAPE.get(state.getValue(FACING).getOpposite());
     }
 }

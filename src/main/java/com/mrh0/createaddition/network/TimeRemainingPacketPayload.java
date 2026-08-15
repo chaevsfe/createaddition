@@ -2,12 +2,11 @@ package com.mrh0.createaddition.network;
 
 import com.mrh0.createaddition.CreateAddition;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.BlockPos;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.neoforge.network.PacketDistributor;
 
 public record TimeRemainingPacketPayload(int timeRemaining) implements CustomPacketPayload {
     public static int clientTimeRemaining = 0;
@@ -30,7 +29,7 @@ public record TimeRemainingPacketPayload(int timeRemaining) implements CustomPac
     }
 
     public static boolean send(int timeRemaining, ServerPlayer player) {
-        PacketDistributor.sendToPlayer(player, new TimeRemainingPacketPayload(timeRemaining));
+        ServerPlayNetworking.send(player, new TimeRemainingPacketPayload(timeRemaining));
         return true;
     }
 }

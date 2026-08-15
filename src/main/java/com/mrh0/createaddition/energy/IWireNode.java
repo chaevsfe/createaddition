@@ -396,7 +396,7 @@ public interface IWireNode {
 
 			WireType type = node.getType();
 			int index = type.getIndex();
-			ItemStack spools = Util.findStack(CAItems.SPOOL.get().asItem(), player.getInventory());
+			ItemStack spools = Util.findStack(CAItems.SPOOL, player.getInventory());
 
 			if (spools.getCount() > 0) {
 				if (wireSpools.get(index).isEmpty()) wireSpools.set(index, type.getSourceDrop());

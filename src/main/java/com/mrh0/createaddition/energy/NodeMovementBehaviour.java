@@ -1,13 +1,13 @@
 package com.mrh0.createaddition.energy;
 
-import com.simibubi.create.api.behaviour.movement.MovementBehaviour;
-import com.simibubi.create.content.contraptions.behaviour.MovementContext;
+import com.zurrtum.create.api.behaviour.movement.MovementBehaviour;
+import com.zurrtum.create.content.contraptions.behaviour.MovementContext;
 
-public class NodeMovementBehaviour implements MovementBehaviour {
-	
+public class NodeMovementBehaviour extends MovementBehaviour {
+
 	@Override
 	public void startMoving(MovementContext context) {
-		// Mark this tileentity as a contraption.
+		if (context.blockEntityData == null) return;
 		context.blockEntityData.putBoolean("contraption", true);
 	}
 }

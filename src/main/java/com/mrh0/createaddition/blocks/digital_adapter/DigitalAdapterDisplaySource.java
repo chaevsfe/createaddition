@@ -1,8 +1,8 @@
 package com.mrh0.createaddition.blocks.digital_adapter;
 
-import com.simibubi.create.api.behaviour.display.DisplaySource;
-import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
-import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;
+import com.zurrtum.create.api.behaviour.display.DisplaySource;
+import com.zurrtum.create.content.redstone.displayLink.DisplayLinkContext;
+import com.zurrtum.create.content.redstone.displayLink.target.DisplayTargetStats;
 import net.minecraft.network.chat.MutableComponent;
 
 import java.util.List;

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.connector.ConnectorType;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.IWireNode;
@@ -14,41 +13,30 @@ import com.mrh0.createaddition.energy.WireType;
 import com.mrh0.createaddition.energy.network.EnergyNetwork;
 import com.mrh0.createaddition.index.CABlocks;
 import com.mrh0.createaddition.network.EnergyNetworkPacketPayload;
-import com.mrh0.createaddition.network.ObservePacketPayload;
-import com.mrh0.createaddition.util.Util;
 import com.mrh0.createaddition.network.IObserveBlockEntity;
-import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
-import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
-import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.mrh0.createaddition.network.ObservePacketPayload;
+import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireNode, IHaveGoggleInformation, IObserveBlockEntity {
-
-	//private final InternalEnergyStorage energyBufferIn;
-	//private final InternalEnergyStorage energyBufferOut;
+public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireNode, IObserveBlockEntity {
 
 	private final Set<LocalNode> wireCache = new HashSet<>();
 	private final LocalNode[] localNodes;
 	private final IWireNode[] nodeCache;
 	private EnergyNetwork networkIn;
 	private EnergyNetwork networkOut;
-	private int demand = 0;
-	private int throughput = 0;
+	private long demand = 0;
+	private long throughput = 0;
 
 	private boolean wasContraption = false;
 	private boolean firstTick = true;
@@ -70,22 +58,15 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 
 	public static final int NODE_COUNT = 8;
 
-	//protected LazyOptional<RedstoneRelayPeripheral> peripheral;
-
 	public RedstoneRelayBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
 		super(tileEntityTypeIn, pos, state);
 
 		this.localNodes = new LocalNode[getNodeCount()];
 		this.nodeCache = new IWireNode[getNodeCount()];
-
-		// if (CreateAddition.CC_ACTIVE)
-			// this.peripheral = LazyOptional.of(() -> Peripherals.createRedstoneRelayPeripheral(this));
 	}
 
 	@Override
-	public void addBehaviours(List<BlockEntityBehaviour> list) {
-
-	}
+	public void addBehaviours(List<BlockEntityBehaviour<?>> behaviours) {}
 
 	@Override
 	public @Nullable IWireNode getWireNode(int index) {
@@ -103,7 +84,6 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 
 		notifyUpdate();
 
-		// Invalidate
 		if (networkIn != null) networkIn.invalidate();
 		if (networkOut != null) networkOut.invalidate();
 	}
@@ -116,10 +96,8 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 		invalidateNodeCache();
 		notifyUpdate();
 
-		// Invalidate
 		if (networkIn != null) networkIn.invalidate();
 		if (networkOut != null) networkOut.invalidate();
-		// Drop wire next tick.
 		if (dropWire && old != null) this.wireCache.add(old);
 	}
 
@@ -132,7 +110,6 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 	public Vec3 getNodeOffset(int node) {
 		boolean vertical = getBlockState().getValue(RedstoneRelayBlock.VERTICAL);
 		Direction direction = getBlockState().getValue(RedstoneRelayBlock.HORIZONTAL_FACING);
-		// Output
 		if(node > 3) {
 			return switch (direction) {
 				case NORTH -> vertical ? OUT_VERTICAL_OFFSET_NORTH : OFFSET_NORTH;
@@ -142,7 +119,6 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 				default -> OFFSET_NORTH;
 			};
 		}
-		// Input
 		return switch (direction) {
 			case NORTH -> vertical ? IN_VERTICAL_OFFSET_NORTH : OFFSET_SOUTH;
 			case WEST -> vertical ? IN_VERTICAL_OFFSET_WEST : OFFSET_EAST;
@@ -160,18 +136,18 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 		pos = pos.subtract(worldPosition.getX(), worldPosition.getY(), worldPosition.getZ());
 		if (vertical) {
 			switch (dir) {
-				case NORTH -> upper = pos.x() < 0.5d;
-				case WEST -> upper = pos.z() > 0.5d;
-				case SOUTH -> upper = pos.x() > 0.5d;
-				case EAST -> upper = pos.z() < 0.5d;
+				case NORTH -> upper = pos.x < 0.5d;
+				case WEST -> upper = pos.z > 0.5d;
+				case SOUTH -> upper = pos.x > 0.5d;
+				case EAST -> upper = pos.z < 0.5d;
 				default -> {}
 			}
 		} else {
 			switch (dir) {
-				case NORTH -> upper = pos.z() < 0.5d;
-				case WEST -> upper = pos.x() < 0.5d;
-				case SOUTH -> upper = pos.z() > 0.5d;
-				case EAST -> upper = pos.x() > 0.5d;
+				case NORTH -> upper = pos.z < 0.5d;
+				case WEST -> upper = pos.x < 0.5d;
+				case SOUTH -> upper = pos.z > 0.5d;
+				case EAST -> upper = pos.x > 0.5d;
 				default -> {}
 			}
 		}
@@ -211,71 +187,53 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 	}
 
 	@Override
-	protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
-		super.read(tag, registries, clientPacket);
-		// Convert old nbt data. x0, y0, z0, node0 & type0 etc.
-		if (!clientPacket && tag.contains("node0")) {
-			convertOldNbt(tag);
-			setChanged();
-		}
+	protected void read(ValueInput view, boolean clientPacket) {
+		super.read(view, clientPacket);
 
-		// Read the nodes.
 		invalidateLocalNodes();
 		invalidateNodeCache();
-		ListTag nodes = tag.getList(LocalNode.NODES, Tag.TAG_COMPOUND);
-		nodes.forEach(itag -> {
-			LocalNode localNode = new LocalNode(this, (CompoundTag) itag);
+		boolean hasNodes = false;
+		for (ValueInput node : view.childrenListOrEmpty(LocalNode.NODES)) {
+			LocalNode localNode = new LocalNode(this, node);
 			this.localNodes[localNode.getIndex()] = localNode;
-		});
+			hasNodes = true;
+		}
 
-		// Check if this was a contraption.
-		if (tag.contains("contraption") && !clientPacket) {
-			this.wasContraption = tag.getBoolean("contraption");
+		if (!clientPacket && view.getBooleanOr("contraption", false)) {
+			this.wasContraption = true;
 			NodeRotation rotation = getBlockState().getValue(NodeRotation.ROTATION);
 			if (rotation != NodeRotation.NONE)
 				level.setBlock(getBlockPos(), getBlockState().setValue(NodeRotation.ROTATION, NodeRotation.NONE), 0);
-			// Loop over all nodes and update their relative positions.
 			for (LocalNode localNode : this.localNodes) {
 				if (localNode == null) continue;
 				localNode.updateRelative(rotation);
 			}
 		}
 
-		// Invalidate the network if we updated the nodes.
-		if (!nodes.isEmpty() && this.networkIn != null && this.networkOut != null) {
+		if (hasNodes && this.networkIn != null && this.networkOut != null) {
 			this.networkIn.invalidate();
 			this.networkOut.invalidate();
 		}
 	}
 
 	@Override
-	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
-		super.write(nbt, registries, clientPacket);
-		// Write nodes.
-		ListTag nodes = new ListTag();
+	protected void write(ValueOutput view, boolean clientPacket) {
+		super.write(view, clientPacket);
+		ValueOutput.ValueOutputList nodes = view.childrenList(LocalNode.NODES);
 		for (int i = 0; i < getNodeCount(); i++) {
 			LocalNode localNode = this.localNodes[i];
 			if (localNode == null) continue;
-			CompoundTag newTag = new CompoundTag();
-			localNode.write(newTag);
-			nodes.add(newTag);
+			localNode.write(nodes.addChild());
 		}
-		nbt.put(LocalNode.NODES, nodes);
 	}
 
-	/**
-	 * Called after the tile entity has been part of a contraption.
-	 * Only runs on the server.
-	 */
 	private void validateNodes() {
 		boolean changed = validateLocalNodes(this.localNodes);
 
-		// Always set as changed if we were a contraption, as nodes might have been rotated.
 		notifyUpdate();
 
 		if (changed) {
 			invalidateNodeCache();
-			// Invalidate
 			if (networkIn != null) networkIn.invalidate();
 			if (networkOut != null) networkOut.invalidate();
 		}
@@ -287,15 +245,12 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 
 		if (this.firstTick) {
 			this.firstTick = false;
-			// Check if this blockentity was a part of a contraption.
-			// If it was, then make sure all the nodes are valid.
 			if (this.wasContraption && !level.isClientSide()) {
 				this.wasContraption = false;
 				validateNodes();
 			}
 		}
 
-		// Check if we need to drop any wires due to contraption.
 		if (!this.wireCache.isEmpty() && !isRemoved()) handleWireCache(level, this.wireCache);
 
 		if (level.isClientSide()) return;
@@ -306,14 +261,14 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 		if(awakeNetwork(level)) notifyUpdate();
 		BlockState bs = getBlockState();
 		throughput = 0;
-		if(!bs.is(CABlocks.REDSTONE_RELAY.get())) return;
+		if(!bs.is(CABlocks.REDSTONE_RELAY)) return;
 		if(bs.getValue(RedstoneRelayBlock.POWERED)) {
 			throughput = networkOut.push(networkIn.pull(demand));
 			demand = networkIn.demand(networkOut.getDemand());
 		}
 	}
 
-	public int getThroughput() {
+	public long getThroughput() {
 		return throughput;
 	}
 
@@ -321,7 +276,6 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 	public void remove() {
 		if (level == null) return;
 		if (level.isClientSide()) return;
-		// Remove all nodes.
 		for (int i = 0; i < getNodeCount(); i++) {
 			LocalNode localNode = getLocalNode(i);
 			if (localNode == null) continue;
@@ -330,13 +284,11 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 
 			int ourNode = localNode.getOtherIndex();
 			if (localNode.isInvalid()) otherNode.removeNode(ourNode);
-			else otherNode.removeNode(ourNode, true); // Make the other node drop the wires.
+			else otherNode.removeNode(ourNode, true);
 		}
 
 		invalidateNodeCache();
-		// invalidateCaps();
 
-		// Invalidate
 		if (networkIn != null) networkIn.invalidate();
 		if (networkOut != null) networkOut.invalidate();
 	}
@@ -362,38 +314,16 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 		return ConnectorType.Small;
 	}
 
-	public int getDemand() {
+	public long getDemand() {
 		return demand;
 	}
 
 	@Override
 	public void onObserved(ServerPlayer player, ObservePacketPayload pack) {
-		if(isNetworkValid(pack.node()))
-			EnergyNetworkPacketPayload.send(worldPosition, getNetwork(pack.node()).getPulled(), getNetwork(pack.node()).getPushed(), player);
-	}
-
-	@Override
-	public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-		HitResult ray = Minecraft.getInstance().hitResult;
-		if(ray == null) return false;
-		int node = getAvailableNode(ray.getLocation());
-
-		ObservePacketPayload.send(worldPosition, node);
-
-		String spacing = " ";
-		tooltip.add(Component.literal(spacing)
-				.append(Component.translatable(CreateAddition.MODID + ".tooltip.relay.info").withStyle(ChatFormatting.WHITE)));
-		tooltip.add(Component.literal(spacing)
-				.append(Component.translatable(CreateAddition.MODID + ".tooltip.energy.selected").withStyle(ChatFormatting.GRAY)));
-		tooltip.add(Component.literal(spacing).append(Component.literal(" "))
-				.append(Component.translatable(isNodeInput(node) ? "createaddition.tooltip.energy.push" : "createaddition.tooltip.energy.pull").withStyle(ChatFormatting.AQUA)));
-
-		tooltip.add(Component.literal(spacing)
-				.append(Component.translatable(CreateAddition.MODID + ".tooltip.energy.usage").withStyle(ChatFormatting.GRAY)));
-		tooltip.add(Component.literal(spacing).append(" ")
-				.append(Util.format((int)EnergyNetworkPacketPayload.clientBuff)).append("⚡/t").withStyle(ChatFormatting.AQUA));
-
-		return true;
+		int node = pack.node();
+		if (node < 0 || node >= getNodeCount()) return;
+		if(isNetworkValid(node))
+			EnergyNetworkPacketPayload.send(worldPosition, (int) getNetwork(node).getPulled(), (int) getNetwork(node).getPushed(), player);
 	}
 
 	@Override

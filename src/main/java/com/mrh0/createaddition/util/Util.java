@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import team.reborn.energy.api.EnergyStorage;
 
 public class Util {
 	public static int max(int...v) {
@@ -66,7 +66,7 @@ public class Util {
 		return new ItemStack(to.isEmpty() ? add.getItem() : to.getItem(), to.getCount() + add.getCount());
 	}
 
-	public static String format(int n) {
+	public static String format(long n) {
 		if(n >= 1000_000_000)
 			return Math.round((double)n/100_000_000d)/10d + "G";
 		if(n >= 1000_000)
@@ -76,17 +76,21 @@ public class Util {
 		return n + "";
 	}
 
-	public static MutableComponent getTextComponent(IEnergyStorage ies, String nan, String unit) {
-		if(ies == null)
+	public static MutableComponent getTextComponent(EnergyStorage es, String nan, String unit) {
+		if(es == null)
 			return Component.literal(nan);
-		return getTextComponent(ies.getEnergyStored(), unit).withStyle(ChatFormatting.AQUA).append(Component.literal(" / ").withStyle(ChatFormatting.GRAY)).append(getTextComponent(ies.getMaxEnergyStored(), unit));
+		return getTextComponent(es.getAmount(), es.getCapacity(), unit);
 	}
 
-	public static MutableComponent getTextComponent(IEnergyStorage ies) {
-		return getTextComponent(ies, "NaN", "⚡");
+	public static MutableComponent getTextComponent(EnergyStorage es) {
+		return getTextComponent(es, "NaN", "⚡");
 	}
 
-	public static MutableComponent getTextComponent(int value, String unit) {
+	public static MutableComponent getTextComponent(long value, long max, String unit) {
+		return getTextComponent(value, unit).withStyle(ChatFormatting.AQUA).append(Component.literal(" / ").withStyle(ChatFormatting.GRAY)).append(getTextComponent(max, unit));
+	}
+
+	public static MutableComponent getTextComponent(long value, String unit) {
 		return Component.literal(format(value)+unit);
 	}
 
@@ -108,7 +112,7 @@ public class Util {
 	public static Util.Triple<BlockPos, Integer, WireType> getWireNodeOfSpools(ItemStack...stacks) {
 		for(ItemStack stack : stacks) {
 			if(stack.isEmpty()) continue;
-			CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.of(new CompoundTag())).copyTag();
+			CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
 			if(WireSpool.hasPos(tag)) {
 				return Util.Triple.of(WireSpool.getPos(tag), WireSpool.getNode(tag), WireType.of(stack.getItem()));
 			}

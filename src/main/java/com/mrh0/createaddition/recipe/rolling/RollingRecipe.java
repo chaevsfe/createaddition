@@ -1,59 +1,45 @@
 package com.mrh0.createaddition.recipe.rolling;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mrh0.createaddition.index.CARecipes;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
-import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
-import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
-import net.minecraft.resources.ResourceLocation;
+import com.zurrtum.create.content.processing.recipe.ProcessingOutput;
+import com.zurrtum.create.foundation.recipe.CreateSingleStackRollableRecipe;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 
-public class RollingRecipe extends StandardProcessingRecipe<RecipeWrapper> {
-    public static final IRecipeTypeInfo TYPE_INFO = new IRecipeTypeInfo() {
-        @Override
-        public ResourceLocation getId() {
-            return CARecipes.ROLLING.getId();
-        }
+import java.util.List;
 
-        @Override
-        public <T extends RecipeSerializer<?>> T getSerializer() {
-            return (T) CARecipes.ROLLING.get();
-        }
-
-        @Override
-        public <V extends RecipeInput, R extends Recipe<V>> RecipeType<R> getType() {
-            return (RecipeType<R>) CARecipes.ROLLING_TYPE.get();
-        }
-    };
-
-    public RollingRecipe(ProcessingRecipeParams params) {
-        super(TYPE_INFO, params);
-    }
-
-    public Ingredient getIngredient() {
-        return ingredients.get(0);
-    }
-
-    @Override
-    public boolean matches(RecipeWrapper inv, @NotNull Level level) {
-        if (inv.isEmpty()) return false;
-        return ingredients.get(0).test(inv.getItem(0));
-    }
-
-    @Override
-    protected int getMaxInputCount() {
-        return 1;
-    }
-
-    @Override
-    protected int getMaxOutputCount() {
-        return 1;
-    }
+public record RollingRecipe(Ingredient ingredient, List<ProcessingOutput> results) implements CreateSingleStackRollableRecipe {
+    public static final MapCodec<RollingRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        Ingredient.CODEC.listOf(1, 1).fieldOf("ingredients").xmap(list -> list.getFirst(), single -> List.of(single)).forGetter(RollingRecipe::ingredient),
+        ProcessingOutput.CODEC.listOf(1, 1).fieldOf("results").forGetter(RollingRecipe::results)
+    ).apply(instance, RollingRecipe::new));
+    public static final StreamCodec<RegistryFriendlyByteBuf, RollingRecipe> STREAM_CODEC = StreamCodec.composite(
+        Ingredient.CONTENTS_STREAM_CODEC,
+        RollingRecipe::ingredient,
+        ProcessingOutput.STREAM_CODEC.apply(ByteBufCodecs.list()),
+        RollingRecipe::results,
+        RollingRecipe::new
+    );
+    public static final RecipeSerializer<RollingRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
 
     public ItemStack getResultStack() {
-        return getRollableResults().getFirst().getStack();
+        return results.getFirst().create();
+    }
+
+    @Override
+    public RecipeSerializer<RollingRecipe> getSerializer() {
+        return CARecipes.ROLLING;
+    }
+
+    @Override
+    public RecipeType<RollingRecipe> getType() {
+        return CARecipes.ROLLING_TYPE;
     }
 }
