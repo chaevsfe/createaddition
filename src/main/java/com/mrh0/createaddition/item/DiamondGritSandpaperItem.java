@@ -2,7 +2,7 @@ package com.mrh0.createaddition.item;
 
 import java.util.function.Consumer;
 
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.simibubi.create.content.equipment.sandPaper.SandPaperItem;
 import com.simibubi.create.content.equipment.sandPaper.SandPaperItemRenderer;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
@@ -20,7 +20,7 @@ public class DiamondGritSandpaperItem extends SandPaperItem {
 	
 	@Override
 	public int getMaxDamage(ItemStack stack) {
-		return CommonConfig.DIAMOND_GRIT_SANDPAPER_USES.get();
+		return CACommonConfig.COMMON.DIAMOND_GRIT_SANDPAPER_USES.get();
 	}
 
 	// This needs to be redone OnlyIn is never recommended

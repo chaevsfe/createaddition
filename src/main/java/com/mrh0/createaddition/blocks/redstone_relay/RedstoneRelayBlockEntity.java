@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.connector.ConnectorType;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.IWireNode;
 import com.mrh0.createaddition.energy.LocalNode;
 import com.mrh0.createaddition.energy.NodeRotation;
@@ -398,6 +398,6 @@ public class RedstoneRelayBlockEntity extends SmartBlockEntity implements IWireN
 
 	@Override
 	public int getMaxWireLength() {
-		return CommonConfig.SMALL_CONNECTOR_MAX_LENGTH.get();
+		return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_LENGTH.get();
 	}
 }

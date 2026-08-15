@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mrh0.createaddition.datagen.TagProvider.CATagRegister;
+import com.mrh0.createaddition.index.CATags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -33,7 +33,7 @@ public class FireBlockMixin {
         }
 
         FluidState fluidState = level.getFluidState(blockPos);
-        return fluidState.is(CATagRegister.Fluids.IGNITES);
+        return fluidState.is(CATags.Fluids.IGNITES);
     }
 
     @ModifyExpressionValue(
@@ -47,7 +47,7 @@ public class FireBlockMixin {
         if (fluidState.isEmpty()) {
             return igniteOdd;
         }
-        if (!fluidState.is(CATagRegister.Fluids.IGNITES)) {
+        if (!fluidState.is(CATags.Fluids.IGNITES)) {
             return igniteOdd;
         }
         int fireSpeed = 75;
@@ -70,7 +70,7 @@ public class FireBlockMixin {
             return original;
         }
 
-        if (!fluidState.is(CATagRegister.Fluids.IGNITES)) {
+        if (!fluidState.is(CATags.Fluids.IGNITES)) {
             return original;
         }
 
@@ -103,7 +103,7 @@ public class FireBlockMixin {
                 return false;
             }
 
-            return fluid.is(CATagRegister.Fluids.IGNITES);
+            return fluid.is(CATags.Fluids.IGNITES);
         });
     }
 }

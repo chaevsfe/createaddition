@@ -1,7 +1,7 @@
 package com.mrh0.createaddition.blocks.modular_accumulator;
 
 import com.mrh0.createaddition.CreateAddition;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.debug.IDebugDrawer;
 import com.mrh0.createaddition.energy.IMultiTileEnergyContainer;
 import com.mrh0.createaddition.energy.InternalEnergyStorage;
@@ -91,7 +91,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 	public void onChunkUnloaded() {}
 
 	protected InternalEnergyStorage createEnergyStorage() {
-		return new InternalEnergyStorage(getCapacityMultiplier(), CommonConfig.ACCUMULATOR_MAX_INPUT.get(), CommonConfig.ACCUMULATOR_MAX_OUTPUT.get());
+		return new InternalEnergyStorage(getCapacityMultiplier(), CACommonConfig.COMMON.ACCUMULATOR_MAX_INPUT.get(), CACommonConfig.COMMON.ACCUMULATOR_MAX_OUTPUT.get());
 	}
 
 	public void updateCache() {
@@ -185,7 +185,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 		if (sideCache == null) return;
 		IEnergyStorage ies = sideCache.getCapability();
 		if(ies == null) return;
-		int ext = getControllerBE().energyCapability.extractEnergy(ies.receiveEnergy(CommonConfig.ACCUMULATOR_MAX_OUTPUT.get(), true), false);
+		int ext = getControllerBE().energyCapability.extractEnergy(ies.receiveEnergy(CACommonConfig.COMMON.ACCUMULATOR_MAX_OUTPUT.get(), true), false);
 		int rec = ies.receiveEnergy(ext, false);
 	}
 
@@ -329,7 +329,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 		if (controllerBE != null && controllerBE != this) {
 			return controllerBE.handlerForCapability();
 		}
-		return new InternalEnergyStorage(0, CommonConfig.ACCUMULATOR_MAX_INPUT.get(), CommonConfig.ACCUMULATOR_MAX_OUTPUT.get());
+		return new InternalEnergyStorage(0, CACommonConfig.COMMON.ACCUMULATOR_MAX_INPUT.get(), CACommonConfig.COMMON.ACCUMULATOR_MAX_OUTPUT.get());
 	}
 
 	@Override
@@ -408,16 +408,16 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements I
 	}
 
 	public static int getCapacityMultiplier() {
-		return CommonConfig.ACCUMULATOR_CAPACITY.get();
+		return CACommonConfig.COMMON.ACCUMULATOR_CAPACITY.get();
 	}
 
 	public static int getMaxHeight() {
-		return CommonConfig.ACCUMULATOR_MAX_HEIGHT.get();
+		return CACommonConfig.COMMON.ACCUMULATOR_MAX_HEIGHT.get();
 	}
 
 	@Override
 	public int getMaxWidth() {
-		return CommonConfig.ACCUMULATOR_MAX_WIDTH.get();
+		return CACommonConfig.COMMON.ACCUMULATOR_MAX_WIDTH.get();
 	}
 
 	@Override

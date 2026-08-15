@@ -1,6 +1,6 @@
 package com.mrh0.createaddition.blocks.portable_energy_interface;
 
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.actors.psi.PortableStorageInterfaceBlockEntity;
@@ -107,7 +107,7 @@ public class PortableEnergyInterfaceBlockEntity extends PortableStorageInterface
 		@Override
 		public int receiveEnergy(int maxReceive, boolean simulate) {
 			if (!PortableEnergyInterfaceBlockEntity.this.canTransfer()) return 0;
-			maxReceive = Math.min(maxReceive, CommonConfig.PEI_MAX_INPUT.get());
+			maxReceive = Math.min(maxReceive, CACommonConfig.COMMON.PEI_MAX_INPUT.get());
 			if (this.wrapped == null) return 0;
 			int received = this.wrapped.receiveEnergy(maxReceive, simulate);
 			if (received != 0 && !simulate) this.keepAlive();
@@ -117,7 +117,7 @@ public class PortableEnergyInterfaceBlockEntity extends PortableStorageInterface
 		@Override
 		public int extractEnergy(int maxExtract, boolean simulate) {
 			if (!PortableEnergyInterfaceBlockEntity.this.canTransfer()) return 0;
-			maxExtract = Math.min(maxExtract, CommonConfig.PEI_MAX_OUTPUT.get());
+			maxExtract = Math.min(maxExtract, CACommonConfig.COMMON.PEI_MAX_OUTPUT.get());
 			if (this.wrapped == null) return 0;
 			int extracted = this.wrapped.extractEnergy(maxExtract, simulate);
 			if (extracted != 0 && !simulate) this.keepAlive();

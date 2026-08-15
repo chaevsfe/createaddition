@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlockEntity;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.InternalEnergyStorage;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CABlocks;
@@ -153,8 +153,8 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 
 	public ServoMotorBlockEntity(BlockEntityType<? extends ServoMotorBlockEntity> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
-		energy = new InternalEnergyStorage(CommonConfig.ELECTRIC_MOTOR_CAPACITY.get(),
-				CommonConfig.ELECTRIC_MOTOR_MAX_INPUT.get(), 0);
+		energy = new InternalEnergyStorage(CACommonConfig.COMMON.ELECTRIC_MOTOR_CAPACITY.get(),
+				CACommonConfig.COMMON.ELECTRIC_MOTOR_MAX_INPUT.get(), 0);
 		energyCapability = energy;
 		setLazyTickRate(20);
 	}
@@ -212,8 +212,8 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 				(motor, side) -> motor.getValue(ServoMotorBlock.FACING) == side.getOpposite());
 
 		generatedSpeed = new KineticScrollValueBehaviour(CreateLang.translateDirect("generic.speed"), this, slot);
-		generatedSpeed.between(-CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get(),
-				CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get());
+		generatedSpeed.between(-CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get(),
+				CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get());
 		generatedSpeed.value = 32;
 		generatedSpeed.withCallback(rpm -> {
 			motorSpeed = rpm;
@@ -261,7 +261,7 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 
 	@Override
 	public float calculateAddedStressCapacity() {
-		float capacity = CommonConfig.MAX_STRESS.get() / 256f;
+		float capacity = CACommonConfig.COMMON.MAX_STRESS.get() / 256f;
 		this.lastCapacityProvided = capacity;
 		return capacity;
 	}
@@ -401,7 +401,7 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 	public void tickAudio() {
 		super.tickAudio();
 		if (!active || !running || getAngularSpeed() == 0) return;
-		if (CommonConfig.AUDIO_ENABLED.get())
+		if (CACommonConfig.COMMON.AUDIO_ENABLED.get())
 			CASoundScapes.play(CASoundScapes.AmbienceGroup.DYNAMO, worldPosition, 1);
 	}
 
@@ -457,8 +457,8 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity {
 	}
 
 	public void setRPM(float rpm) {
-		int clamped = (int) Math.max(-CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get(),
-				Math.min(CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get(), rpm));
+		int clamped = (int) Math.max(-CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get(),
+				Math.min(CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get(), rpm));
 		generatedSpeed.setValue(clamped);
 		motorSpeed = clamped;
 		updateGeneratedRotation();

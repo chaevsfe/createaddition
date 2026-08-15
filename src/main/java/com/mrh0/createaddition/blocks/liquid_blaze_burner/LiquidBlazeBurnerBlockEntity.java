@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mrh0.createaddition.CreateAddition;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CALang;
 import com.mrh0.createaddition.index.CARecipes;
@@ -60,7 +60,7 @@ import org.jetbrains.annotations.Nullable;
 import static com.simibubi.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL;
 
 public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation, IObserveBlockEntity {
-	public static int MAX_HEAT_CAPACITY = CommonConfig.LIQUID_BLAZE_BURNER_MAX_HEAT_CAPACITY.get();
+	public static int MAX_HEAT_CAPACITY = CACommonConfig.COMMON.LIQUID_BLAZE_BURNER_MAX_HEAT_CAPACITY.get();
 
 	protected FuelType activeFuel;
 	protected int remainingBurnTime;
@@ -112,7 +112,7 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IH
 	}
 
 	protected SmartFluidTank createInventory() {
-		return new SmartFluidTank(CommonConfig.LIQUID_BLAZE_BURNER_MAX_LIQUID_CAPACITY.get(), this::onFluidStackChanged);
+		return new SmartFluidTank(CACommonConfig.COMMON.LIQUID_BLAZE_BURNER_MAX_LIQUID_CAPACITY.get(), this::onFluidStackChanged);
 	}
 
 	protected void onFluidStackChanged(FluidStack newFluidStack) {

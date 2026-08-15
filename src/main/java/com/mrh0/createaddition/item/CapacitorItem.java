@@ -1,6 +1,6 @@
 package com.mrh0.createaddition.item;
 
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.index.CAItems;
 import com.mrh0.createaddition.util.Util;
 
@@ -38,7 +38,7 @@ public class CapacitorItem extends Item {
             else stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         } else {
             CompoundTag tag = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
-            tag.putInt(ENERGY_KEY, Math.min(energy, CommonConfig.CAPACITOR_CAPACITY.get()));
+            tag.putInt(ENERGY_KEY, Math.min(energy, CACommonConfig.COMMON.CAPACITOR_CAPACITY.get()));
             stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
         }
     }
@@ -61,7 +61,7 @@ public class CapacitorItem extends Item {
 
     @Override
     public int getBarWidth(ItemStack stack) {
-        return Math.round((float) getEnergy(stack) / CommonConfig.CAPACITOR_CAPACITY.get() * 13f);
+        return Math.round((float) getEnergy(stack) / CACommonConfig.COMMON.CAPACITOR_CAPACITY.get() * 13f);
     }
 
     @Override
@@ -86,9 +86,9 @@ public class CapacitorItem extends Item {
 
         @Override
         public int receiveEnergy(int maxReceive, boolean simulate) {
-            int capacity = CommonConfig.CAPACITOR_CAPACITY.get();
+            int capacity = CACommonConfig.COMMON.CAPACITOR_CAPACITY.get();
             int stored = getEnergy(stack);
-            int accepted = Math.min(maxReceive, Math.min(CommonConfig.CAPACITOR_CHARGE_RATE.get(), capacity - stored));
+            int accepted = Math.min(maxReceive, Math.min(CACommonConfig.COMMON.CAPACITOR_CHARGE_RATE.get(), capacity - stored));
             if (accepted <= 0) return 0;
             if (!simulate) setEnergy(stack, stored + accepted);
             return accepted;
@@ -97,14 +97,14 @@ public class CapacitorItem extends Item {
         @Override
         public int extractEnergy(int maxExtract, boolean simulate) {
             int stored = getEnergy(stack);
-            int extracted = Math.min(maxExtract, Math.min(CommonConfig.CAPACITOR_CHARGE_RATE.get(), stored));
+            int extracted = Math.min(maxExtract, Math.min(CACommonConfig.COMMON.CAPACITOR_CHARGE_RATE.get(), stored));
             if (extracted <= 0) return 0;
             if (!simulate) setEnergy(stack, stored - extracted);
             return extracted;
         }
 
         @Override public int getEnergyStored() { return getEnergy(stack); }
-        @Override public int getMaxEnergyStored() { return CommonConfig.CAPACITOR_CAPACITY.get(); }
+        @Override public int getMaxEnergyStored() { return CACommonConfig.COMMON.CAPACITOR_CAPACITY.get(); }
         @Override public boolean canExtract() { return true; }
         @Override public boolean canReceive() { return true; }
     }

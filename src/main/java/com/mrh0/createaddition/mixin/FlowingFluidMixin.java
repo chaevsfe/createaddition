@@ -3,7 +3,7 @@ package com.mrh0.createaddition.mixin;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mrh0.createaddition.datagen.TagProvider.CATagRegister;
+import com.mrh0.createaddition.index.CATags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -44,7 +44,7 @@ public class FlowingFluidMixin {
             return true;
         }
 
-        boolean ignites = fluid.is(CATagRegister.Fluids.IGNITES);
+        boolean ignites = fluid.is(CATags.Fluids.IGNITES);
         if (!ignites) {
             return true;
         }
@@ -79,7 +79,7 @@ public class FlowingFluidMixin {
         }
 
 
-        if (flowDirection == Direction.DOWN && fluidState.is(CATagRegister.Fluids.IGNITES) && toReplace.is(BlockTags.FIRE)) {
+        if (flowDirection == Direction.DOWN && fluidState.is(CATags.Fluids.IGNITES) && toReplace.is(BlockTags.FIRE)) {
             Direction.Plane.HORIZONTAL.stream().forEach(direction -> {
                 BlockPos side = blockPos.relative(direction);
                 if (level.isEmptyBlock(side) && toReplace.canSurvive(level, side)) {

@@ -1,7 +1,7 @@
 package com.mrh0.createaddition.compat.computercraft;
 
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockEntity;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import org.jetbrains.annotations.NotNull;
@@ -53,12 +53,12 @@ public class ModularAccumulatorPeripheral implements IPeripheral {
 
     @LuaFunction(mainThread = true)
     public final int getMaxInsert() {
-        return CommonConfig.ACCUMULATOR_MAX_INPUT.get();
+        return CACommonConfig.COMMON.ACCUMULATOR_MAX_INPUT.get();
     }
 
     @LuaFunction(mainThread = true)
     public final int getMaxExtract() {
-        return CommonConfig.ACCUMULATOR_MAX_OUTPUT.get();
+        return CACommonConfig.COMMON.ACCUMULATOR_MAX_OUTPUT.get();
     }
 
     @LuaFunction(mainThread = true)

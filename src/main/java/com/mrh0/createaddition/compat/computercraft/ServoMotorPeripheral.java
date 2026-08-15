@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mrh0.createaddition.blocks.servo_motor.ServoMotorBlockEntity;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
@@ -51,7 +51,7 @@ public class ServoMotorPeripheral implements IPeripheral {
 
 	@LuaFunction(mainThread = true)
 	public final void setSpeed(double rpm) throws LuaException {
-		double limit = CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get();
+		double limit = CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get();
 		if (Math.abs(rpm) > limit)
 			throw new LuaException("Speed out of range (max " + (int) limit + " RPM).");
 		tileEntity.setRPM((float) rpm);

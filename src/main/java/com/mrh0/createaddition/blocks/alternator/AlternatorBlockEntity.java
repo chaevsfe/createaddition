@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import com.mrh0.createaddition.CreateAddition;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.IEnergyProvider;
 import com.mrh0.createaddition.energy.InternalEnergyStorage;
 import com.mrh0.createaddition.index.CABlockEntities;
@@ -48,7 +48,7 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 
 	public AlternatorBlockEntity(BlockEntityType<?> typeIn, BlockPos pos, BlockState state) {
 		super(typeIn, pos, state);
-		energy = new InternalEnergyStorage(CommonConfig.ALTERNATOR_CAPACITY.get(), 0, CommonConfig.ALTERNATOR_MAX_OUTPUT.get());
+		energy = new InternalEnergyStorage(CACommonConfig.COMMON.ALTERNATOR_CAPACITY.get(), 0, CACommonConfig.COMMON.ALTERNATOR_MAX_OUTPUT.get());
 		capability = energy;
 	}
 
@@ -72,7 +72,7 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 
 	@Override
 	public float calculateStressApplied() {
-		float impact = CommonConfig.MAX_STRESS.get()/256f;
+		float impact = CACommonConfig.COMMON.MAX_STRESS.get()/256f;
 		this.lastStressApplied = impact;
 		return impact;
 	}
@@ -114,7 +114,7 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 			if(!isEnergyOutput(d)) continue;
 			IEnergyStorage ies = cache.get(d).getCapability();
 			if(ies == null) continue;
-			int ext = energy.extractEnergy(ies.receiveEnergy(CommonConfig.ALTERNATOR_MAX_OUTPUT.get(), true), false);
+			int ext = energy.extractEnergy(ies.receiveEnergy(CACommonConfig.COMMON.ALTERNATOR_MAX_OUTPUT.get(), true), false);
 			ies.receiveEnergy(ext, false);
 		}
 	}
@@ -129,12 +129,12 @@ public class AlternatorBlockEntity extends KineticBlockEntity implements IEnergy
 			return;
 
 		float pitch = Mth.clamp((componentSpeed / 256f) + .5f, .5f, 1.5f);
-		if (CommonConfig.AUDIO_ENABLED.get()) CASoundScapes.play(AmbienceGroup.DYNAMO, worldPosition, pitch);
+		if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) CASoundScapes.play(AmbienceGroup.DYNAMO, worldPosition, pitch);
 	}
 
 	public static int getEnergyProductionRate(int rpm) {
 		rpm = Math.abs(rpm);
-		return (int)((double) CommonConfig.FE_RPM.get() * ((double)Math.abs(rpm) / 256d) * CommonConfig.ALTERNATOR_EFFICIENCY.get());//return (int)((double)Config.FE_TO_SU.get() * ((double)Math.abs(rpm)/256d) * EFFICIENCY);
+		return (int)((double) CACommonConfig.COMMON.FE_RPM.get() * ((double)Math.abs(rpm) / 256d) * CACommonConfig.COMMON.ALTERNATOR_EFFICIENCY.get());//return (int)((double)Config.FE_TO_SU.get() * ((double)Math.abs(rpm)/256d) * EFFICIENCY);
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package com.mrh0.createaddition.blocks.connector;
 
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlock;
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlockEntity;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.network.EnergyNetwork;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -60,12 +60,12 @@ public class SmallLightConnectorBlockEntity extends AbstractConnectorBlockEntity
 
     @Override
     public int getMaxIn() {
-        return CommonConfig.SMALL_CONNECTOR_MAX_INPUT.get();
+        return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_INPUT.get();
     }
 
     @Override
     public int getMaxOut() {
-        return CommonConfig.SMALL_CONNECTOR_MAX_OUTPUT.get();
+        return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_OUTPUT.get();
     }
 
     @Override
@@ -91,7 +91,7 @@ public class SmallLightConnectorBlockEntity extends AbstractConnectorBlockEntity
     }
 
     public int getMaxWireLength() {
-        return CommonConfig.SMALL_CONNECTOR_MAX_LENGTH.get();
+        return CACommonConfig.COMMON.SMALL_CONNECTOR_MAX_LENGTH.get();
     }
 
     private int tickToggleTimer = 0;
@@ -101,7 +101,7 @@ public class SmallLightConnectorBlockEntity extends AbstractConnectorBlockEntity
         if(level.isClientSide()) return;
         EnergyNetwork network = getNetwork(0);
         if (network != null) network.demand(1);
-        boolean hasEnergy = network != null && network.pull(CommonConfig.SMALL_LIGHT_CONNECTOR_CONSUMPTION.get(), false) > 0;
+        boolean hasEnergy = network != null && network.pull(CACommonConfig.COMMON.SMALL_LIGHT_CONNECTOR_CONSUMPTION.get(), false) > 0;
         tickToggleTimer = tickToggleTimer + (hasEnergy ? 1 : -1);
 
         if (tickToggleTimer >= posTimeOffset) {

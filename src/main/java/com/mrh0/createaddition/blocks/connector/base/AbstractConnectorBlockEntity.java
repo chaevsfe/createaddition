@@ -7,7 +7,7 @@ import java.util.Set;
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.compat.sable.ISableRender;
 import com.mrh0.createaddition.compat.sable.SableUtil;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.debug.IDebugDrawer;
 import com.mrh0.createaddition.energy.*;
 import com.mrh0.createaddition.energy.network.EnergyNetwork;
@@ -77,7 +77,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		@Override
 		public int receiveEnergy(int maxReceive, boolean simulate) {
-			if(!CommonConfig.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
+			if(!CACommonConfig.COMMON.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
 			if(getMode() != ConnectorMode.Pull) return 0;
 			if (network == null) return 0;
 			maxReceive = Math.min(maxReceive, getMaxIn());
@@ -86,7 +86,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		@Override
 		public int extractEnergy(int maxExtract, boolean simulate) {
-			if(!CommonConfig.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
+			if(!CACommonConfig.COMMON.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
 			if(getMode() != ConnectorMode.Push) return 0;
 			if (network == null) return 0;
 			maxExtract = Math.min(maxExtract, getMaxOut());

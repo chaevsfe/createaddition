@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.tesla_coil.TeslaCoilBlock;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.InternalEnergyStorage;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CABlocks;
@@ -45,7 +45,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
 	public ElectricMotorBlockEntity(BlockEntityType<? extends ElectricMotorBlockEntity> type, BlockPos pos, BlockState state) {
 		super(type, pos, state);
-		energy = new InternalEnergyStorage(CommonConfig.ELECTRIC_MOTOR_CAPACITY.get(), CommonConfig.ELECTRIC_MOTOR_MAX_INPUT.get(), 0);
+		energy = new InternalEnergyStorage(CACommonConfig.COMMON.ELECTRIC_MOTOR_CAPACITY.get(), CACommonConfig.COMMON.ELECTRIC_MOTOR_MAX_INPUT.get(), 0);
 		capability = energy;
 		/*
 		if(CreateAddition.CC_ACTIVE) {
@@ -71,7 +71,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 			new CenteredSideValueBoxTransform((motor, side) -> motor.getValue(ElectricMotorBlock.FACING) == side.getOpposite());
 
 		generatedSpeed = new KineticScrollValueBehaviour(CreateLang.translateDirect("generic.speed"), this, slot);
-		generatedSpeed.between(-CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get(), CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get());
+		generatedSpeed.between(-CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get(), CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get());
 		generatedSpeed.value = 32;
 		//generatedSpeed.withUnit(i -> Lang.translateDirect("generic.unit.rpm"));
 		generatedSpeed.withCallback(this::updateGeneratedRotation);
@@ -96,7 +96,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
     @Override
 	public float calculateAddedStressCapacity() {
-		float capacity = CommonConfig.MAX_STRESS.get()/256f;
+		float capacity = CACommonConfig.COMMON.MAX_STRESS.get()/256f;
 		this.lastCapacityProvided = capacity;
 		return capacity;
 	}
@@ -156,7 +156,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 	}
 
 	public static int getEnergyConsumptionRate(float rpm) {
-		return Math.abs(rpm) > 0 ? (int)Math.max((double) CommonConfig.FE_RPM.get() * ((double)Math.abs(rpm) / 256d), (double) CommonConfig.ELECTRIC_MOTOR_MINIMUM_CONSUMPTION.get()) : 0;
+		return Math.abs(rpm) > 0 ? (int)Math.max((double) CACommonConfig.COMMON.FE_RPM.get() * ((double)Math.abs(rpm) / 256d), (double) CACommonConfig.COMMON.ELECTRIC_MOTOR_MINIMUM_CONSUMPTION.get()) : 0;
 	}
 
 	// CC
@@ -200,7 +200,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 	public void tickAudio() {
 		super.tickAudio();
 		if (!active) return;
-		if (CommonConfig.AUDIO_ENABLED.get()) CASoundScapes.play(CASoundScapes.AmbienceGroup.DYNAMO, worldPosition, 1);
+		if (CACommonConfig.COMMON.AUDIO_ENABLED.get()) CASoundScapes.play(CASoundScapes.AmbienceGroup.DYNAMO, worldPosition, 1);
 	}
 
 	
@@ -222,7 +222,7 @@ public class ElectricMotorBlockEntity extends GeneratingKineticBlockEntity {
 
 	// This is the callback used by the CC Peripheral!
 	public boolean setRPM(float rpm) {
-		rpm = Math.max(Math.min(rpm, CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get()), -CommonConfig.ELECTRIC_MOTOR_RPM_RANGE.get());
+		rpm = Math.max(Math.min(rpm, CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get()), -CACommonConfig.COMMON.ELECTRIC_MOTOR_RPM_RANGE.get());
 		cc_new_rpm = rpm;
 		cc_update_rpm = true;
 		return true;

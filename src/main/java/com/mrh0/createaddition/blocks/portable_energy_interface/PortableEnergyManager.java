@@ -1,6 +1,6 @@
 package com.mrh0.createaddition.blocks.portable_energy_interface;
 
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.behaviour.MovementContext;
 import net.minecraft.core.BlockPos;
@@ -56,8 +56,8 @@ public class PortableEnergyManager {
 		private long heartbeat;
 		private boolean removed = false;
 
-		private final int maxReceive = CommonConfig.ACCUMULATOR_MAX_INPUT.get();
-		private final int maxExtract = CommonConfig.ACCUMULATOR_MAX_OUTPUT.get();
+		private final int maxReceive = CACommonConfig.COMMON.ACCUMULATOR_MAX_INPUT.get();
+		private final int maxExtract = CACommonConfig.COMMON.ACCUMULATOR_MAX_OUTPUT.get();
 		private final Map<BlockPos, EnergyData> energyHolders = new HashMap<>();
 
 		public EnergyStorageHolder() {

@@ -2,7 +2,7 @@ package com.mrh0.createaddition.energy.network;
 
 import java.util.Map;
 
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.IWireNode;
 
 import net.minecraft.core.BlockPos;
@@ -36,7 +36,7 @@ public class EnergyNetwork {
 	}
 
 	public int getMaxBuff() {
-		return Math.min(nodeCount * (outDemand + inDemand * 2 + 10), CommonConfig.CONNECTOR_NETWORK_INTERNAL_BUFFER.get());
+		return Math.min(nodeCount * (outDemand + inDemand * 2 + 10), CACommonConfig.COMMON.CONNECTOR_NETWORK_INTERNAL_BUFFER.get());
 	}
 	
 	public void tick(int index) {

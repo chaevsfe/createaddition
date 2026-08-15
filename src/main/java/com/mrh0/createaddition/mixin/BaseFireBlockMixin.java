@@ -2,7 +2,7 @@ package com.mrh0.createaddition.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mrh0.createaddition.datagen.TagProvider.CATagRegister;
+import com.mrh0.createaddition.index.CATags;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -26,7 +26,7 @@ public class BaseFireBlockMixin {
             return isAir;
         }
 
-        boolean ignites = fluid.is(CATagRegister.Fluids.IGNITES);
+        boolean ignites = fluid.is(CATags.Fluids.IGNITES);
 
         return isAir || ignites;
     }

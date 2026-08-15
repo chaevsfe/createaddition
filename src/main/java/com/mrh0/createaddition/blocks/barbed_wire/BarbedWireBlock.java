@@ -1,7 +1,7 @@
 package com.mrh0.createaddition.blocks.barbed_wire;
 
 import com.mrh0.createaddition.CreateAddition;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.index.CADamageTypes;
 import com.tterrag.registrate.providers.DataGenContext;
 import com.tterrag.registrate.providers.RegistrateBlockstateProvider;
@@ -49,7 +49,7 @@ public class BarbedWireBlock extends Block implements IShearable, SimpleWaterlog
 	public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
 		double delta = Math.abs(entity.getX() - entity.xOld) + Math.abs(entity.getY() - entity.yOld) + Math.abs(entity.getZ() - entity.zOld);
 		if((entity instanceof LivingEntity) && delta > 0d) {
-			if(entity.hurt(CADamageTypes.barbedWire(level), CommonConfig.BARBED_WIRE_DAMAGE.get().floatValue()))
+			if(entity.hurt(CADamageTypes.barbedWire(level), CACommonConfig.COMMON.BARBED_WIRE_DAMAGE.get().floatValue()))
 				entity.playSound(SoundEvents.PLAYER_HURT_SWEET_BERRY_BUSH, 1f, 1f);
 		}
 		entity.makeStuckInBlock(state, new Vec3(0.25D, 0.05D, 0.25D));

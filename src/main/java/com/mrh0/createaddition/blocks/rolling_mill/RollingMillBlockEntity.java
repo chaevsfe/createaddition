@@ -3,7 +3,7 @@ package com.mrh0.createaddition.blocks.rolling_mill;
 import java.util.List;
 import java.util.Optional;
 
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CARecipes;
 import com.mrh0.createaddition.recipe.rolling.RollingRecipe;
@@ -108,13 +108,13 @@ public class RollingMillBlockEntity extends KineticBlockEntity {
 				sendData();
 			} else {
 				lastRecipe = recipe.get().value();
-				timer = CommonConfig.ROLLING_MILL_PROCESSING_DURATION.get();
+				timer = CACommonConfig.COMMON.ROLLING_MILL_PROCESSING_DURATION.get();
 				sendData();
 			}
 			return;
 		}
 
-		timer = CommonConfig.ROLLING_MILL_PROCESSING_DURATION.get();
+		timer = CACommonConfig.COMMON.ROLLING_MILL_PROCESSING_DURATION.get();
 		sendData();
 	}
 

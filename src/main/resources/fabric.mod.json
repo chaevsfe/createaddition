@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "id": "createaddition",
+  "version": "${version}",
+  "name": "Create Crafts & Additions",
+  "description": "Create Crafts & Additions port for Create Fly 26.2. Electrical age for Create: generate, store, and transfer Forge Energy with wires, motors, and machines.",
+  "authors": [
+    "MRH0"
+  ],
+  "contributors": [
+    "chaevsfe"
+  ],
+  "contact": {
+    "homepage": "https://github.com/chaevsfe/createaddition",
+    "sources": "https://github.com/chaevsfe/createaddition",
+    "issues": "https://github.com/chaevsfe/createaddition/issues"
+  },
+  "license": [
+    "MIT"
+  ],
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.mrh0.createaddition.CreateAddition"
+    ],
+    "create_plugin": [
+      "com.mrh0.createaddition.CreateAdditionPlugin"
+    ]
+  },
+  "mixins": [
+    "createaddition.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "${minecraft_dependency_version}",
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "create": "${create_fabric_version_range}",
+    "java": ">=25"
+  },
+  "suggests": {
+    "computercraft": "*"
+  }
+}

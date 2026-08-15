@@ -15,7 +15,7 @@ import com.mrh0.createaddition.blocks.digital_adapter.DigitalAdapterBlock;
 import com.mrh0.createaddition.blocks.modular_accumulator.*;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceBlock;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceMovement;
-import com.mrh0.createaddition.config.CommonConfig;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.datagen.Models.BlockGenHelper;
 import com.mrh0.createaddition.energy.NodeMovementBehaviour;
 import com.mrh0.createaddition.blocks.creative_energy.CreativeEnergyBlock;
@@ -70,7 +70,7 @@ public class CABlocks {
 			.transform(pickaxeOnly())
 			.blockstate(BlockGenHelper.directionalBlockState())
             .onRegister(BlockStressValues.setGeneratorSpeed(256, true))
-            .onRegister((block) -> BlockStressValues.CAPACITIES.register(block, () -> CommonConfig.MAX_STRESS.get()/256f))
+            .onRegister((block) -> BlockStressValues.CAPACITIES.register(block, () -> CACommonConfig.COMMON.MAX_STRESS.get()/256f))
 			.item()
 			.transform(customItemModel())
 			.register();
@@ -84,7 +84,7 @@ public class CABlocks {
 			.transform(pickaxeOnly())
 			.blockstate(BlockGenHelper.directionalBlockState())
             .onRegister(BlockStressValues.setGeneratorSpeed(256, true))
-            .onRegister((block) -> BlockStressValues.CAPACITIES.register(block, () -> CommonConfig.MAX_STRESS.get()/256f))
+            .onRegister((block) -> BlockStressValues.CAPACITIES.register(block, () -> CACommonConfig.COMMON.MAX_STRESS.get()/256f))
 			.item()
 			.transform(customItemModel())
 			.register();
@@ -96,7 +96,7 @@ public class CABlocks {
 			.initialProperties(SharedProperties::softMetal)
 			.transform(pickaxeOnly())
 		    .blockstate(BlockGenHelper.directionalBlockState())
-            .onRegister((block) -> BlockStressValues.IMPACTS.register(block, () -> CommonConfig.MAX_STRESS.get()/256f))
+            .onRegister((block) -> BlockStressValues.IMPACTS.register(block, () -> CACommonConfig.COMMON.MAX_STRESS.get()/256f))
 			.item()
 			.transform(customItemModel())
 			.register();
@@ -106,7 +106,7 @@ public class CABlocks {
                     .andThen(TooltipModifier.mapNull(KineticStats.create(item))))
             .block("rolling_mill", RollingMillBlock::new)
 			.initialProperties(SharedProperties::stone)
-            .onRegister((block) -> BlockStressValues.IMPACTS.register(block, () -> CommonConfig.ROLLING_MILL_STRESS.get()))
+            .onRegister((block) -> BlockStressValues.IMPACTS.register(block, () -> CACommonConfig.COMMON.ROLLING_MILL_STRESS.get()))
 			.transform(axeOrPickaxe())
 			.blockstate(BlockGenHelper.horizontalBlockState())
 			.item()
