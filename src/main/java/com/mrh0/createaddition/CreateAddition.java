@@ -1,13 +1,17 @@
 package com.mrh0.createaddition;
 
 import com.mrh0.createaddition.config.CACommonConfig;
+import com.mrh0.createaddition.event.GameEvents;
+import com.mrh0.createaddition.commands.CCApiCommand;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CACreativeTabs;
 import com.mrh0.createaddition.index.CADamageTypes;
 import com.mrh0.createaddition.index.CAEffects;
 import com.mrh0.createaddition.index.CAFluids;
 import com.mrh0.createaddition.index.CAItems;
+import com.mrh0.createaddition.index.CARegistration;
 import com.mrh0.createaddition.index.CASounds;
+import com.mrh0.createaddition.index.CATransfer;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
@@ -33,6 +37,10 @@ public class CreateAddition implements ModInitializer {
         CAEffects.register();
         CASounds.register();
         CADamageTypes.register();
+        CATransfer.register();
+        CARegistration.register();
+        GameEvents.initCommon();
+        CCApiCommand.register();
         LOGGER.info("Create Crafts & Additions Initialized!");
     }
 
