@@ -1,3 +1,19 @@
+<div align="center">
+  <h1>Create Crafts &amp; Additions — Create Fly port</h1>
+  <p>Crafts &amp; Additions for Fabric, Minecraft 26.2, and Create Fly.</p>
+</div>
+
+This repository ports [Create Crafts & Additions](https://github.com/mrh0/createaddition) to the latest public version of [Create Fly](https://github.com/ZurrTum/Create-Fly) for stable Minecraft 26.2. Crafts & Additions brings the electrical age to Create: generate, store and move Forge Energy with electric motors, alternators, wires, capacitors, tesla coils and modular accumulators.
+
+This is an **unofficial port**; all credit for the mod belongs to MRH0 and the upstream contributors. Please report issues with this port here, not upstream.
+
+Ready-to-install builds are on the [GitHub Releases page](https://github.com/chaevsfe/createaddition/releases). Requires Fabric API and Create Fly 6.0.9-1 on Java 25. ComputerCraft peripherals are supported when CC:Tweaked is installed; a recipe-viewer (JEI) plugin is not included in this beta.
+
+> [!IMPORTANT]
+> This build targets stable Minecraft **26.2** exactly. The `rc-2` text in the historical Create Fly artifact filename does not change its published Minecraft compatibility metadata, which targets stable 26.2.
+
+---
+
 # Create Crafts &amp; Additions by MRH0
 Addon to the Create mod by the Create Team.
 
