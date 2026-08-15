@@ -7,26 +7,25 @@ import com.mrh0.createaddition.blocks.tesla_coil.TeslaCoilBlock;
 import com.mrh0.createaddition.index.CABlocks;
 import com.mrh0.createaddition.index.CAFluids;
 import com.mrh0.createaddition.index.CAItems;
-import com.simibubi.create.AllItems;
-import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
-import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
-import net.createmod.catnip.math.Pointing;
-import net.createmod.ponder.api.PonderPalette;
-import net.createmod.ponder.api.element.ElementLink;
-import net.createmod.ponder.api.element.WorldSectionElement;
-
-import net.createmod.ponder.api.scene.SceneBuilder;
-import net.createmod.ponder.api.scene.SceneBuildingUtil;
-import net.createmod.ponder.api.scene.Selection;
+import com.zurrtum.create.AllItems;
+import com.zurrtum.create.catnip.math.Pointing;
+import com.zurrtum.create.client.foundation.ponder.CreateSceneBuilder;
+import com.zurrtum.create.client.ponder.api.PonderPalette;
+import com.zurrtum.create.client.ponder.api.element.ElementLink;
+import com.zurrtum.create.client.ponder.api.element.WorldSectionElement;
+import com.zurrtum.create.client.ponder.api.scene.SceneBuilder;
+import com.zurrtum.create.client.ponder.api.scene.SceneBuildingUtil;
+import com.zurrtum.create.client.ponder.api.scene.Selection;
+import com.zurrtum.create.content.processing.burner.BlazeBurnerBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LeverBlock;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-
 
 public class PonderScenes {
 	public static void electricMotor(SceneBuilder builder, SceneBuildingUtil util) {
@@ -49,7 +48,6 @@ public class PonderScenes {
 			.placeNearTarget()
 			.pointAt(util.vector().topOf(motor));
 		scene.idle(50);
-
 
 		scene.rotateCameraY(90);
 		scene.idle(20);
@@ -76,18 +74,17 @@ public class PonderScenes {
 
 		scene.addKeyframe();
 		scene.overlay().showText(70)
-		.text("The Electric Motor requires a source of energy (fe)")
-		.placeNearTarget()
-		.pointAt(blockSurface);
+			.text("The Electric Motor requires a source of energy (fe)")
+			.placeNearTarget()
+			.pointAt(blockSurface);
 		scene.idle(80);
 
 		scene.overlay().showText(70)
-		.text("The motors' energy consumption is determined by the set RPM")
-		.placeNearTarget()
-		.pointAt(blockSurface);
+			.text("The motors' energy consumption is determined by the set RPM")
+			.placeNearTarget()
+			.pointAt(blockSurface);
 		scene.idle(80);
 		scene.markAsFinished();
-
 
 		scene.rotateCameraY(-90);
 	}
@@ -103,7 +100,6 @@ public class PonderScenes {
 		for (int i = 0; i < 6; i++) {
 			scene.idle(5);
 			scene.world().showSection(util.select().position(i, 1, 2), Direction.DOWN);
-			//scene.world().showSection(util.select().position(i, 2, 2), Direction.DOWN);
 		}
 
 		scene.idle(10);
@@ -119,11 +115,10 @@ public class PonderScenes {
 			.pointAt(util.vector().topOf(generator));
 		scene.idle(60);
 
-
 		scene.overlay().showText(50)
-		.text("The Alternators energy production is determined by the input RPM")
-		.placeNearTarget()
-		.pointAt(util.vector().topOf(generator));
+			.text("The Alternators energy production is determined by the input RPM")
+			.placeNearTarget()
+			.pointAt(util.vector().topOf(generator));
 		scene.idle(60);
 		scene.markAsFinished();
 	}
@@ -157,9 +152,9 @@ public class PonderScenes {
 		scene.addKeyframe();
 		scene.overlay().showControls(util.vector().topOf(mill), Pointing.DOWN, 50).rightClick();
 		scene.overlay().showText(50)
-		.text("Manualy retrieve the rolled output by R-clicking the Mill")
-		.placeNearTarget()
-		.pointAt(util.vector().topOf(mill));
+			.text("Manualy retrieve the rolled output by R-clicking the Mill")
+			.placeNearTarget()
+			.pointAt(util.vector().topOf(mill));
 		scene.idle(60);
 		scene.markAsFinished();
 	}
@@ -174,9 +169,6 @@ public class PonderScenes {
 		BlockPos in = util.grid().at(3, 2, 3);
 		BlockPos out = util.grid().at(3, 2, 1);
 
-		//BlockPos entryBeltPos = util.grid().at(3, 1, 4);
-		//BlockPos exitBeltPos = util.grid().at(3, 1, 0);
-
 		for (int i = 0; i < 3; i++) {
 			scene.idle(5);
 			scene.world().showSection(util.select().position(i, 1, 4), Direction.DOWN);
@@ -185,7 +177,6 @@ public class PonderScenes {
 		for (int i = 5; i >= 0; i--) {
 			scene.idle(5);
 			scene.world().showSection(util.select().position(3, 1, i), Direction.DOWN);
-			//scene.world().showSection(util.select().position(3, 2, i), Direction.DOWN);
 			scene.world().showSection(util.select().position(4, 1, i), Direction.DOWN);
 			scene.world().showSection(util.select().position(4, 2, i), Direction.DOWN);
 		}
@@ -194,9 +185,9 @@ public class PonderScenes {
 
 		scene.addKeyframe();
 		scene.overlay().showText(50)
-		.text("The Rolling Mill can be automated using a Belt and two Funnels")
-		.placeNearTarget()
-		.pointAt(util.vector().topOf(mill));
+			.text("The Rolling Mill can be automated using a Belt and two Funnels")
+			.placeNearTarget()
+			.pointAt(util.vector().topOf(mill));
 		scene.idle(60);
 
 		scene.idle(5);
@@ -266,9 +257,11 @@ public class PonderScenes {
 			.pointAt(topOf);
 		scene.idle(60);
 
-		scene.world().createItemOnBeltLike(depotPos, Direction.NORTH, AllItems.CHROMATIC_COMPOUND.asStack());
+		scene.world().createItemOnBeltLike(depotPos, Direction.NORTH, CAItems.CAPACITOR.getDefaultInstance());
 		scene.idle(10);
-		scene.world().setBlock(util.grid().at(2, 3, 2), CABlocks.TESLA_COIL.getDefaultState().setValue(TeslaCoilBlock.FACING, Direction.UP).setValue(TeslaCoilBlock.POWERED, true), false);
+		scene.world().setBlock(util.grid().at(2, 3, 2), CABlocks.TESLA_COIL.defaultBlockState()
+			.setValue(TeslaCoilBlock.FACING, Direction.UP)
+			.setValue(TeslaCoilBlock.POWERED, true), false);
 		scene.overlay().showText(70)
 			.attachKeyFrame()
 			.text("It will charge any Forge Energy Items and more!")
@@ -284,7 +277,6 @@ public class PonderScenes {
 		scene.configureBasePlate(0, 0, 5);
 		scene.showBasePlate();
 		scene.idle(5);
-		//scene.world().setBlock(util.grid().at(3, 2, 2), Blocks.WATER.defaultBlockState(), false);
 
 		BlockPos teslacoil = util.grid().at(2, 1, 2);
 		BlockPos lever = util.grid().at(2, 1, 1);
@@ -305,9 +297,14 @@ public class PonderScenes {
 			.placeNearTarget()
 			.pointAt(util.vector().centerOf(lever));
 		scene.idle(60);
-		scene.world().setBlock(lever, Blocks.LEVER.defaultBlockState().setValue(LeverBlock.POWERED, true).setValue(LeverBlock.FACING, Direction.SOUTH).setValue(LeverBlock.FACE, AttachFace.FLOOR), false);
+		scene.world().setBlock(lever, Blocks.LEVER.defaultBlockState()
+			.setValue(LeverBlock.POWERED, true)
+			.setValue(LeverBlock.FACING, Direction.SOUTH)
+			.setValue(FaceAttachedHorizontalDirectionalBlock.FACE, AttachFace.FLOOR), false);
 		scene.idle(5);
-		scene.world().setBlock(teslacoil, CABlocks.TESLA_COIL.getDefaultState().setValue(TeslaCoilBlock.FACING, Direction.DOWN).setValue(TeslaCoilBlock.POWERED, true), false);
+		scene.world().setBlock(teslacoil, CABlocks.TESLA_COIL.defaultBlockState()
+			.setValue(TeslaCoilBlock.FACING, Direction.DOWN)
+			.setValue(TeslaCoilBlock.POWERED, true), false);
 		scene.idle(5);
 		scene.overlay().showText(70)
 			.attachKeyFrame()
@@ -324,7 +321,6 @@ public class PonderScenes {
 		scene.configureBasePlate(0, 0, 5);
 		scene.showBasePlate();
 		scene.idle(5);
-		//scene.world().setBlock(util.grid().at(3, 2, 2), Blocks.WATER.defaultBlockState(), false);
 
 		BlockPos burner = util.grid().at(2, 1, 2);
 		BlockPos[] blocks = {
@@ -336,15 +332,16 @@ public class PonderScenes {
 		scene.world().showSection(util.select().position(burner), Direction.DOWN);
 		scene.idle(5);
 		scene.overlay().showText(50)
-		.attachKeyFrame()
-		.text("Giving the Blaze Burner a Straw")
-		.placeNearTarget()
-		.pointAt(util.vector().topOf(burner));
+			.attachKeyFrame()
+			.text("Giving the Blaze Burner a Straw")
+			.placeNearTarget()
+			.pointAt(util.vector().topOf(burner));
 		scene.idle(10);
 		scene.overlay().showControls(util.vector().topOf(burner), Pointing.DOWN, 40)
 				.rightClick()
-				.withItem(new ItemStack(CAItems.STRAW.get()));
-		scene.world().setBlock(burner, CABlocks.LIQUID_BLAZE_BURNER.getDefaultState().setValue(BlazeBurnerBlock.HEAT_LEVEL, BlazeBurnerBlock.HeatLevel.SMOULDERING), false);
+				.withItem(new ItemStack(CAItems.STRAW));
+		scene.world().setBlock(burner, CABlocks.LIQUID_BLAZE_BURNER.defaultBlockState()
+			.setValue(BlazeBurnerBlock.HEAT_LEVEL, BlazeBurnerBlock.HeatLevel.SMOULDERING), false);
 		scene.idle(60);
 		scene.overlay().showText(50)
 			.attachKeyFrame()
@@ -354,7 +351,7 @@ public class PonderScenes {
 		scene.idle(10);
 		scene.overlay().showControls(util.vector().topOf(burner), Pointing.DOWN, 40)
 				.rightClick()
-				.withItem(new ItemStack(CAFluids.BIOETHANOL.getBucket().get()));
+				.withItem(new ItemStack(CAFluids.BIOETHANOL_ENTRY.bucket));
 		scene.idle(60);
 		scene.overlay().showText(50)
 			.text("- or by pipes.")
@@ -362,14 +359,13 @@ public class PonderScenes {
 			.pointAt(util.vector().topOf(burner));
 		scene.idle(10);
 
-		for (int i = 0; i < blocks.length; i++) {
+		for (BlockPos block : blocks) {
 			scene.idle(5);
-			scene.world().showSection(util.select().position(blocks[i]), Direction.EAST);
+			scene.world().showSection(util.select().position(block), Direction.EAST);
 		}
 		scene.idle(20);
 		scene.markAsFinished();
 	}
-
 
 	public static void modularAccumulator(SceneBuilder builder, SceneBuildingUtil util) {
 		CreateSceneBuilder scene = new CreateSceneBuilder(builder);
@@ -381,8 +377,7 @@ public class PonderScenes {
 		BlockPos cIn = new BlockPos(1, 3, 1);
 		BlockPos cOut = new BlockPos(2, 3, 2);
 
-		var accumulator = util.select().fromTo(1, 1, 1, 2, 2, 2);
-		//scene.world().showSection(accumulator, Direction.EAST);
+		Selection accumulator = util.select().fromTo(1, 1, 1, 2, 2, 2);
 		ElementLink<WorldSectionElement> accumulatorLink = scene.world().showIndependentSection(accumulator, Direction.EAST);
 		scene.idle(15);
 		scene.overlay().showOutline(PonderPalette.GREEN, accumulatorLink, accumulator, 50);
@@ -403,8 +398,10 @@ public class PonderScenes {
 
 		scene.idle(15);
 		scene.overlay().showControls(util.vector().centerOf(cIn), Pointing.DOWN, 0).rightClick()
-				.withItem(new ItemStack(AllItems.WRENCH.get()));
-		scene.world().setBlock(cIn, CABlocks.SMALL_CONNECTOR.getDefaultState().setValue(AbstractConnectorBlock.FACING, Direction.DOWN).setValue(AbstractConnectorBlock.MODE, ConnectorMode.Push), false);
+				.withItem(new ItemStack(AllItems.WRENCH));
+		scene.world().setBlock(cIn, CABlocks.SMALL_CONNECTOR.defaultBlockState()
+			.setValue(AbstractConnectorBlock.FACING, Direction.DOWN)
+			.setValue(AbstractConnectorBlock.MODE, ConnectorMode.Push), false);
 		scene.overlay().showText(50)
 			.attachKeyFrame()
 			.text("Configure an input connector,")
@@ -414,8 +411,10 @@ public class PonderScenes {
 		scene.idle(60);
 		scene.overlay().showControls(util.vector().centerOf(cOut), Pointing.DOWN, 40)
 				.rightClick()
-				.withItem(new ItemStack(AllItems.WRENCH.get()));
-		scene.world().setBlock(cOut, CABlocks.SMALL_CONNECTOR.getDefaultState().setValue(AbstractConnectorBlock.FACING, Direction.DOWN).setValue(AbstractConnectorBlock.MODE, ConnectorMode.Pull), false);
+				.withItem(new ItemStack(AllItems.WRENCH));
+		scene.world().setBlock(cOut, CABlocks.SMALL_CONNECTOR.defaultBlockState()
+			.setValue(AbstractConnectorBlock.FACING, Direction.DOWN)
+			.setValue(AbstractConnectorBlock.MODE, ConnectorMode.Pull), false);
 		scene.overlay().showText(50)
 			.text("and an output connector.")
 			.placeNearTarget()
@@ -423,9 +422,9 @@ public class PonderScenes {
 		scene.idle(60);
 
 		scene.overlay().showText(110)
-		.text("Compat")
-		.placeNearTarget()
-		.pointAt(util.vector().centerOf(cOut));
+			.text("Compat")
+			.placeNearTarget()
+			.pointAt(util.vector().centerOf(cOut));
 		scene.idle(120);
 		scene.markAsFinished();
 	}
@@ -493,7 +492,7 @@ public class PonderScenes {
 
 		scene.world().modifyBlockEntityNBT(both, peiClass, nbt -> {
 			nbt.putFloat("Distance", 1);
-			nbt.putFloat("Timer", 40);
+			nbt.putFloat("Timer", 12);
 		});
 
 		scene.idle(20);
@@ -521,7 +520,7 @@ public class PonderScenes {
 			.placeNearTarget()
 			.pointAt(util.vector().centerOf(pei2))
 			.text("After no items have been exchanged for a while, the contraption will continue on its way");
-		scene.world().modifyBlockEntityNBT(both, peiClass, nbt -> nbt.putFloat("Timer", 9));
+		scene.world().modifyBlockEntityNBT(both, peiClass, nbt -> nbt.putFloat("Timer", 2));
 
 		scene.idle(15);
 		scene.world().rotateBearing(bearing, 270, 120);
@@ -539,7 +538,7 @@ public class PonderScenes {
 		Selection peis = util.select().fromTo(1, 1, 3, 1, 3, 3);
 		scene.world().modifyBlockEntityNBT(peis, peiClass, nbt -> {
 			nbt.putFloat("Distance", 1);
-			nbt.putFloat("Timer", 40);
+			nbt.putFloat("Timer", 12);
 		});
 
 		scene.world().showSection(util.select().layer(0), Direction.UP);
@@ -552,7 +551,7 @@ public class PonderScenes {
 		BlockPos bearing = util.grid().at(3, 1, 3);
 		scene.world().configureCenterOfRotation(contraption, util.vector().topOf(bearing));
 		scene.idle(20);
-		scene.world().modifyBlockEntityNBT(peis, peiClass, nbt -> nbt.putFloat("Timer", 9));
+		scene.world().modifyBlockEntityNBT(peis, peiClass, nbt -> nbt.putFloat("Timer", 2));
 		scene.idle(20);
 		scene.world().rotateBearing(bearing, 360 * 3 + 270, 240 + 60);
 		scene.world().rotateSection(contraption, 0, 360 * 3 + 270, 0, 240 + 60);

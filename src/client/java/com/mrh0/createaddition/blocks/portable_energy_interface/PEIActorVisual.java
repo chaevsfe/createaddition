@@ -1,12 +1,11 @@
 package com.mrh0.createaddition.blocks.portable_energy_interface;
 
-import com.simibubi.create.content.contraptions.actors.psi.PortableStorageInterfaceMovement;
-import com.simibubi.create.content.contraptions.behaviour.MovementContext;
-import com.simibubi.create.content.contraptions.render.ActorVisual;
-import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
-import dev.engine_room.flywheel.api.visualization.VisualizationContext;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.animation.LerpedFloat;
+import com.zurrtum.create.catnip.animation.LerpedFloat;
+import com.zurrtum.create.client.catnip.animation.AnimationTickHolder;
+import com.zurrtum.create.client.content.contraptions.render.ActorVisual;
+import com.zurrtum.create.client.flywheel.api.visualization.VisualizationContext;
+import com.zurrtum.create.client.foundation.virtualWorld.VirtualRenderWorld;
+import com.zurrtum.create.content.contraptions.behaviour.MovementContext;
 
 public class PEIActorVisual extends ActorVisual {
 
@@ -23,7 +22,7 @@ public class PEIActorVisual extends ActorVisual {
 
 	@Override
 	public void beginFrame() {
-		LerpedFloat lf = PortableStorageInterfaceMovement.getAnimation(context);
+		LerpedFloat lf = PortableEnergyInterfaceMovement.getAnimation(context);
 		instance.tick(lf.settled());
 		instance.beginFrame(lf.getValue(AnimationTickHolder.getPartialTicks()));
 	}

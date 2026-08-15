@@ -1,42 +1,56 @@
 package com.mrh0.createaddition.event;
 
 import com.mrh0.createaddition.CreateAddition;
-
 import com.mrh0.createaddition.item.WireSpool;
+import com.mrh0.createaddition.network.ObservePacketPayload;
 import com.mrh0.createaddition.sound.CASoundScapes;
-import com.mrh0.createaddition.util.ClientMinecraftWrapper;
 import com.mrh0.createaddition.util.Util;
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 
-@EventBusSubscriber(modid = CreateAddition.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.world.item.ItemStack;
+
 public class ClientEventHandler {
 
-    public static boolean clientRenderHeldWire = false;
+	public static boolean clientRenderHeldWire = false;
 
-    @SubscribeEvent
-    public static void playerRendererEvent(ClientTickEvent.Post evt) {
-        if(ClientMinecraftWrapper.getPlayer() == null) return;
-        ItemStack stack = ClientMinecraftWrapper.getPlayer().getInventory().getSelected();
-        if(stack.isEmpty()) return;
-        if(WireSpool.isRemover(stack.getItem())) return;
-        clientRenderHeldWire = Util.getWireNodeOfSpools(stack) != null;
-    }
+	public static void register() {
+		ClientTickEvents.END_CLIENT_TICK.register(ClientEventHandler::onClientTickEnd);
+		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+			@Override
+			public Identifier getFabricId() {
+				return CreateAddition.asResource("client_resource_reload");
+			}
 
-    @SubscribeEvent
-    public static void tickSoundscapes(ClientTickEvent.Post event) {
-        CASoundScapes.tick();
-    }
+			@Override
+			public void onResourceManagerReload(ResourceManager resourceManager) {
+				CASoundScapes.invalidateAll();
+			}
+		});
+	}
 
-    @EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
-    public static class ModBusEvents {
-        @SubscribeEvent
-        public static void registerReloadListener(RegisterClientReloadListenersEvent event) {
-            event.registerReloadListener(new ResourceReloadListener());
-        }
-    }
+	private static void onClientTickEnd(Minecraft client) {
+		ObservePacketPayload.tick();
+		CASoundScapes.tick();
+		updateHeldWire(client.player);
+	}
+
+	private static void updateHeldWire(LocalPlayer player) {
+		if (player == null) {
+			clientRenderHeldWire = false;
+			return;
+		}
+		ItemStack stack = player.getInventory().getSelectedItem();
+		if (stack.isEmpty() || WireSpool.isRemover(stack.getItem())) {
+			clientRenderHeldWire = false;
+			return;
+		}
+		clientRenderHeldWire = Util.getWireNodeOfSpools(stack) != null;
+	}
 }

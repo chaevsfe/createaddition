@@ -1,207 +1,259 @@
 package com.mrh0.createaddition.blocks.liquid_blaze_burner;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mrh0.createaddition.CreateAddition;
-import com.mrh0.createaddition.compat.sable.SableUtil;
+import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerRenderer.LiquidBlazeBurnerRenderState;
 import com.mrh0.createaddition.index.CAPartials;
-import com.simibubi.create.AllPartialModels;
-import com.simibubi.create.AllSpriteShifts;
-import com.simibubi.create.content.contraptions.behaviour.MovementContext;
-import com.simibubi.create.content.contraptions.render.ContraptionMatrices;
-import com.simibubi.create.content.processing.burner.BlazeBurnerBlock;
-import com.simibubi.create.foundation.blockEntity.renderer.SafeBlockEntityRenderer;
-import com.simibubi.create.foundation.virtualWorld.VirtualRenderWorld;
-import dev.engine_room.flywheel.lib.model.baked.PartialModel;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.animation.LerpedFloat;
-import net.createmod.catnip.math.AngleHelper;
-import net.createmod.catnip.render.CachedBuffers;
-import net.createmod.catnip.render.SpriteShiftEntry;
-import net.createmod.catnip.render.SuperByteBuffer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import com.zurrtum.create.catnip.animation.LerpedFloat.Chaser;
+import com.zurrtum.create.catnip.math.AngleHelper;
+import com.zurrtum.create.client.AllPartialModels;
+import com.zurrtum.create.client.AllSpriteShifts;
+import com.zurrtum.create.client.catnip.animation.AnimationTickHolder;
+import com.zurrtum.create.client.catnip.render.CachedBuffers;
+import com.zurrtum.create.client.catnip.render.SpriteShiftEntry;
+import com.zurrtum.create.client.catnip.render.SuperByteBuffer;
+import com.zurrtum.create.client.catnip.render.SuperByteBufferRenderState;
+import com.zurrtum.create.client.content.kinetics.base.KineticBlockEntityRenderer;
+import com.zurrtum.create.client.flywheel.lib.model.baked.PartialModel;
+import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
+import com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HeatLevel;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer.CrumblingOverlay;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.CardinalLighting;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
+import org.joml.Quaternionf;
 
-import javax.annotation.Nullable;
+public class LiquidBlazeBurnerRenderer implements BlockEntityRenderer<LiquidBlazeBurnerBlockEntity, LiquidBlazeBurnerRenderState> {
+    public LiquidBlazeBurnerRenderer(Context context) {
+    }
 
-public class LiquidBlazeBurnerRenderer extends SafeBlockEntityRenderer<LiquidBlazeBurnerBlockEntity> {
+    @Override
+    public LiquidBlazeBurnerRenderState createRenderState() {
+        return new LiquidBlazeBurnerRenderState();
+    }
 
-	public LiquidBlazeBurnerRenderer(BlockEntityRendererProvider.Context context) {}
+    @Override
+    public void extractRenderState(
+        LiquidBlazeBurnerBlockEntity be,
+        LiquidBlazeBurnerRenderState state,
+        float tickProgress,
+        Vec3 cameraPos,
+        @Nullable CrumblingOverlay crumblingOverlay
+    ) {
+        state.data = null;
+        HeatLevel heatLevel = be.getHeatLevelForRender();
+        if (heatLevel == HeatLevel.NONE) {
+            return;
+        }
+        BlockEntityRenderState.extractBase(be, state, crumblingOverlay);
+        state.blockState = be.getBlockState();
+        state.data = getLiquidBlazeBurnerRenderData(
+            be.getLevel(),
+            state.blockState,
+            heatLevel,
+            be.headAnimation.getValue(tickProgress) * 0.175f,
+            AngleHelper.rad(be.headAngle.getValue(tickProgress)),
+            heatLevel.isAtLeast(HeatLevel.FADING),
+            be.goggles,
+            be.hashCode()
+        );
+    }
 
-	@Override
-	protected void renderSafe(LiquidBlazeBurnerBlockEntity be, float partialTicks, PoseStack ms, MultiBufferSource bufferSource,
-							  int light, int overlay) {
-		if (CreateAddition.SABLE_ACTIVE
-				&& SableUtil.isInSubLevel(be.getLevel(), be.getBlockPos())) {
-			LiquidBlazeBurnerSubLevelRenderer.render(be, partialTicks, ms, bufferSource);
-			return;
-		}
+    @Override
+    public void submit(
+        LiquidBlazeBurnerRenderState state,
+        PoseStack matrices,
+        SubmitNodeCollector queue,
+        CameraRenderState cameraState
+    ) {
+        if (state.data != null) {
+            state.data.submit(matrices, queue);
+        }
+    }
 
-		BlazeBurnerBlock.HeatLevel heatLevel = be.getHeatLevelFromBlock();
-		if (heatLevel == BlazeBurnerBlock.HeatLevel.NONE)
-			return;
+    public static PartialModel getBlazeModel(HeatLevel heatLevel, boolean blockAbove) {
+        if (heatLevel.isAtLeast(HeatLevel.SEETHING)) {
+            return blockAbove ? AllPartialModels.BLAZE_SUPER_ACTIVE : AllPartialModels.BLAZE_SUPER;
+        }
+        if (heatLevel.isAtLeast(HeatLevel.FADING)) {
+            return blockAbove && heatLevel.isAtLeast(HeatLevel.KINDLED) ? AllPartialModels.BLAZE_ACTIVE :
+                AllPartialModels.BLAZE_IDLE;
+        }
+        return AllPartialModels.BLAZE_INERT;
+    }
 
-		Level level = be.getLevel();
-		BlockState blockState = be.getBlockState();
-		float animation = be.headAnimation.getValue(partialTicks) * .175f;
-		float horizontalAngle = AngleHelper.rad(be.headAngle.getValue(partialTicks));
-		boolean canDrawFlame = heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.FADING);
-		boolean drawGoggles = be.goggles;
-		int hashCode = be.hashCode();
+    public static void tickAnimation(LiquidBlazeBurnerBlockEntity be) {
+        if (be.getHeatLevelFromBlock().isAtLeast(HeatLevel.FADING) && be.isValidBlockAbove()) {
+            be.headAngle.chase(
+                (AngleHelper.horizontalAngle(be.getBlockState()
+                    .getValueOrElse(LiquidBlazeBurnerBlock.FACING, Direction.SOUTH)) + 180) % 360,
+                0.125f,
+                Chaser.EXP
+            );
+            be.headAnimation.chase(1, 0.25f, Chaser.exp(0.25f));
+        } else {
+            float target = 0;
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null && !player.isInvisible()) {
+                double x;
+                double z;
+                if (be.isVirtual()) {
+                    x = -4;
+                    z = -10;
+                } else {
+                    x = player.getX();
+                    z = player.getZ();
+                }
+                double dx = x - (be.getBlockPos().getX() + 0.5);
+                double dz = z - (be.getBlockPos().getZ() + 0.5);
+                target = AngleHelper.deg(-Mth.atan2(dz, dx)) - 90;
+            }
+            target = be.headAngle.getValue() + AngleHelper.getShortestAngleDiff(be.headAngle.getValue(), target);
+            be.headAngle.chase(target, 0.25f, Chaser.exp(5));
+            be.headAnimation.chase(0, 0.25f, Chaser.exp(0.25f));
+        }
+        be.headAngle.tickChaser();
+        be.headAnimation.tickChaser();
+    }
 
-		renderShared(ms, null, bufferSource,
-			level, blockState, heatLevel, animation, horizontalAngle,
-			canDrawFlame, drawGoggles, hashCode);
-	}
+    public static LiquidBlazeBurnerRenderData getLiquidBlazeBurnerRenderData(
+        @Nullable Level level,
+        BlockState blockState,
+        HeatLevel heatLevel,
+        float animation,
+        float horizontalAngle,
+        boolean canDrawFlame,
+        boolean drawGoggles,
+        int hashCode
+    ) {
+        CardinalLighting cardinalLighting = SmartBlockEntityRenderer.getCardinalLighting(level);
+        LiquidBlazeBurnerRenderData data = new LiquidBlazeBurnerRenderData();
+        boolean blockAbove = animation > 0.125f;
+        float time = AnimationTickHolder.getRenderTime(level);
+        float renderTick = time / 16.0f + hashCode % 13;
+        float offset = Mth.sin(renderTick % Mth.TWO_PI) / (heatLevel.isAtLeast(HeatLevel.FADING) ? 64 : 16);
+        PartialModel blazeModel = getBlazeModel(heatLevel, blockAbove);
+        data.headY = offset - animation * 0.75f;
+        data.horizontalAngle = KineticBlockEntityRenderer.getUpRadiansRotateAngle(horizontalAngle);
+        data.blaze = CachedBuffers.partial(blazeModel, blockState).cardinalLighting(cardinalLighting)
+            .light(LightCoordsUtil.FULL_BRIGHT).extractRenderState();
+        if (drawGoggles) {
+            PartialModel gogglesModel =
+                blazeModel == AllPartialModels.BLAZE_INERT ? AllPartialModels.BLAZE_GOGGLES_SMALL :
+                    AllPartialModels.BLAZE_GOGGLES;
+            data.goggles = CachedBuffers.partial(gogglesModel, blockState).cardinalLighting(cardinalLighting)
+                .light(LightCoordsUtil.FULL_BRIGHT).extractRenderState();
+        }
+        data.hat = CachedBuffers.partial(CAPartials.LIQUID_HAT, blockState).cardinalLighting(cardinalLighting)
+            .light(LightCoordsUtil.FULL_BRIGHT).extractRenderState();
+        data.hatScale = blazeModel == AllPartialModels.BLAZE_INERT;
+        data.hatAngle = new Quaternionf().setAngleAxis(horizontalAngle + Mth.PI, 0, 1, 0);
+        if (heatLevel.isAtLeast(HeatLevel.FADING)) {
+            if (heatLevel == HeatLevel.SEETHING) {
+                data.rods = CachedBuffers.partial(AllPartialModels.BLAZE_BURNER_SUPER_RODS, blockState)
+                    .cardinalLighting(cardinalLighting).light(LightCoordsUtil.FULL_BRIGHT).extractRenderState();
+                data.rods2 = CachedBuffers.partial(AllPartialModels.BLAZE_BURNER_SUPER_RODS_2, blockState)
+                    .cardinalLighting(cardinalLighting).light(LightCoordsUtil.FULL_BRIGHT).extractRenderState();
+            } else {
+                data.rods = CachedBuffers.partial(AllPartialModels.BLAZE_BURNER_RODS, blockState)
+                    .cardinalLighting(cardinalLighting).light(LightCoordsUtil.FULL_BRIGHT).extractRenderState();
+                data.rods2 = CachedBuffers.partial(AllPartialModels.BLAZE_BURNER_RODS_2, blockState)
+                    .cardinalLighting(cardinalLighting).light(LightCoordsUtil.FULL_BRIGHT).extractRenderState();
+            }
+            data.rodsY = Mth.sin((float) ((renderTick + Math.PI) % Mth.TWO_PI)) / 64 + animation + 0.125f;
+            data.rods2Y = Mth.sin((renderTick + Mth.HALF_PI) % Mth.TWO_PI) / 64 + animation - 0.1875f;
+        }
+        if (canDrawFlame && blockAbove) {
+            SpriteShiftEntry spriteShift =
+                heatLevel == HeatLevel.SEETHING ? AllSpriteShifts.SUPER_BURNER_FLAME : AllSpriteShifts.BURNER_FLAME;
+            TextureAtlasSprite target = spriteShift.getTarget();
+            float spriteWidth = target.getU1() - target.getU0();
+            float spriteHeight = target.getV1() - target.getV0();
+            float speed = 0.03125f + 0.015625f * heatLevel.ordinal();
+            double vScroll = speed * time;
+            vScroll = vScroll - Math.floor(vScroll);
+            vScroll = vScroll * spriteHeight / 2;
+            double uScroll = speed * time / 2;
+            uScroll = uScroll - Math.floor(uScroll);
+            uScroll = uScroll * spriteWidth / 2;
+            data.flame = CachedBuffers.partial(AllPartialModels.BLAZE_BURNER_FLAME, blockState)
+                .cardinalLighting(cardinalLighting).light(LightCoordsUtil.FULL_BRIGHT)
+                .shiftUVScrolling(spriteShift, (float) uScroll, (float) vScroll).extractRenderState();
+        }
+        return data;
+    }
 
-	public static void renderInContraption(MovementContext context, VirtualRenderWorld renderWorld,
-										   ContraptionMatrices matrices, MultiBufferSource bufferSource, LerpedFloat headAngle, boolean conductor) {
-		BlockState state = context.state;
-		BlazeBurnerBlock.HeatLevel heatLevel = BlazeBurnerBlock.getHeatLevelOf(state);
-		if (heatLevel == BlazeBurnerBlock.HeatLevel.NONE)
-			return;
+    public static class LiquidBlazeBurnerRenderState extends BlockEntityRenderState {
+        public @UnknownNullability BlockState blockState;
+        public @Nullable LiquidBlazeBurnerRenderData data;
+    }
 
-		if (!heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.FADING)) {
-			heatLevel = BlazeBurnerBlock.HeatLevel.FADING;
-		}
+    public static class LiquidBlazeBurnerRenderData {
+        public SuperByteBufferRenderState blaze;
+        public @Nullable SuperByteBufferRenderState goggles;
+        public SuperByteBufferRenderState hat;
+        public @Nullable SuperByteBufferRenderState rods;
+        public @Nullable SuperByteBufferRenderState rods2;
+        public @Nullable SuperByteBufferRenderState flame;
+        public float headY;
+        public @Nullable Quaternionf horizontalAngle;
+        public boolean hatScale;
+        public @Nullable Quaternionf hatAngle;
+        public float rodsY;
+        public float rods2Y;
 
-		Level level = context.world;
-		float horizontalAngle = AngleHelper.rad(headAngle.getValue(AnimationTickHolder.getPartialTicks(level)));
-		boolean drawGoggles = context.blockEntityData.contains("Goggles");
-		//boolean drawHat = conductor || context.tileData.contains("TrainHat");
-		int hashCode = context.hashCode();
-
-		renderShared(matrices.getViewProjection(), matrices.getModel(), bufferSource,
-			level, state, heatLevel, 0, horizontalAngle,
-			false, drawGoggles, hashCode);
-	}
-
-	static void renderShared(PoseStack ms, @Nullable PoseStack modelTransform, MultiBufferSource bufferSource,
-									 Level level, BlockState blockState, BlazeBurnerBlock.HeatLevel heatLevel, float animation, float horizontalAngle,
-									 boolean canDrawFlame, boolean drawGoggles, int hashCode) {
-
-		boolean blockAbove = animation > 0.125f;
-		float time = AnimationTickHolder.getRenderTime(level);
-		float renderTick = time + (hashCode % 13) * 16f;
-		float offsetMult = heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.FADING) ? 64 : 16;
-		float offset = Mth.sin((float) ((renderTick / 16f) % (2 * Math.PI))) / offsetMult;
-		float offset1 = Mth.sin((float) ((renderTick / 16f + Math.PI) % (2 * Math.PI))) / offsetMult;
-		float offset2 = Mth.sin((float) ((renderTick / 16f + Math.PI / 2) % (2 * Math.PI))) / offsetMult;
-		float headY = offset - (animation * .75f);
-
-		ms.pushPose();
-
-		var blazeModel = getBlazeModel(heatLevel, blockAbove);
-
-		SuperByteBuffer blazeBuffer = CachedBuffers.partial(blazeModel, blockState);
-		if (modelTransform != null)
-			blazeBuffer.transform(modelTransform);
-		blazeBuffer.translate(0, headY, 0);
-		draw(blazeBuffer, horizontalAngle, ms, bufferSource.getBuffer(RenderType.solid()));
-
-		if (drawGoggles) {
-			PartialModel gogglesModel = blazeModel == AllPartialModels.BLAZE_INERT
-					? AllPartialModels.BLAZE_GOGGLES_SMALL : AllPartialModels.BLAZE_GOGGLES;
-
-			SuperByteBuffer gogglesBuffer = CachedBuffers.partial(gogglesModel, blockState);
-			if (modelTransform != null)
-				gogglesBuffer.transform(modelTransform);
-			gogglesBuffer.translate(0, headY + 8 / 16f, 0);
-			draw(gogglesBuffer, horizontalAngle, ms, bufferSource.getBuffer(RenderType.solid()));
-		}
-
-		SuperByteBuffer hatBuffer = CachedBuffers.partial(CAPartials.LIQUID_HAT, blockState);
-		if (modelTransform != null)
-			hatBuffer.transform(modelTransform);
-		hatBuffer.translate(0, headY, 0);
-		if (blazeModel == AllPartialModels.BLAZE_INERT) {
-			hatBuffer.translateY(0.5f)
-					.center()
-					.scale(0.75f)
-					.uncenter();
-		} else {
-			hatBuffer.translateY(0.75f);
-		}
-		hatBuffer
-				.rotateCentered(horizontalAngle + Mth.PI, Direction.UP)
-				.translate(0.5f, 0, 0.5f)
-				.light(LightTexture.FULL_BRIGHT)
-				.renderInto(ms, bufferSource.getBuffer(RenderType.cutoutMipped()));
-
-		if (heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.FADING)) {
-			PartialModel rodsModel = heatLevel == BlazeBurnerBlock.HeatLevel.SEETHING ? AllPartialModels.BLAZE_BURNER_SUPER_RODS
-					: AllPartialModels.BLAZE_BURNER_RODS;
-			PartialModel rodsModel2 = heatLevel == BlazeBurnerBlock.HeatLevel.SEETHING ? AllPartialModels.BLAZE_BURNER_SUPER_RODS_2
-					: AllPartialModels.BLAZE_BURNER_RODS_2;
-
-			SuperByteBuffer rodsBuffer = CachedBuffers.partial(rodsModel, blockState);
-			if (modelTransform != null)
-				rodsBuffer.transform(modelTransform);
-			rodsBuffer.translate(0, offset1 + animation + .125f, 0)
-					.light(LightTexture.FULL_BRIGHT)
-					.renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
-
-			SuperByteBuffer rodsBuffer2 = CachedBuffers.partial(rodsModel2, blockState);
-			if (modelTransform != null)
-				rodsBuffer2.transform(modelTransform);
-			rodsBuffer2.translate(0, offset2 + animation - 3 / 16f, 0)
-					.light(LightTexture.FULL_BRIGHT)
-					.renderInto(ms, bufferSource.getBuffer(RenderType.solid()));
-		}
-
-		if (canDrawFlame && blockAbove) {
-			SpriteShiftEntry spriteShift =
-				heatLevel == BlazeBurnerBlock.HeatLevel.SEETHING ? AllSpriteShifts.SUPER_BURNER_FLAME : AllSpriteShifts.BURNER_FLAME;
-
-			float spriteWidth = spriteShift.getTarget()
-				.getU1()
-				- spriteShift.getTarget()
-					.getU0();
-
-			float spriteHeight = spriteShift.getTarget()
-				.getV1()
-				- spriteShift.getTarget()
-					.getV0();
-
-			float speed = 1 / 32f + 1 / 64f * heatLevel.ordinal();
-
-			double vScroll = speed * time;
-			vScroll = vScroll - Math.floor(vScroll);
-			vScroll = vScroll * spriteHeight / 2;
-
-			double uScroll = speed * time / 2;
-			uScroll = uScroll - Math.floor(uScroll);
-			uScroll = uScroll * spriteWidth / 2;
-
-			SuperByteBuffer flameBuffer = CachedBuffers.partial(AllPartialModels.BLAZE_BURNER_FLAME, blockState);
-			if (modelTransform != null)
-				flameBuffer.transform(modelTransform);
-			flameBuffer.shiftUVScrolling(spriteShift, (float) uScroll, (float) vScroll);
-			draw(flameBuffer, horizontalAngle, ms, bufferSource.getBuffer(RenderType.cutoutMipped()));
-		}
-		ms.popPose();
-	}
-
-	public static PartialModel getBlazeModel(BlazeBurnerBlock.HeatLevel heatLevel, boolean blockAbove) {
-		if (heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.SEETHING)) {
-			return blockAbove ? AllPartialModels.BLAZE_SUPER_ACTIVE : AllPartialModels.BLAZE_SUPER;
-		} else if (heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.FADING)) {
-			return blockAbove && heatLevel.isAtLeast(BlazeBurnerBlock.HeatLevel.KINDLED) ? AllPartialModels.BLAZE_ACTIVE
-					: AllPartialModels.BLAZE_IDLE;
-		} else {
-			return AllPartialModels.BLAZE_INERT;
-		}
-	}
-
-	private static void draw(SuperByteBuffer buffer, float horizontalAngle, PoseStack ms, VertexConsumer vc) {
-		buffer.rotateCentered(horizontalAngle, Direction.UP)
-			.light(LightTexture.FULL_BRIGHT)
-			.renderInto(ms, vc);
-	}
+        public void submit(PoseStack matrices, SubmitNodeCollector queue) {
+            matrices.pushPose();
+            if (horizontalAngle != null) {
+                matrices.rotateAround(horizontalAngle, 0.5f, 0.5f, 0.5f);
+            }
+            if (flame != null) {
+                flame.submit(matrices, queue);
+            }
+            matrices.translate(0, headY, 0);
+            blaze.submit(matrices, queue);
+            if (goggles != null) {
+                matrices.translate(0, 0.5f, 0);
+                goggles.submit(matrices, queue);
+            }
+            matrices.popPose();
+            matrices.pushPose();
+            matrices.translate(0, headY, 0);
+            if (hatScale) {
+                matrices.translate(0, 0.5f, 0);
+                SuperByteBuffer.scaleAround(matrices.last(), 0.75f, 0.5f, 0.5f, 0.5f);
+            } else {
+                matrices.translate(0, 0.75f, 0);
+            }
+            if (hatAngle != null) {
+                matrices.rotateAround(hatAngle, 0.5f, 0.5f, 0.5f);
+            }
+            matrices.translate(0.5f, 0, 0.5f);
+            hat.submit(matrices, queue);
+            matrices.popPose();
+            if (rods != null && rods2 != null) {
+                matrices.pushPose();
+                matrices.translate(0, rodsY, 0);
+                rods.submit(matrices, queue);
+                matrices.popPose();
+                matrices.pushPose();
+                matrices.translate(0, rods2Y, 0);
+                rods2.submit(matrices, queue);
+                matrices.popPose();
+            }
+        }
+    }
 }

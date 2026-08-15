@@ -1,74 +1,65 @@
 package com.mrh0.createaddition.index;
 
 import com.mrh0.createaddition.CreateAddition;
-import com.mrh0.createaddition.ponder.DebugScenes;
 import com.mrh0.createaddition.ponder.PonderScenes;
-import com.simibubi.create.AllBlocks;
-
-import com.simibubi.create.AllItems;
-import com.simibubi.create.infrastructure.ponder.AllCreatePonderTags;
-import com.tterrag.registrate.util.entry.ItemProviderEntry;
-import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;
-import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
-import net.minecraft.resources.ResourceLocation;
-import com.tterrag.registrate.util.entry.RegistryEntry;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.data.loading.DatagenModLoader;
+import com.zurrtum.create.AllItems;
+import com.zurrtum.create.client.infrastructure.ponder.AllCreatePonderTags;
+import com.zurrtum.create.client.ponder.api.registration.PonderSceneRegistrationHelper;
+import com.zurrtum.create.client.ponder.api.registration.PonderTagRegistrationHelper;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 
 public class CAPonders {
-	public static final ResourceLocation ELECTRIC = CreateAddition.asResource("electric");
+	public static final Identifier ELECTRIC = CreateAddition.asResource("electric");
 
-	public static void registerTags(PonderTagRegistrationHelper<ResourceLocation> helper) {
-		PonderTagRegistrationHelper<RegistryEntry<?,?>> HELPER = helper.withKeyFunction(RegistryEntry::getId);
+	public static void registerTags(PonderTagRegistrationHelper<Identifier> helper) {
+		PonderTagRegistrationHelper<Item> HELPER = helper.withKeyFunction(BuiltInRegistries.ITEM::getKey);
 
 		HELPER.registerTag(ELECTRIC)
 				.addToIndex()
-				.item(CABlocks.ELECTRIC_MOTOR.get(), true, false)
+				.item(CABlocks.ELECTRIC_MOTOR, true, false)
 				.title("Electric Blocks")
 				.description("Components which use electricity")
 				.register();
 
 		HELPER.addToTag(AllCreatePonderTags.KINETIC_SOURCES)
-				.add(CABlocks.ELECTRIC_MOTOR);
+				.add(CABlocks.ELECTRIC_MOTOR.asItem());
 
 		HELPER.addToTag(AllCreatePonderTags.KINETIC_APPLIANCES)
-				.add(CABlocks.ROLLING_MILL)
-				.add(CABlocks.ALTERNATOR);
+				.add(CABlocks.ROLLING_MILL.asItem())
+				.add(CABlocks.ALTERNATOR.asItem());
 
 		HELPER.addToTag(AllCreatePonderTags.FLUIDS)
 				.add(CAItems.STRAW);
 
 		HELPER.addToTag(AllCreatePonderTags.CONTRAPTION_ACTOR)
-				.add(CABlocks.PORTABLE_ENERGY_INTERFACE);
+				.add(CABlocks.PORTABLE_ENERGY_INTERFACE.asItem());
 
 		HELPER.addToTag(ELECTRIC)
-				.add(CABlocks.ELECTRIC_MOTOR)
-				.add(CABlocks.ALTERNATOR)
-				.add(CABlocks.TESLA_COIL)
-				.add(CABlocks.MODULAR_ACCUMULATOR)
-				.add(CABlocks.PORTABLE_ENERGY_INTERFACE);
+				.add(CABlocks.ELECTRIC_MOTOR.asItem())
+				.add(CABlocks.ALTERNATOR.asItem())
+				.add(CABlocks.TESLA_COIL.asItem())
+				.add(CABlocks.MODULAR_ACCUMULATOR.asItem())
+				.add(CABlocks.PORTABLE_ENERGY_INTERFACE.asItem());
 	}
 
-	public static void registerScenes(PonderSceneRegistrationHelper<ResourceLocation> helper) {
-		PonderSceneRegistrationHelper<ItemProviderEntry<?,?>> HELPER = helper.withKeyFunction(RegistryEntry::getId);
+	public static void registerScenes(PonderSceneRegistrationHelper<Identifier> helper) {
+		PonderSceneRegistrationHelper<Item> HELPER = helper.withKeyFunction(BuiltInRegistries.ITEM::getKey);
 
-		HELPER.addStoryBoard(CABlocks.ELECTRIC_MOTOR, "electric_motor", PonderScenes::electricMotor, AllCreatePonderTags.KINETIC_SOURCES, ELECTRIC);
-		HELPER.addStoryBoard(CABlocks.ALTERNATOR, "alternator", PonderScenes::alternator, AllCreatePonderTags.KINETIC_APPLIANCES, ELECTRIC);
-		HELPER.addStoryBoard(CABlocks.ROLLING_MILL, "rolling_mill", PonderScenes::rollingMill, AllCreatePonderTags.KINETIC_APPLIANCES);
-		HELPER.addStoryBoard(CABlocks.ROLLING_MILL, "automate_rolling_mill", PonderScenes::automateRollingMill, AllCreatePonderTags.KINETIC_APPLIANCES);
-		HELPER.addStoryBoard(CABlocks.TESLA_COIL, "tesla_coil", PonderScenes::teslaCoil, ELECTRIC);
-		HELPER.addStoryBoard(CABlocks.TESLA_COIL, "tesla_coil_hurt", PonderScenes::teslaCoilHurt, ELECTRIC);
+		HELPER.addStoryBoard(CABlocks.ELECTRIC_MOTOR.asItem(), "electric_motor", PonderScenes::electricMotor, AllCreatePonderTags.KINETIC_SOURCES, ELECTRIC);
+		HELPER.addStoryBoard(CABlocks.ALTERNATOR.asItem(), "alternator", PonderScenes::alternator, AllCreatePonderTags.KINETIC_APPLIANCES, ELECTRIC);
+		HELPER.addStoryBoard(CABlocks.ROLLING_MILL.asItem(), "rolling_mill", PonderScenes::rollingMill, AllCreatePonderTags.KINETIC_APPLIANCES);
+		HELPER.addStoryBoard(CABlocks.ROLLING_MILL.asItem(), "automate_rolling_mill", PonderScenes::automateRollingMill, AllCreatePonderTags.KINETIC_APPLIANCES);
+		HELPER.addStoryBoard(CABlocks.TESLA_COIL.asItem(), "tesla_coil", PonderScenes::teslaCoil, ELECTRIC);
+		HELPER.addStoryBoard(CABlocks.TESLA_COIL.asItem(), "tesla_coil_hurt", PonderScenes::teslaCoilHurt, ELECTRIC);
 		HELPER.addStoryBoard(CAItems.STRAW, "liquid_blaze_burner", PonderScenes::liquidBlazeBurner, AllCreatePonderTags.FLUIDS);
-		HELPER.addStoryBoard(AllBlocks.BLAZE_BURNER, "liquid_blaze_burner", PonderScenes::liquidBlazeBurner, AllCreatePonderTags.LOGISTICS);
-		HELPER.addStoryBoard(CABlocks.MODULAR_ACCUMULATOR, "accumulator", PonderScenes::modularAccumulator, ELECTRIC);
-		HELPER.addStoryBoard(CABlocks.PORTABLE_ENERGY_INTERFACE, "pei_transfer", PonderScenes::peiTransfer, AllCreatePonderTags.CONTRAPTION_ACTOR, ELECTRIC);
-		HELPER.addStoryBoard(CABlocks.PORTABLE_ENERGY_INTERFACE, "pei_redstone", PonderScenes::peiRedstone, AllCreatePonderTags.CONTRAPTION_ACTOR, ELECTRIC);
-		
-		
-		if(CreateAddition.CC_ACTIVE)
-			HELPER.addStoryBoard(CABlocks.ELECTRIC_MOTOR, "cc_electric_motor", PonderScenes::ccMotor, AllCreatePonderTags.KINETIC_SOURCES, ELECTRIC);
+		HELPER.addStoryBoard(AllItems.BLAZE_BURNER, "liquid_blaze_burner", PonderScenes::liquidBlazeBurner, AllCreatePonderTags.LOGISTICS);
+		HELPER.addStoryBoard(CABlocks.MODULAR_ACCUMULATOR.asItem(), "accumulator", PonderScenes::modularAccumulator, ELECTRIC);
+		HELPER.addStoryBoard(CABlocks.PORTABLE_ENERGY_INTERFACE.asItem(), "pei_transfer", PonderScenes::peiTransfer, AllCreatePonderTags.CONTRAPTION_ACTOR, ELECTRIC);
+		HELPER.addStoryBoard(CABlocks.PORTABLE_ENERGY_INTERFACE.asItem(), "pei_redstone", PonderScenes::peiRedstone, AllCreatePonderTags.CONTRAPTION_ACTOR, ELECTRIC);
 
-		if(!FMLEnvironment.production && !DatagenModLoader.isRunningDataGen())
-			HELPER.addStoryBoard(AllItems.WRENCH,"debug/fluidtank", DebugScenes::controllerBEDebug);
+		if (CreateAddition.CC_ACTIVE)
+			HELPER.addStoryBoard(CABlocks.ELECTRIC_MOTOR.asItem(), "cc_electric_motor", PonderScenes::ccMotor, AllCreatePonderTags.KINETIC_SOURCES, ELECTRIC);
 	}
 }

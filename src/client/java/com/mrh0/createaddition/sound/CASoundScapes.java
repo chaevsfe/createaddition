@@ -1,16 +1,21 @@
 package com.mrh0.createaddition.sound;
 
-import com.mrh0.createaddition.CreateAddition;
+import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.index.CASounds;
-
-import com.simibubi.create.infrastructure.config.AllConfigs;
-import net.createmod.catnip.animation.AnimationTickHolder;
-import net.createmod.catnip.data.Pair;
+import com.zurrtum.create.catnip.data.Pair;
+import com.zurrtum.create.client.catnip.animation.AnimationTickHolder;
+import com.zurrtum.create.client.infrastructure.config.AllConfigs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 
 public class CASoundScapes {
@@ -36,19 +41,15 @@ public class CASoundScapes {
 	}
 
 	private static CASoundScape dynamo(float pitch, AmbienceGroup group) {
-		return new CASoundScape(pitch, group).continuous(CASounds.ELECTRIC_MOTOR_BUZZ.get(), 0.75f, 1f);
+		return new CASoundScape(pitch, group).continuous(CASounds.ELECTRIC_MOTOR_BUZZ, 0.75f, 1f);
 	}
 
-//	private static CASoundScape tesla(float pitch, AmbienceGroup group) {
-//		return new CASoundScape(pitch, group).continuous(CASounds.TESLA_COIL.get(), 1f, 1f);
-//	}
-
 	private static CASoundScape tesla(float pitch, AmbienceGroup group) {
-		return new CASoundScape(pitch, group).continuous(CASounds.ELECTRIC_CHARGE.get(), 1f, 1f);
+		return new CASoundScape(pitch, group).continuous(CASounds.ELECTRIC_CHARGE, 1f, 1f);
 	}
 
 	private static CASoundScape charge(float pitch, AmbienceGroup group) {
-		return new CASoundScape(pitch, group).continuous(CASounds.ELECTRIC_CHARGE.get(), 0.2f, 1f);
+		return new CASoundScape(pitch, group).continuous(CASounds.ELECTRIC_CHARGE, 0.2f, 1f);
 	}
 
 	public enum PitchGroup {
@@ -59,25 +60,17 @@ public class CASoundScapes {
 	private static final Map<Pair<AmbienceGroup, PitchGroup>, CASoundScape> activeSounds = new HashMap<>();
 
 	public static void play(AmbienceGroup group, BlockPos pos, float pitch) {
-		if (!AllConfigs.client().enableAmbientSounds.get()) return;
-		if(!CASounds.ELECTRIC_MOTOR_BUZZ.isBound() || !CASounds.ELECTRIC_CHARGE.isBound()) return;
-
+		if (!enabled()) return;
 		if (!outOfRange(pos)) addSound(group, pos, pitch);
 	}
 
 	public static void tick() {
-        if (Minecraft.getInstance().level == null) return;
-		activeSounds.values()
-			.forEach(CASoundScape::tick);
+		if (Minecraft.getInstance().level == null) return;
+		activeSounds.values().forEach(CASoundScape::tick);
 
 		if (AnimationTickHolder.getTicks() % UPDATE_INTERVAL != 0) return;
 
-		boolean disable = false;
-		try {
-			disable = !AllConfigs.client().enableAmbientSounds.get();
-		} catch (Exception error) {
-			CreateAddition.LOGGER.error("Suppressed crash in CASoundScapes");
-		}
+		boolean disable = !enabled();
 		for (Iterator<Map.Entry<Pair<AmbienceGroup, PitchGroup>, CASoundScape>> iterator = activeSounds.entrySet()
 			.iterator(); iterator.hasNext();) {
 
@@ -91,9 +84,13 @@ public class CASoundScapes {
 			}
 		}
 
-		counter.values()
-			.forEach(m -> m.values()
-				.forEach(Set::clear));
+		counter.values().forEach(m -> m.values().forEach(Set::clear));
+	}
+
+	private static boolean enabled() {
+		if (!AllConfigs.client().enableAmbientSounds.get()) return false;
+		CACommonConfig config = CACommonConfig.COMMON;
+		return config == null || config.AUDIO_ENABLED.get();
 	}
 
 	private static void addSound(AmbienceGroup group, BlockPos pos, float pitch) {
@@ -121,9 +118,9 @@ public class CASoundScapes {
 	}
 
 	protected static BlockPos getCameraPos() {
-		Entity renderViewEntity = Minecraft.getInstance().cameraEntity;
+		Entity renderViewEntity = Minecraft.getInstance().getCameraEntity();
 		if (renderViewEntity == null) return BlockPos.ZERO;
-        return renderViewEntity.blockPosition();
+		return renderViewEntity.blockPosition();
 	}
 
 	public static int getSoundCount(AmbienceGroup group, PitchGroup pitchGroup) {
