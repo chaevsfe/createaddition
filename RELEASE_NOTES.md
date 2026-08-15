@@ -8,4 +8,6 @@ Unofficial port of Create Crafts & Additions 1.7.0 to Fabric Minecraft 26.2, bui
 - Seed oil is now made in a basin by mixing rather than compacting
 - ComputerCraft peripherals work when CC:Tweaked is installed
 
-Requires Fabric API and Create Fly 6.0.9-1 on Java 25. Recipe-viewer (JEI) integration and in-game Ponder scenes are not in this beta. Client visuals are new in this build — please report any rendering issues.
+- In-game Ponder scenes are included
+
+Requires Fabric API and Create Fly 6.0.9-1 on Java 25. Recipe-viewer (JEI) integration is not in this beta. Client visuals are new in this build — please report any rendering issues.
