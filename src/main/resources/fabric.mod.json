@@ -5,13 +5,14 @@
   "name": "Create Crafts & Additions",
   "description": "Create Crafts & Additions port for Create Fly 26.2. Electrical age for Create: generate, store, and transfer Forge Energy with wires, motors, and machines.",
   "authors": [
-    "MRH0"
+    "MRH0",
+    "chaevsfe"
   ],
   "contributors": [
     "chaevsfe"
   ],
   "contact": {
-    "homepage": "https://github.com/chaevsfe/createaddition",
+    "homepage": "https://modrinth.com/mod/createaddition",
     "sources": "https://github.com/chaevsfe/createaddition",
     "issues": "https://github.com/chaevsfe/createaddition/issues"
   },
