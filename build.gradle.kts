@@ -22,6 +22,9 @@ repositories {
     maven("https://maven.squiddev.cc") {
         content { includeGroup("cc.tweaked") }
     }
+    maven("https://maven.blamejared.com/") {
+        content { includeGroup("mezz.jei") }
+    }
 }
 
 loom {
@@ -37,7 +40,6 @@ loom {
 sourceSets {
     main {
         java.exclude(
-            "com/mrh0/createaddition/compat/jei/**",
             "com/mrh0/createaddition/index/CAAdvancements.java",
         )
     }
@@ -52,6 +54,7 @@ dependencies {
 
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     compileOnly("cc.tweaked:cc-tweaked-26.2-fabric-api:1.120.2")
+    "clientCompileOnly"("mezz.jei:jei-26.2-fabric:30.24.0.165")
 }
 
 java {

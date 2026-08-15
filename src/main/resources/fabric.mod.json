@@ -29,6 +29,9 @@
     ],
     "client": [
       "com.mrh0.createaddition.CreateAdditionClient"
+    ],
+    "jei_mod_plugin": [
+      "com.mrh0.createaddition.compat.jei.CreateAdditionJEI"
     ]
   },
   "mixins": [
@@ -42,6 +45,7 @@
     "java": ">=25"
   },
   "suggests": {
-    "computercraft": "*"
+    "computercraft": "*",
+    "jei": "*"
   }
 }

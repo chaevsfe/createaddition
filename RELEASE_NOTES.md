@@ -7,7 +7,7 @@ Unofficial port of Create Crafts & Additions 1.7.0 to Fabric Minecraft 26.2, bui
 - Recipes and data updated for 26.2 item, tag and fluid changes
 - Seed oil is now made in a basin by mixing rather than compacting
 - ComputerCraft peripherals work when CC:Tweaked is installed
-
 - In-game Ponder scenes are included
+- JEI recipe-viewer support: rolling, charging and liquid burning categories, with the rolling mill shown in sequenced assembly
 
-Requires Fabric API and Create Fly 6.0.9-1 on Java 25. Recipe-viewer (JEI) integration is not in this beta. Client visuals are new in this build — please report any rendering issues.
+Requires Fabric API and Create Fly 6.0.9-1 on Java 25. Client visuals and JEI are new in this build — please report any rendering issues. The rolling mill's JEI icon no longer spins (Create Fly has no public API for animated recipe widgets yet).
