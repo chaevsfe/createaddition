@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_glass_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:glass_blocks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_iron_wire": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:wires/iron"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_small_connector": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:connector"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_small_light_connector": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:small_light_connector"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/small_light_connector"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_small_light_connector",
+      "has_iron_wire",
+      "has_glass_block",
+      "has_small_connector"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/small_light_connector"
+    ]
+  }
+}

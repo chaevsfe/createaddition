@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "createaddition:block/biomass_pellet_block/block"
+    }
+  }
+}

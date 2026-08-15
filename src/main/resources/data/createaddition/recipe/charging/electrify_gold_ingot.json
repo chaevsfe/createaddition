@@ -1,0 +1,13 @@
+{
+  "type": "createaddition:charging",
+  "energy": 36000,
+  "ingredients": [
+    "minecraft:gold_ingot"
+  ],
+  "max_charge_rate": 360,
+  "results": [
+    {
+      "id": "createaddition:electrum_ingot"
+    }
+  ]
+}

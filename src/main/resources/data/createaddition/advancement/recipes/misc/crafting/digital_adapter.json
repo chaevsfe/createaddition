@@ -1,0 +1,62 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_brass_plate": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:plates/brass"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_digital_adapter": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:digital_adapter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_redstone_torch": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:redstone_torch"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/digital_adapter"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_redstone_torch",
+      "has_brass_plate",
+      "has_digital_adapter"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/digital_adapter"
+    ]
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "computercraft"
+      ]
+    }
+  ]
+}

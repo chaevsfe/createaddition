@@ -1,0 +1,76 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_connector": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:connector"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_electorn_tube": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create:electron_tube"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_redstone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:dusts/redstone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_redstone_relay": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:redstone_relay"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_stone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:stones"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/redstone_relay"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_redstone",
+      "has_stone",
+      "has_connector",
+      "has_electorn_tube",
+      "has_redstone_relay"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/redstone_relay"
+    ]
+  }
+}

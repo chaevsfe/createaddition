@@ -1,0 +1,9 @@
+{
+  "values": [
+    "createaddition:electric_motor",
+    "createaddition:servo_motor",
+    "createaddition:alternator",
+    "createaddition:rolling_mill",
+    "createaddition:liquid_blaze_burner"
+  ]
+}

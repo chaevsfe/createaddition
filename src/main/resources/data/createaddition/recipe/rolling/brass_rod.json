@@ -1,0 +1,12 @@
+{
+  "type": "createaddition:rolling",
+  "ingredients": [
+    "#c:ingots/brass"
+  ],
+  "results": [
+    {
+      "count": 2,
+      "id": "createaddition:brass_rod"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "type": "create:mixing",
+  "heat_requirement": "heated",
+  "ingredients": [
+    "#c:ingots/gold",
+    "#c:ingots/silver"
+  ],
+  "results": [
+    {
+      "count": 2,
+      "id": "createaddition:electrum_ingot"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:tags_populated",
+      "registry": "minecraft:item",
+      "values": [
+        "c:ingots/silver"
+      ]
+    }
+  ]
+}

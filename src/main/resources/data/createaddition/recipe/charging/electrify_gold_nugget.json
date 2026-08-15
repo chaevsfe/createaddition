@@ -1,0 +1,13 @@
+{
+  "type": "createaddition:charging",
+  "energy": 4000,
+  "ingredients": [
+    "minecraft:gold_nugget"
+  ],
+  "max_charge_rate": 360,
+  "results": [
+    {
+      "id": "createaddition:electrum_nugget"
+    }
+  ]
+}

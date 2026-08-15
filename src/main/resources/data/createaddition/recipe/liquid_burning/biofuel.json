@@ -1,0 +1,10 @@
+{
+  "type": "createaddition:liquid_burning",
+  "fluid_ingredient": {
+    "type": "fluid_tag",
+    "amount": 81000,
+    "fluid_tag": "#c:biofuel"
+  },
+  "burn_time": 24000,
+  "superheated": true
+}

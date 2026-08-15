@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "#c:dusts/diamond"
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:diamond_grit_sandpaper"
+  }
+}

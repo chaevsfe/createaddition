@@ -1,0 +1,13 @@
+{
+  "type": "createaddition:charging",
+  "energy": 18000,
+  "ingredients": [
+    "createaddition:gold_rod"
+  ],
+  "max_charge_rate": 360,
+  "results": [
+    {
+      "id": "createaddition:electrum_rod"
+    }
+  ]
+}

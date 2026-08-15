@@ -1,0 +1,60 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "createaddition:block/honey_cake/cake"
+      },
+      "when": {
+        "bites": "0"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/honey_cake/slice1"
+      },
+      "when": {
+        "bites": "1"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/honey_cake/slice2"
+      },
+      "when": {
+        "bites": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/honey_cake/slice3"
+      },
+      "when": {
+        "bites": "3"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/honey_cake/slice4"
+      },
+      "when": {
+        "bites": "4"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/honey_cake/slice5"
+      },
+      "when": {
+        "bites": "5"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/honey_cake/slice6"
+      },
+      "when": {
+        "bites": "6"
+      }
+    }
+  ]
+}

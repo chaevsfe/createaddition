@@ -1,0 +1,9 @@
+{
+  "type": "create:pressing",
+  "results": [
+    {
+      "id": "createaddition:electrum_sheet"
+    }
+  ],
+  "ingredient": "#c:ingots/electrum"
+}

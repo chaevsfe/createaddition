@@ -1,0 +1,22 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": true,
+  "category": "misc",
+  "key": {
+    "A": "create:andesite_alloy",
+    "B": "#c:plates/brass",
+    "C": "createaddition:capacitor",
+    "R": "#c:rods/iron",
+    "S": "createaddition:copper_spool"
+  },
+  "pattern": [
+    "  A  ",
+    " BSB ",
+    "BSRSB",
+    " BCB "
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:electric_motor"
+  }
+}

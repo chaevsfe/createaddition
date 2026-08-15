@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "E": "#c:ingots/electrum",
+    "G": "#c:dusts/diamond",
+    "W": "#c:wires/electrum",
+    "Z": "#c:plates/zinc"
+  },
+  "pattern": [
+    " WW",
+    "EZW",
+    "GE "
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:electrum_amulet"
+  }
+}

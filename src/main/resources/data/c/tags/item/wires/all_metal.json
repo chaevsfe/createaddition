@@ -1,0 +1,8 @@
+{
+  "values": [
+    "createaddition:gold_wire",
+    "createaddition:iron_wire",
+    "createaddition:electrum_wire",
+    "createaddition:copper_wire"
+  ]
+}

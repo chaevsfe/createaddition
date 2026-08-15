@@ -1,0 +1,14 @@
+{
+  "type": "create:compacting",
+  "ingredients": [
+    "#c:eggs",
+    "minecraft:sugar",
+    "minecraft:sugar",
+    "create:dough"
+  ],
+  "results": [
+    {
+      "id": "createaddition:cake_base"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": true,
+  "category": "misc",
+  "key": {
+    "A": "create:andesite_alloy",
+    "B": "create:brass_casing",
+    "C": "createaddition:capacitor",
+    "E": "create:electron_tube",
+    "P": "#c:plates/brass",
+    "S": "createaddition:copper_spool"
+  },
+  "pattern": [
+    "SSS",
+    " A ",
+    "CBC",
+    "PEP"
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:tesla_coil"
+  }
+}

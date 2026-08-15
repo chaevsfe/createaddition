@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#c:rods/copper",
+    "create:andesite_alloy",
+    "#c:slime_balls"
+  ],
+  "result": {
+    "count": 3,
+    "id": "createaddition:connector"
+  }
+}

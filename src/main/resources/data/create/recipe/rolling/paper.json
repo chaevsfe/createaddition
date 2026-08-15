@@ -1,0 +1,11 @@
+{
+  "type": "createaddition:rolling",
+  "ingredients": [
+    "minecraft:paper"
+  ],
+  "results": [
+    {
+      "id": "createaddition:straw"
+    }
+  ]
+}

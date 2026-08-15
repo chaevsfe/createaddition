@@ -1,0 +1,22 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": true,
+  "category": "misc",
+  "key": {
+    "A": "create:andesite_alloy",
+    "I": "#c:plates/iron",
+    "R": "#c:rods/iron",
+    "S": "createaddition:copper_spool"
+  },
+  "pattern": [
+    "  A  ",
+    " ISI ",
+    "ISRSI",
+    " ISI ",
+    "  A  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:alternator"
+  }
+}

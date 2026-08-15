@@ -1,0 +1,12 @@
+{
+  "type": "createaddition:rolling",
+  "ingredients": [
+    "#c:plates/gold"
+  ],
+  "results": [
+    {
+      "count": 2,
+      "id": "createaddition:gold_wire"
+    }
+  ]
+}

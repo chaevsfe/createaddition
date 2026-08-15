@@ -1,0 +1,40 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "createaddition:block/modular_accumulator/block_middle"
+      },
+      "when": {
+        "bottom": "false",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/modular_accumulator/block_bottom"
+      },
+      "when": {
+        "bottom": "true",
+        "top": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/modular_accumulator/block_top"
+      },
+      "when": {
+        "bottom": "false",
+        "top": "true"
+      }
+    },
+    {
+      "apply": {
+        "model": "createaddition:block/modular_accumulator/block_single"
+      },
+      "when": {
+        "bottom": "true",
+        "top": "true"
+      }
+    }
+  ]
+}

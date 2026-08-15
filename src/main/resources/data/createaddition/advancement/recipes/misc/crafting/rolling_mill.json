@@ -1,0 +1,76 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_andesite_alloy": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create:andesite_alloy"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_andesite_casing": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create:andesite_casing"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_iron_plates": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:plates/iron"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_rolling_mill": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:rolling_mill"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_shaft": {
+      "conditions": {
+        "items": [
+          {
+            "items": "create:shaft"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/rolling_mill"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_iron_plates",
+      "has_shaft",
+      "has_andesite_alloy",
+      "has_andesite_casing",
+      "has_rolling_mill"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/rolling_mill"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "create:filling",
+  "ingredient": "createaddition:cake_base_baked",
+  "fluid_ingredient": {
+    "type": "fluid_stack",
+    "amount": 40500,
+    "fluid": "create:chocolate"
+  },
+  "result": {
+    "id": "createaddition:chocolate_cake"
+  }
+}

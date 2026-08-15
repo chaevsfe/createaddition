@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "S": "createaddition:spool",
+    "W": "#c:wires/gold"
+  },
+  "pattern": [
+    " W ",
+    "WSW",
+    " W "
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:gold_spool"
+  }
+}

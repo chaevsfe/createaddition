@@ -1,0 +1,9 @@
+{
+  "type": "create:pressing",
+  "results": [
+    {
+      "id": "createaddition:zinc_sheet"
+    }
+  ],
+  "ingredient": "#c:ingots/zinc"
+}

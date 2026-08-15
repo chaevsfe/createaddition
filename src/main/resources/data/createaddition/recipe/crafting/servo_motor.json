@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    "create:mechanical_bearing",
+    "createaddition:electric_motor",
+    "create:electron_tube"
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:servo_motor"
+  }
+}

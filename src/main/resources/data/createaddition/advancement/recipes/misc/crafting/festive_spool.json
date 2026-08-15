@@ -1,0 +1,65 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_biomass": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:biomass"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_copper_spool": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:copper_spool"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_festive_spool": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:festive_spool"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_redstone": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:dusts/redstone"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/festive_spool"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_copper_spool",
+      "has_redstone",
+      "has_biomass",
+      "has_festive_spool"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/festive_spool"
+    ]
+  }
+}

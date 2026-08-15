@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_biomass_pellet_block": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:biomass_pellet_block"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/biomass_pellet_from_biomass_pallet_block"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_biomass_pellet_block"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/biomass_pellet_from_biomass_pallet_block"
+    ]
+  }
+}

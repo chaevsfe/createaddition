@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#createaddition:large_connector_usable_rods",
+    "create:andesite_alloy",
+    "create:andesite_alloy",
+    "#c:slime_balls"
+  ],
+  "result": {
+    "count": 2,
+    "id": "createaddition:large_connector"
+  }
+}

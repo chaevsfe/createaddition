@@ -1,0 +1,12 @@
+{
+  "type": "create:mixing",
+  "ingredients": [
+    "#c:seeds"
+  ],
+  "fluid_results": [
+    {
+      "amount": 8100,
+      "id": "createaddition:seed_oil"
+    }
+  ]
+}

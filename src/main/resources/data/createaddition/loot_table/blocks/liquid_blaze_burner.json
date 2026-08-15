@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "create:blaze_burner"
+        }
+      ],
+      "rolls": 1.0
+    },
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "createaddition:straw"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "createaddition:blocks/liquid_blaze_burner"
+}

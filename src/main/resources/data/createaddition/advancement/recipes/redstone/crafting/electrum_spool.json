@@ -1,0 +1,54 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_spool": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:spool"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/electrum_spool"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_wire": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:wires/electrum"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_wired_spool": {
+      "conditions": {
+        "items": [
+          {
+            "items": "createaddition:electrum_spool"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_wire",
+      "has_spool",
+      "has_wired_spool"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/electrum_spool"
+    ]
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "variants": {
+    "facing=east,vertical=false,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block"
+    },
+    "facing=east,vertical=false,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block"
+    },
+    "facing=east,vertical=true,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90,
+      "y": 270
+    },
+    "facing=east,vertical=true,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90,
+      "y": 270
+    },
+    "facing=north,vertical=false,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block",
+      "y": 270
+    },
+    "facing=north,vertical=false,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block",
+      "y": 270
+    },
+    "facing=north,vertical=true,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=north,vertical=true,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90,
+      "y": 180
+    },
+    "facing=south,vertical=false,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block",
+      "y": 90
+    },
+    "facing=south,vertical=false,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block",
+      "y": 90
+    },
+    "facing=south,vertical=true,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90
+    },
+    "facing=south,vertical=true,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90
+    },
+    "facing=west,vertical=false,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block",
+      "y": 180
+    },
+    "facing=west,vertical=false,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block",
+      "y": 180
+    },
+    "facing=west,vertical=true,waterlogged=false": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west,vertical=true,waterlogged=true": {
+      "model": "createaddition:block/barbed_wire/block",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

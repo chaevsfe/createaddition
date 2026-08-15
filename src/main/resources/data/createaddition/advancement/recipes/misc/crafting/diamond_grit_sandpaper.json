@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_diamond_dust": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:dusts/diamond"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_paper": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:paper"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "createaddition:crafting/diamond_grit_sandpaper"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_paper",
+      "has_diamond_dust"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "createaddition:crafting/diamond_grit_sandpaper"
+    ]
+  }
+}

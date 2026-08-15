@@ -1,0 +1,19 @@
+{
+  "type": "create:crushing",
+  "processing_time": 300,
+  "results": [
+    {
+      "id": "createaddition:diamond_grit"
+    }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:tags_populated",
+      "registry": "minecraft:item",
+      "values": [
+        "c:dusts/diamond"
+      ]
+    }
+  ],
+  "ingredient": "minecraft:diamond"
+}
