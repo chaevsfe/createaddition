@@ -6,14 +6,16 @@ import com.zurrtum.create.client.AllPartialModels;
 import com.zurrtum.create.client.content.kinetics.base.KineticBlockEntityVisual;
 import com.zurrtum.create.client.content.kinetics.base.RotatingInstance;
 import com.zurrtum.create.client.flywheel.api.instance.Instance;
+import com.zurrtum.create.client.flywheel.api.visual.TickableVisual;
 import com.zurrtum.create.client.flywheel.api.visualization.VisualizationContext;
 import com.zurrtum.create.client.flywheel.lib.model.Models;
+import com.zurrtum.create.client.flywheel.lib.visual.SimpleTickableVisual;
 import com.zurrtum.create.client.foundation.render.AllInstanceTypes;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-public class AlternatorVisual extends KineticBlockEntityVisual<AlternatorBlockEntity> {
+public class AlternatorVisual extends KineticBlockEntityVisual<AlternatorBlockEntity> implements SimpleTickableVisual {
 	protected final RotatingInstance frontShaft;
 	protected final RotatingInstance backShaft;
 
@@ -21,7 +23,7 @@ public class AlternatorVisual extends KineticBlockEntityVisual<AlternatorBlockEn
 		super(context, blockEntity, partialTick);
 
 		Direction facing = blockState.getValue(BlockStateProperties.FACING);
-		var instancer = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.partial(AllPartialModels.SHAFT_HALF));
+		var instancer = instancerProvider().instancer(AllInstanceTypes.ROTATING, Models.chunkPartial(AllPartialModels.SHAFT_HALF));
 
 		frontShaft = instancer.createInstance()
 				.rotateToFace(Direction.SOUTH, facing)
@@ -40,6 +42,11 @@ public class AlternatorVisual extends KineticBlockEntityVisual<AlternatorBlockEn
 	public void update(float pt) {
 		frontShaft.setup(blockEntity).setChanged();
 		backShaft.setup(blockEntity).setChanged();
+	}
+
+	@Override
+	public void tick(TickableVisual.Context context) {
+		applyOverstressEffect(blockEntity, frontShaft, backShaft);
 	}
 
 	@Override

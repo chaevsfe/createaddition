@@ -1,6 +1,8 @@
 package com.mrh0.createaddition;
 
+import com.mrh0.createaddition.blocks.alternator.AlternatorRenderer;
 import com.mrh0.createaddition.blocks.alternator.AlternatorVisual;
+import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorRenderer;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorVisual;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerRenderer;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerVisual;
@@ -8,6 +10,7 @@ import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorCTBe
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorRenderer;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PEIVisual;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceRenderer;
+import com.mrh0.createaddition.blocks.rolling_mill.RollingMillRenderer;
 import com.mrh0.createaddition.blocks.rolling_mill.RollingMillVisual;
 import com.mrh0.createaddition.blocks.servo_motor.ServoMotorRenderer;
 import com.mrh0.createaddition.blocks.servo_motor.ServoMotorVisual;
@@ -28,7 +31,6 @@ import com.zurrtum.create.client.AllBlockEntityBehaviours;
 import com.zurrtum.create.client.AllBlockEntityRenders;
 import com.zurrtum.create.client.AllFluidConfigs;
 import com.zurrtum.create.client.AllModels;
-import com.zurrtum.create.client.flywheel.lib.visualization.SimpleBlockEntityVisualizer;
 import com.zurrtum.create.client.infrastructure.model.CTModel;
 import com.zurrtum.create.client.ponder.foundation.PonderIndex;
 
@@ -59,9 +61,9 @@ public class CreateAdditionClient implements ClientModInitializer {
 		AllBlockEntityRenders.visual(CABlockEntities.PORTABLE_ENERGY_INTERFACE, PortableEnergyInterfaceRenderer::new, PEIVisual::new);
 		AllBlockEntityRenders.render(CABlockEntities.MODULAR_ACCUMULATOR, ModularAccumulatorRenderer::new);
 
-		SimpleBlockEntityVisualizer.builder(CABlockEntities.ELECTRIC_MOTOR).factory(ElectricMotorVisual::new).apply();
-		SimpleBlockEntityVisualizer.builder(CABlockEntities.ALTERNATOR).factory(AlternatorVisual::new).apply();
-		SimpleBlockEntityVisualizer.builder(CABlockEntities.ROLLING_MILL).factory(RollingMillVisual::new).apply();
+		AllBlockEntityRenders.visual(CABlockEntities.ELECTRIC_MOTOR, ElectricMotorRenderer::new, ElectricMotorVisual::new);
+		AllBlockEntityRenders.visual(CABlockEntities.ALTERNATOR, AlternatorRenderer::new, AlternatorVisual::new);
+		AllBlockEntityRenders.visual(CABlockEntities.ROLLING_MILL, RollingMillRenderer::new, RollingMillVisual::new);
 	}
 
 	private static void registerBlockEntityBehaviours() {
