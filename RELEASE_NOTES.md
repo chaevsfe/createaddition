@@ -7,6 +7,7 @@ Unofficial port of Create Crafts & Additions 1.7.0 to Fabric Minecraft 26.2, bui
 - Recipes and data updated for 26.2 item, tag and fluid changes
 - Seed oil is now made in a basin by mixing rather than compacting
 - ComputerCraft peripherals work when CC:Tweaked is installed
+- Electric motor, alternator and rolling mill show their spinning shafts
 - In-game Ponder scenes are included
 - JEI recipe-viewer support: rolling, charging and liquid burning categories, with the rolling mill shown in sequenced assembly
 
