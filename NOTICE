@@ -1,0 +1,33 @@
+NOTICE
+======
+
+Create Crafts & Additions — unofficial Create Fly port
+
+Based on Create Crafts & Additions by MRH0, version 1.7.0.
+  Upstream source:  https://github.com/mrh0/createaddition
+  Upstream project: https://modrinth.com/mod/createaddition
+  This port:        https://modrinth.com/project/7bkhocI9
+
+Modified by chaevsfe in 2026 to run on Minecraft 26.2 with the Fabric mod
+loader, built against Create Fly by ZurrTum rather than the original Create mod.
+
+Nature of the modifications:
+  - retargeted from the Create mod to Create Fly (package com.zurrtum.create)
+  - block and item registration moved into Create Fly's create_plugin
+    early-registration entrypoint
+  - block entity serialization migrated to the ValueInput/ValueOutput API
+  - block entity rendering migrated to the Minecraft 26.2 render-state model
+  - data pack directories renamed to their 1.21.2+ singular forms
+  - recipes updated for renamed conventional tags and removed Create items
+  - energy handling moved to the Team Reborn Energy API
+
+This is an UNOFFICIAL port. It is not endorsed by or affiliated with the
+original authors. Please report problems with the port to this repository,
+not to the upstream project.
+
+
+Licence
+-------
+The original work is licensed under the MIT License.
+This modified version is distributed under the same licence. The full text
+accompanies this file as LICENSE.

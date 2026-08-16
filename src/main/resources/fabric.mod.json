@@ -12,14 +12,15 @@
     "chaevsfe"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/createaddition",
+    "homepage": "https://modrinth.com/project/7bkhocI9",
     "sources": "https://github.com/chaevsfe/createaddition",
-    "issues": "https://github.com/chaevsfe/createaddition/issues"
+    "issues": "https://github.com/chaevsfe/createaddition/issues",
+    "upstream": "https://modrinth.com/mod/createaddition"
   },
   "license": [
     "MIT"
   ],
-  "icon": "icon.png",
+  "icon": "icon_fly_port.png",
   "environment": "*",
   "entrypoints": {
     "main": [
