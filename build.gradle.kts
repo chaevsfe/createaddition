@@ -53,8 +53,6 @@ dependencies {
     implementation(include("teamreborn:energy:${property("team_reborn_energy_version")}")!!)
 
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    compileOnly("net.fabricmc.fabric-api:fabric-content-registries-v0:11.3.0+d0a699d09e")
-    "clientCompileOnly"("net.fabricmc.fabric-api:fabric-rendering-v1:25.3.1+6988455e9e")
     compileOnly("cc.tweaked:cc-tweaked-26.2-fabric-api:1.120.2")
     "clientCompileOnly"("mezz.jei:jei-26.2-fabric:30.24.0.165")
 }
