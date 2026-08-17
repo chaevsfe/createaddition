@@ -8,13 +8,20 @@ import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerRende
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerVisual;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorCTBehaviour;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorRenderer;
+import com.mrh0.createaddition.blocks.portable_energy_interface.PEIActorVisual;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PEIVisual;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceRenderer;
 import com.mrh0.createaddition.blocks.rolling_mill.RollingMillRenderer;
 import com.mrh0.createaddition.blocks.rolling_mill.RollingMillVisual;
+import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorScrollValueBehaviour;
+import com.mrh0.createaddition.blocks.servo_motor.ServoMotorClientBehaviours;
 import com.mrh0.createaddition.blocks.servo_motor.ServoMotorRenderer;
 import com.mrh0.createaddition.blocks.servo_motor.ServoMotorVisual;
+import com.mrh0.createaddition.rendering.WireNodeRenderer;
+import com.mrh0.createaddition.trains.schedule.condition.EnergyThresholdConditionRender;
+import com.mrh0.createaddition.client.goggles.AlternatorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.ConnectorTooltipBehaviour;
+import com.mrh0.createaddition.client.goggles.ElectricMotorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.LiquidBlazeBurnerTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.ModularAccumulatorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.RedstoneRelayTooltipBehaviour;
@@ -26,14 +33,33 @@ import com.mrh0.createaddition.index.CAFluids;
 import com.mrh0.createaddition.index.CAPartials;
 import com.mrh0.createaddition.network.EnergyNetworkPacketPayload;
 import com.mrh0.createaddition.network.TimeRemainingPacketPayload;
+import com.mrh0.createaddition.blocks.alternator.AlternatorBlockEntity;
+import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlockEntity;
+import com.mrh0.createaddition.blocks.servo_motor.ServoMotorBlockEntity;
 import com.mrh0.createaddition.ponder.CAPonderPlugin;
+import com.mrh0.createaddition.sound.CAAudioBehaviour;
+import com.mrh0.createaddition.sound.CASoundScapes.AmbienceGroup;
+import com.zurrtum.create.api.behaviour.movement.MovementBehaviour;
+import com.zurrtum.create.client.api.behaviour.movement.MovementRenderBehaviour;
+import com.zurrtum.create.client.content.contraptions.render.ActorVisual;
+import com.zurrtum.create.client.flywheel.api.visualization.VisualizationContext;
+import com.zurrtum.create.client.foundation.virtualWorld.VirtualRenderWorld;
+import com.zurrtum.create.content.contraptions.behaviour.MovementContext;
 import com.zurrtum.create.client.AllBlockEntityBehaviours;
 import com.zurrtum.create.client.AllBlockEntityRenders;
+import com.zurrtum.create.client.AllItemTooltips;
 import com.zurrtum.create.client.AllFluidConfigs;
 import com.zurrtum.create.client.AllModels;
+import com.zurrtum.create.client.AllScheduleRenders;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.tooltip.GeneratingKineticTooltipBehaviour;
+import com.zurrtum.create.client.foundation.blockEntity.behaviour.tooltip.KineticTooltipBehaviour;
 import com.zurrtum.create.client.infrastructure.model.CTModel;
 import com.zurrtum.create.client.ponder.foundation.PonderIndex;
 
+import java.util.Map;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
@@ -44,6 +70,9 @@ public class CreateAdditionClient implements ClientModInitializer {
 		CAPartials.init();
 		registerModels();
 		registerBlockEntityRenders();
+		registerMovementRenders();
+		registerScheduleRenders();
+		registerItemTooltips();
 		registerBlockEntityBehaviours();
 		registerFluidConfigs();
 		registerClientReceivers();
@@ -64,6 +93,33 @@ public class CreateAdditionClient implements ClientModInitializer {
 		AllBlockEntityRenders.visual(CABlockEntities.ELECTRIC_MOTOR, ElectricMotorRenderer::new, ElectricMotorVisual::new);
 		AllBlockEntityRenders.visual(CABlockEntities.ALTERNATOR, AlternatorRenderer::new, AlternatorVisual::new);
 		AllBlockEntityRenders.visual(CABlockEntities.ROLLING_MILL, RollingMillRenderer::new, RollingMillVisual::new);
+
+		AllBlockEntityRenders.render(CABlockEntities.SMALL_CONNECTOR, WireNodeRenderer::new);
+		AllBlockEntityRenders.render(CABlockEntities.SMALL_LIGHT_CONNECTOR, WireNodeRenderer::new);
+		AllBlockEntityRenders.render(CABlockEntities.LARGE_CONNECTOR, WireNodeRenderer::new);
+		AllBlockEntityRenders.render(CABlockEntities.REDSTONE_RELAY, WireNodeRenderer::new);
+	}
+
+	private static void registerMovementRenders() {
+		MovementBehaviour behaviour = MovementBehaviour.REGISTRY.get(CABlocks.PORTABLE_ENERGY_INTERFACE);
+		if (behaviour != null)
+			behaviour.attachRender = new MovementRenderBehaviour() {
+				@Override
+				public ActorVisual createVisual(VisualizationContext context, VirtualRenderWorld world, MovementContext movementContext) {
+					return new PEIActorVisual(context, world, movementContext);
+				}
+			};
+	}
+
+	private static void registerScheduleRenders() {
+		AllScheduleRenders.ALL.put(CreateAddition.asResource("energy_threshold"), new EnergyThresholdConditionRender());
+	}
+
+	private static void registerItemTooltips() {
+		for (Map.Entry<ResourceKey<Item>, Item> entry : BuiltInRegistries.ITEM.entrySet()) {
+			if (entry.getKey().identifier().getNamespace().equals(CreateAddition.MODID))
+				AllItemTooltips.register(entry.getValue());
+		}
 	}
 
 	private static void registerBlockEntityBehaviours() {
@@ -74,6 +130,34 @@ public class CreateAdditionClient implements ClientModInitializer {
 		AllBlockEntityBehaviours.add(CABlockEntities.TESLA_COIL, TeslaCoilTooltipBehaviour::new);
 		AllBlockEntityBehaviours.add(CABlockEntities.LIQUID_BLAZE_BURNER, LiquidBlazeBurnerTooltipBehaviour::new);
 		AllBlockEntityBehaviours.add(CABlockEntities.MODULAR_ACCUMULATOR, ModularAccumulatorTooltipBehaviour::new);
+
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.ELECTRIC_MOTOR,
+			ElectricMotorScrollValueBehaviour::new,
+			ElectricMotorTooltipBehaviour::new);
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.SERVO_MOTOR,
+			ServoMotorClientBehaviours::speed,
+			ServoMotorClientBehaviours::movementMode,
+			ServoMotorClientBehaviours::maxAngle,
+			ServoMotorClientBehaviours::minAngle,
+			GeneratingKineticTooltipBehaviour::new);
+		AllBlockEntityBehaviours.add(CABlockEntities.ALTERNATOR, AlternatorTooltipBehaviour::new);
+		AllBlockEntityBehaviours.add(CABlockEntities.ROLLING_MILL, KineticTooltipBehaviour::new);
+
+		registerAmbientAudio();
+	}
+
+	private static void registerAmbientAudio() {
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.ELECTRIC_MOTOR,
+			be -> new CAAudioBehaviour<>(be, AmbienceGroup.DYNAMO, b -> b.getSpeed() != 0, ElectricMotorBlockEntity::getSpeed));
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.ALTERNATOR,
+			be -> new CAAudioBehaviour<>(be, AmbienceGroup.DYNAMO, b -> b.getSpeed() != 0, AlternatorBlockEntity::getSpeed));
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.SERVO_MOTOR,
+			be -> new CAAudioBehaviour<>(be, AmbienceGroup.DYNAMO, b -> b.getSpeed() != 0, ServoMotorBlockEntity::getSpeed));
 	}
 
 	private static void registerFluidConfigs() {
