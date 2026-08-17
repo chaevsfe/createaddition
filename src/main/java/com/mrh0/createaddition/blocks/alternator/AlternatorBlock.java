@@ -4,6 +4,7 @@ import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
 import com.zurrtum.create.catnip.math.VoxelShaper;
 import com.zurrtum.create.content.kinetics.base.DirectionalKineticBlock;
+import com.zurrtum.create.content.kinetics.base.IRotate;
 import com.zurrtum.create.foundation.block.IBE;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -49,6 +50,11 @@ public class AlternatorBlock extends DirectionalKineticBlock implements IBE<Alte
 	public Axis getRotationAxis(BlockState state) {
 		return state.getValue(FACING)
 			.getAxis();
+	}
+
+	@Override
+	public IRotate.SpeedLevel getMinimumRequiredSpeedLevel() {
+		return IRotate.SpeedLevel.MEDIUM;
 	}
 
 	@Override
