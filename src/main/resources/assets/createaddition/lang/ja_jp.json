@@ -229,7 +229,7 @@
 
 	"block.createaddition.liquid_blaze_burner": "ストロー付きブレイズバーナー",
 
-	"itemGroup.createaddition:main": "Create Crafts & Additions",
+	"itemGroup.createaddition.main": "Create Crafts & Additions",
 
 	"createaddition.ponder.tag.electric": "電気機器",
 	"createaddition.ponder.tag.electric.description": "電気を扱う機械",

@@ -195,7 +195,7 @@
 	"block.createaddition.barbed_wire.tooltip.summary": "Fere as entidades que tentam passar.",
 	"createaddition.recipe.liquid_burning.burn_time": "Tempo de combustão",
 	"block.createaddition.tesla_coil": "Bobina de Tesla",
-	"itemGroup.createaddition:main": "Create Crafts & Additions",
+	"itemGroup.createaddition.main": "Create Crafts & Additions",
 	"createaddition.command.cca_api.link": "Faz clique aqui para abrir documentação de API",
 	"createaddition.ponder.tag.electric": "Aparelhos eléctricos",
 	"createaddition.ponder.tag.electric.description": "Componentes que usam electricidade",

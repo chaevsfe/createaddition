@@ -223,7 +223,7 @@
 
   "block.createaddition.liquid_blaze_burner": "帶吸管的烈焰使者動力爐",
 
-  "itemGroup.createaddition:main": "動力機械 & 擴充",
+  "itemGroup.createaddition.main": "動力機械 & 擴充",
 
   "createaddition.ponder.tag.electric": "電力設備",
   "createaddition.ponder.tag.electric.description": "使用電力的組件",

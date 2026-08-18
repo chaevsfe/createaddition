@@ -182,7 +182,7 @@
 	"block.createaddition.barbed_wire.tooltip.summary": "Üzerinden yüründüğünde veya içinden geçildiğinde hasar verir.",
 	"block.createaddition.tesla_coil": "Tesla Bobini",
 	"block.createaddition.liquid_blaze_burner": "Pipetli Blaze Isıtıcı",
-	"itemGroup.createaddition:main": "Create: Crafts & Additions",
+	"itemGroup.createaddition.main": "Create: Crafts & Additions",
 	"createaddition.ponder.tag.electric": "Eletrikli Ev Aletleri",
 	"createaddition.ponder.tag.electric.description": "Elektrik kullanan bileşenler",
 	"createaddition.ponder.electric_motor.header": "Elektrik Motorları Kullanarak Dönme Gücü Oluşturma",

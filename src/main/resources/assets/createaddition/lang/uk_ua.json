@@ -211,7 +211,7 @@
 	
 	"block.createaddition.liquid_blaze_burner": "Паяльник пломеня з соломинкою",
 	
-	"itemGroup.createaddition:main": "Create Crafts & Additions",
+	"itemGroup.createaddition.main": "Create Crafts & Additions",
 	
 	"createaddition.ponder.tag.electric": "Електроприлади",
 	"createaddition.ponder.tag.electric.description": "Компоненти, які використовують електрику",

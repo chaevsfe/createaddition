@@ -143,7 +143,7 @@
 	"block.createaddition.barbed_wire.tooltip.summary": "Infligge danno a chi ci cammina dentro.",
 	"createaddition.recipe.liquid_burning.burn_time": "Tempo di combustione",
 	"block.createaddition.tesla_coil": "Bobina di Tesla",
-	"itemGroup.createaddition:main": "Create Crafts & Additions",
+	"itemGroup.createaddition.main": "Create Crafts & Additions",
 	"createaddition.command.cca_api.link": "Clicca qui per aprire la documentazione dell'API",
 	"createaddition.ponder.tag.electric": "Elettrodomestici",
 	"createaddition.ponder.tag.electric.description": "Componenti che usano elettricità",

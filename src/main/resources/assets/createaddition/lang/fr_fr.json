@@ -228,7 +228,7 @@
 
 	"block.createaddition.liquid_blaze_burner": "Brûleur à Blaze avec une paille",
 
-	"itemGroup.createaddition:main": "Create Crafts & Additions",
+	"itemGroup.createaddition.main": "Create Crafts & Additions",
 
 	"createaddition.ponder.tag.electric": "Appareils électriques",
 	"createaddition.ponder.tag.electric.description": "Composants qui consomment de l'électricité",
