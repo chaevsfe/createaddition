@@ -37,7 +37,11 @@ import com.mrh0.createaddition.blocks.alternator.AlternatorBlockEntity;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlockEntity;
 import com.mrh0.createaddition.blocks.servo_motor.ServoMotorBlockEntity;
 import com.mrh0.createaddition.ponder.CAPonderPlugin;
+import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockEntity;
+import com.mrh0.createaddition.blocks.tesla_coil.TeslaCoilBlockEntity;
 import com.mrh0.createaddition.sound.CAAudioBehaviour;
+import com.mrh0.createaddition.sound.CAFlatAudioBehaviour;
+import com.mrh0.createaddition.sound.RollingMillAudioBehaviour;
 import com.mrh0.createaddition.sound.CASoundScapes.AmbienceGroup;
 import com.zurrtum.create.api.behaviour.movement.MovementBehaviour;
 import com.zurrtum.create.client.api.behaviour.movement.MovementRenderBehaviour;
@@ -158,6 +162,14 @@ public class CreateAdditionClient implements ClientModInitializer {
 		AllBlockEntityBehaviours.add(
 			CABlockEntities.SERVO_MOTOR,
 			be -> new CAAudioBehaviour<>(be, AmbienceGroup.DYNAMO, b -> b.getSpeed() != 0, ServoMotorBlockEntity::getSpeed));
+		AllBlockEntityBehaviours.add(CABlockEntities.ROLLING_MILL, RollingMillAudioBehaviour::new);
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.TESLA_COIL,
+			be -> new CAFlatAudioBehaviour<>(be, AmbienceGroup.TESLA, TeslaCoilBlockEntity::isPoweredState, b -> 1f));
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.MODULAR_ACCUMULATOR,
+			be -> new CAFlatAudioBehaviour<>(be, AmbienceGroup.CHARGE, ModularAccumulatorBlockEntity::isEnergyChanging,
+				ModularAccumulatorBlockEntity::audioPitch));
 	}
 
 	private static void registerFluidConfigs() {

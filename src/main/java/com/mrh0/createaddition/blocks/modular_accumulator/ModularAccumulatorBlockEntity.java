@@ -368,6 +368,18 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements E
 		}
 	}
 
+	public float audioPitch() {
+		int sizeInBlocks = getTotalAccumulatorSize();
+		float pitch = 0.75f;
+		if (sizeInBlocks < 4) pitch = 1.25f;
+		if (sizeInBlocks < 9) pitch = 1f;
+		return pitch;
+	}
+
+	public boolean isEnergyChanging() {
+		return energyChangeTick != 0;
+	}
+
 	public int getTotalAccumulatorSize() {
 		return width * width * height;
 	}

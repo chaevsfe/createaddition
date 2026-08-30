@@ -28,10 +28,10 @@ public class CAAudioBehaviour<T extends SmartBlockEntity> extends BlockEntityBeh
 		super.tick();
 		if (!active.test(blockEntity))
 			return;
-		CASoundScapes.play(group, getPos(), pitch(pitchSource.applyAsDouble(blockEntity)));
+		CASoundScapes.play(group, getPos(), mapPitch(pitchSource.applyAsDouble(blockEntity)));
 	}
 
-	private static float pitch(double speed) {
+	protected float mapPitch(double speed) {
 		float abs = (float) Math.abs(speed);
 		if (abs == 0)
 			return 1;
