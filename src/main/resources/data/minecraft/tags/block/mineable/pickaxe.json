@@ -4,6 +4,17 @@
     "createaddition:servo_motor",
     "createaddition:alternator",
     "createaddition:rolling_mill",
-    "createaddition:liquid_blaze_burner"
+    "createaddition:liquid_blaze_burner",
+    "createaddition:modular_accumulator",
+    "createaddition:tesla_coil",
+    "createaddition:portable_energy_interface",
+    "createaddition:digital_adapter",
+    "createaddition:electrum_block",
+    "createaddition:creative_energy",
+    "createaddition:barbed_wire",
+    "createaddition:connector",
+    "createaddition:large_connector",
+    "createaddition:small_light_connector",
+    "createaddition:redstone_relay"
   ]
 }
