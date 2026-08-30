@@ -60,7 +60,7 @@ public class CACommonConfig extends ConfigBase {
     public final ConfigInt TESLA_COIL_HURT_EFFECT_TIME_MOB = i(20, 0, Integer.MAX_VALUE, "tesla_coil_effect_time_mob", "The duration of the Shocked effect for mobs (in ticks).");
     public final ConfigInt TESLA_COIL_HURT_DMG_PLAYER = i(2, 0, Integer.MAX_VALUE, "tesla_coil_hurt_player", "Damaged dealt to players when Tesla Coil is fired (in half hearts).");
     public final ConfigInt TESLA_COIL_HURT_EFFECT_TIME_PLAYER = i(20, 0, Integer.MAX_VALUE, "tesla_coil_effect_time_player", "The duration of the Shocked effect for players (in ticks).");
-    public final ConfigInt TESLA_COIL_HURT_FIRE_COOLDOWN = i(20, 0, Integer.MAX_VALUE, "tesla_coil_fire_cooldown", "Tesla Coil fire interval (in ticks).");
+    public final ConfigInt TESLA_COIL_HURT_FIRE_COOLDOWN = i(20, 1, Integer.MAX_VALUE, "tesla_coil_fire_cooldown", "Tesla Coil fire interval (in ticks).");
 
     public final ConfigGroup liquidBlazeBurner = group(0, "liquid_blaze_burner", "Liquid Blaze Burner");
     public final ConfigInt LIQUID_BLAZE_BURNER_MAX_LIQUID_CAPACITY = i(4000, 100, Integer.MAX_VALUE, "liquid_blaze_burner_max_liquid_capacity", "Liquid Blaze Burner internal liquid storage capacity (in mB). A value less than 1000 prevents players from refilling with a bucket.");
