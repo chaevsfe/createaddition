@@ -21,6 +21,7 @@ Brings the electrical age to Create: generate, store and move energy with electr
 ## Download
 
 - [Modrinth](https://modrinth.com/project/7bkhocI9)
+- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/create-fly-crafts-additions)
 - [GitHub releases](https://github.com/chaevsfe/createaddition/releases)
 
 
