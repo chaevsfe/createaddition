@@ -334,6 +334,8 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity implemen
 			energy.read(view);
 		active = view.getBooleanOr("servo_active", false);
 		targetAngle = view.getFloatOr("TargetAngle", targetAngle);
+		if (clientPacket && running)
+			angle = view.getFloatOr("Angle", angle);
 	}
 
 	public void triggerAssemble() {
