@@ -1,5 +1,6 @@
 {
 	"textures": {
+		"particle": "createaddition:block/alternator/alternator",
 		"main": "createaddition:block/alternator/alternator",
 		"1_0": "create:block/axis",
 		"1_1": "create:block/axis_top"

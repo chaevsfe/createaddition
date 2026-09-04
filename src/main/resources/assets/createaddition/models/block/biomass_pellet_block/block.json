@@ -1,5 +1,5 @@
 {
-	"parent": "block/cube_all",
+	"parent": "minecraft:block/block",
 	"textures": {
 		"bottom": "createaddition:block/biomass_pellet_block/bottom",
 		"top": "createaddition:block/biomass_pellet_block/top",
