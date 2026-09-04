@@ -1,5 +1,9 @@
 {
 	"credit": "Made with Blockbench",
+	"textures": {
+		"missing": "createaddition:block/connector/bulb",
+		"particle": "createaddition:block/connector/bulb"
+	},
 	"elements": [
 		{
 			"from": [-0.5, -0.5, -0.5],
