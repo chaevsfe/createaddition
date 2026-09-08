@@ -151,8 +151,8 @@ public class PortableEnergyManager {
 			CompoundTag energyContent = nbt.getCompound("EnergyContent")
 				.orElseThrow(() -> new IllegalArgumentException("EnergyContent is null"));
 			this.nbt = nbt;
-			this.capacity = nbt.getIntOr("EnergyCapacity", 0);
-			this.energy = energyContent.getIntOr("energy", 0);
+			this.capacity = Math.max(0L, nbt.getLongOr("EnergyCapacity", 0L));
+			this.energy = Math.clamp(energyContent.getLongOr("energy", 0L), 0L, this.capacity);
 		}
 
 		public long receiveEnergy(long energy) {
@@ -172,7 +172,7 @@ public class PortableEnergyManager {
 		}
 
 		private void save() {
-			nbt.getCompound("EnergyContent").ifPresent(energyContent -> energyContent.putInt("energy", (int) this.energy));
+			nbt.getCompound("EnergyContent").ifPresent(energyContent -> energyContent.putLong("energy", this.energy));
 		}
 	}
 }
