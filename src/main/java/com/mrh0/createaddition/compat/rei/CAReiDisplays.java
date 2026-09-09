@@ -37,7 +37,8 @@ public final class CAReiDisplays {
     public static void register(ServerDisplayRegistry registry) {
         CreateReiApi.fill(registry, ChargingRecipe.class, CARecipes.CHARGING_TYPE, CAReiDisplays::charging);
         CreateReiApi.fill(registry, RollingRecipe.class, CARecipes.ROLLING_TYPE, CAReiDisplays::rolling);
-        CreateReiApi.fill(registry, LiquidBurningRecipe.class, CARecipes.LIQUID_BURNING_TYPE, CAReiDisplays::liquidBurning);
+        CreateReiApi.fill(registry, LiquidBurningRecipe.class, CARecipes.LIQUID_BURNING_TYPE,
+            holder -> !holder.value().fluidIngredient().getMatchingFluids().isEmpty(), CAReiDisplays::liquidBurning);
         CreateAddition.LOGGER.info("Recipe fillers registered for {} Crafts & Additions categories", CAReiCategories.ALL.size());
     }
 
