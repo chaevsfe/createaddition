@@ -33,12 +33,14 @@ repositories {
     }
 }
 
-// The recipe viewer is an optional compile-time neighbour: CI downloads its release jar into
-// libs/, a local checkout uses the sibling repo's build output, whichever exists.
-val recipeViewerJar = listOf(file("libs"), file("../../create-rei/CreateReiViewer-Fly/build/libs"))
-    .flatMap { dir -> fileTree(dir) { include("CreateReiViewer-*.jar"); exclude("*-sources.jar") }.files }
-    .maxByOrNull { it.lastModified() }
-    ?: error("No Create Fly Recipe Viewer jar in libs/ or ../../create-rei/CreateReiViewer-Fly/build/libs")
+// The recipe viewer is nested into this jar and compiled against: CI downloads its release
+// jar into libs/, a local checkout uses the sibling repo's build output.
+repositories {
+    flatDir {
+        dirs("libs", "../../create-rei/CreateReiViewer-Fly/build/libs")
+    }
+}
+val recipeViewer = ":CreateReiViewer:${property("createreiviewer_version")}+fabric-mc${property("minecraft_version")}"
 
 loom {
     splitEnvironmentSourceSets()
@@ -71,11 +73,12 @@ dependencies {
     compileOnly("maven.modrinth:rei:${property("rei_version")}")
     compileOnly("maven.modrinth:architectury-api:${property("architectury_version")}")
     compileOnly("me.shedaniel.cloth:basic-math:${property("basic_math_version")}")
-    compileOnly(files(recipeViewerJar))
+    compileOnly(recipeViewer)
+    include(recipeViewer)
     "clientCompileOnly"("maven.modrinth:rei:${property("rei_version")}")
     "clientCompileOnly"("maven.modrinth:architectury-api:${property("architectury_version")}")
     "clientCompileOnly"("me.shedaniel.cloth:basic-math:${property("basic_math_version")}")
-    "clientCompileOnly"(files(recipeViewerJar))
+    "clientCompileOnly"(recipeViewer)
 }
 
 java {
