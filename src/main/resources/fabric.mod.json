@@ -34,6 +34,12 @@
     ],
     "jei_mod_plugin": [
       "com.mrh0.createaddition.compat.jei.CreateAdditionJEI"
+    ],
+    "rei_common": [
+      "com.mrh0.createaddition.compat.rei.CAReiCommonPlugin"
+    ],
+    "rei_client": [
+      "com.mrh0.createaddition.compat.rei.CAReiClientPlugin"
     ]
   },
   "mixins": [
@@ -48,6 +54,8 @@
   },
   "suggests": {
     "computercraft": "*",
-    "jei": "*"
+    "jei": "*",
+    "createreiviewer": "*",
+    "roughlyenoughitems": "*"
   }
 }

@@ -21,6 +21,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Fetch the Create Fly Recipe Viewer jar the compat classes compile against
+        env:
+          VIEWER_JAR_URL: https://github.com/chaevsfe/CreateReiViewer-Fly/releases/download/1.0.0-fly.26.2-beta.1/CreateReiViewer-1.0.0-fly.26.2-beta.1+fabric-mc26.2.jar
+        run: |
+          mkdir -p libs
+          curl -fsSL -o "libs/$(basename "$VIEWER_JAR_URL")" "$VIEWER_JAR_URL"
+
       - name: Build from scratch
         run: ./gradlew clean build --no-build-cache --no-daemon
 

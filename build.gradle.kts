@@ -25,7 +25,20 @@ repositories {
     maven("https://maven.blamejared.com/") {
         content { includeGroup("mezz.jei") }
     }
+    maven("https://maven.shedaniel.me/") {
+        content {
+            includeGroup("me.shedaniel.cloth")
+            includeGroup("me.shedaniel.cloth.api")
+        }
+    }
 }
+
+// The recipe viewer is an optional compile-time neighbour: CI downloads its release jar into
+// libs/, a local checkout uses the sibling repo's build output, whichever exists.
+val recipeViewerJar = listOf(file("libs"), file("../../create-rei/CreateReiViewer-Fly/build/libs"))
+    .flatMap { dir -> fileTree(dir) { include("CreateReiViewer-*.jar"); exclude("*-sources.jar") }.files }
+    .maxByOrNull { it.lastModified() }
+    ?: error("No Create Fly Recipe Viewer jar in libs/ or ../../create-rei/CreateReiViewer-Fly/build/libs")
 
 loom {
     splitEnvironmentSourceSets()
@@ -55,6 +68,14 @@ dependencies {
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     compileOnly("cc.tweaked:cc-tweaked-26.2-fabric-api:1.120.2")
     "clientCompileOnly"("mezz.jei:jei-26.2-fabric:30.24.0.165")
+    compileOnly("maven.modrinth:rei:${property("rei_version")}")
+    compileOnly("maven.modrinth:architectury-api:${property("architectury_version")}")
+    compileOnly("me.shedaniel.cloth:basic-math:${property("basic_math_version")}")
+    compileOnly(files(recipeViewerJar))
+    "clientCompileOnly"("maven.modrinth:rei:${property("rei_version")}")
+    "clientCompileOnly"("maven.modrinth:architectury-api:${property("architectury_version")}")
+    "clientCompileOnly"("me.shedaniel.cloth:basic-math:${property("basic_math_version")}")
+    "clientCompileOnly"(files(recipeViewerJar))
 }
 
 java {
