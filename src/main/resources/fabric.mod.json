@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "createaddition",
   "version": "${version}",
-  "name": "Create Crafts & Additions",
+  "name": "Create Fly: Crafts & Additions",
   "description": "Create Crafts & Additions port for Create Fly 26.2. Electrical age for Create: generate, store, and transfer Forge Energy with wires, motors, and machines.",
   "authors": [
     "MRH0",
