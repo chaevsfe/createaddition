@@ -74,7 +74,6 @@ public class ElectricPumpRenderer implements BlockEntityRenderer<ElectricPumpBlo
 			matrices.translate(-0.5f, -0.5f, -0.5f);
 			matrices.translate(offset[0], offset[1], offset[2]);
 			matrices.scale(scale, scale, scale);
-			matrices.translate(-offset[0], -offset[1], -offset[2]);
 			partial.submit(matrices, queue);
 			matrices.popPose();
 		}
