@@ -43,6 +43,7 @@ repositories {
 val recipeViewer = ":CreateReiViewer:${property("createreiviewer_version")}+fabric-mc${property("minecraft_version")}"
 
 loom {
+    accessWidenerPath = file("src/main/resources/createaddition.accesswidener")
     splitEnvironmentSourceSets()
     mods {
         create("createaddition") {
@@ -68,8 +69,8 @@ dependencies {
     implementation(include("teamreborn:energy:${property("team_reborn_energy_version")}")!!)
 
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    compileOnly("cc.tweaked:cc-tweaked-26.2-fabric-api:1.120.2")
-    "clientCompileOnly"("mezz.jei:jei-26.2-fabric:30.24.0.165")
+    compileOnly("cc.tweaked:cc-tweaked-26.1.2-fabric-api:1.119.0")
+    "clientCompileOnly"("mezz.jei:jei-26.1.2-fabric:29.6.2.31")
     compileOnly("maven.modrinth:rei:${property("rei_version")}")
     compileOnly("maven.modrinth:architectury-api:${property("architectury_version")}")
     compileOnly("me.shedaniel.cloth:basic-math:${property("basic_math_version")}")

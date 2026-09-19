@@ -20,6 +20,7 @@
   "license": [
     "MIT"
   ],
+  "accessWidener": "createaddition.accesswidener",
   "icon": "icon_fly_port.png",
   "environment": "*",
   "entrypoints": {

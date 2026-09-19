@@ -2,6 +2,7 @@ package com.mrh0.createaddition.fluid;
 
 import com.mrh0.createaddition.index.CATags;
 import com.mrh0.createaddition.mixin.FireBlockInvoker;
+import com.zurrtum.create.infrastructure.fluids.FluidEntry;
 import com.zurrtum.create.infrastructure.fluids.FlowableFluid;
 import com.zurrtum.create.infrastructure.fluids.FluidBlock;
 import net.minecraft.core.BlockPos;
@@ -21,7 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
-public class CAFluidEntry {
+public class CAFluidEntry extends FluidEntry {
     public FlowableFluid flowing = new Flowing();
     public FlowableFluid still = new Still();
     public BucketItem bucket;
@@ -51,7 +52,12 @@ public class CAFluidEntry {
         }
     }
 
-    private class Flowing extends FlowableFluid {
+    private class Flowing extends FlowableFluid.Flowing {
+        Flowing() {
+            super(CAFluidEntry.this);
+        }
+
+        @Override
         public CAFluidEntry getEntry() {
             return CAFluidEntry.this;
         }
@@ -125,7 +131,12 @@ public class CAFluidEntry {
         }
     }
 
-    private class Still extends FlowableFluid {
+    private class Still extends FlowableFluid.Still {
+        Still() {
+            super(CAFluidEntry.this);
+        }
+
+        @Override
         public CAFluidEntry getEntry() {
             return CAFluidEntry.this;
         }

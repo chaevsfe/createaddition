@@ -77,7 +77,7 @@ public class FireBlockMixin {
 
     @ModifyExpressionValue(
             method = "tick(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/core/HolderSet;)Z")
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/tags/TagKey;)Z")
     )
     private boolean keepFire(boolean original, BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (original) {

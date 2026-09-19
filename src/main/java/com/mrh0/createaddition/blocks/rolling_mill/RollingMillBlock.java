@@ -3,7 +3,6 @@ package com.mrh0.createaddition.blocks.rolling_mill;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.shapes.CAShapes;
 import com.zurrtum.create.content.kinetics.base.HorizontalKineticBlock;
-import com.zurrtum.create.foundation.block.EntityControlBlock;
 import com.zurrtum.create.foundation.block.IBE;
 import com.zurrtum.create.infrastructure.items.ItemInventoryProvider;
 
@@ -14,6 +13,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,7 +29,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class RollingMillBlock extends HorizontalKineticBlock implements IBE<RollingMillBlockEntity>, ItemInventoryProvider<RollingMillBlockEntity>, EntityControlBlock {
+public class RollingMillBlock extends HorizontalKineticBlock implements IBE<RollingMillBlockEntity>, ItemInventoryProvider<RollingMillBlockEntity> {
 
 	public static final VoxelShape ROLLING_MILL_SHAPE = CAShapes.shape(0,0,0,16,5,16).add(2,0,2,14,16,14).build();
 
@@ -81,7 +81,9 @@ public class RollingMillBlock extends HorizontalKineticBlock implements IBE<Roll
 	}
 
 	@Override
-	public void onEntityMovement(Level level, Entity entity) {
+	protected void entityInside(BlockState state, Level level, BlockPos entityPos, Entity entity,
+			InsideBlockEffectApplier effectApplier, boolean flag) {
+		super.entityInside(state, level, entityPos, entity, effectApplier, flag);
 		if (level.isClientSide() || !(entity instanceof ItemEntity itemEntity) || !entity.isAlive())
 			return;
 
