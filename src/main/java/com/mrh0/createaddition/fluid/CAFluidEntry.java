@@ -23,10 +23,10 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
 public class CAFluidEntry extends FluidEntry {
-    public FlowableFluid flowing = new Flowing();
-    public FlowableFluid still = new Still();
-    public BucketItem bucket;
-    public FluidBlock block;
+    {
+        flowing = new Flowing();
+        still = new Still();
+    }
 
     static boolean protectsFire(Fluid fluid, BlockState replaced, Direction direction) {
         return direction != Direction.DOWN && replaced.is(BlockTags.FIRE)
@@ -72,50 +72,6 @@ public class CAFluidEntry extends FluidEntry {
         }
 
         @Override
-        public Fluid getFlowing() {
-            return this;
-        }
-
-        @Override
-        public Fluid getSource() {
-            return still;
-        }
-
-        @Override
-        public Item getBucket() {
-            return bucket != null ? bucket : Items.AIR;
-        }
-
-        @Override
-        public BlockState createLegacyBlock(FluidState state) {
-            if (block != null) {
-                return block.defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
-            }
-            return Blocks.AIR.defaultBlockState();
-        }
-
-        @Override
-        public boolean isSame(Fluid fluid) {
-            return fluid == this || fluid == still;
-        }
-
-        @Override
-        protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> builder) {
-            super.createFluidStateDefinition(builder);
-            builder.add(LEVEL);
-        }
-
-        @Override
-        public int getAmount(FluidState state) {
-            return state.getValue(LEVEL);
-        }
-
-        @Override
-        public boolean isSource(FluidState state) {
-            return false;
-        }
-
-        @Override
         public int getTickDelay(LevelReader world) {
             return 15;
         }
@@ -151,41 +107,8 @@ public class CAFluidEntry extends FluidEntry {
         }
 
         @Override
-        public Fluid getFlowing() {
-            return flowing;
-        }
-
-        @Override
-        public Fluid getSource() {
-            return this;
-        }
-
-        @Override
         public Item getBucket() {
             return bucket != null ? bucket : Items.AIR;
-        }
-
-        @Override
-        public BlockState createLegacyBlock(FluidState state) {
-            if (block == null) {
-                return Blocks.AIR.defaultBlockState();
-            }
-            return block.defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
-        }
-
-        @Override
-        public boolean isSame(Fluid fluid) {
-            return fluid == this || fluid == flowing;
-        }
-
-        @Override
-        public int getAmount(FluidState state) {
-            return 8;
-        }
-
-        @Override
-        public boolean isSource(FluidState state) {
-            return true;
         }
 
         @Override
