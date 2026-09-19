@@ -58,6 +58,7 @@ public class CAPonders {
 		HELPER.addStoryBoard(CABlocks.MODULAR_ACCUMULATOR.asItem(), "accumulator", PonderScenes::modularAccumulator, ELECTRIC);
 		HELPER.addStoryBoard(CABlocks.PORTABLE_ENERGY_INTERFACE.asItem(), "pei_transfer", PonderScenes::peiTransfer, AllCreatePonderTags.CONTRAPTION_ACTOR, ELECTRIC);
 		HELPER.addStoryBoard(CABlocks.PORTABLE_ENERGY_INTERFACE.asItem(), "pei_redstone", PonderScenes::peiRedstone, AllCreatePonderTags.CONTRAPTION_ACTOR, ELECTRIC);
+		HELPER.addStoryBoard(CABlocks.ELECTRIC_PUMP.asItem(), "electric_pump_flow", PonderScenes::electricPumpFlow, ELECTRIC);
 
 		if (CreateAddition.CC_ACTIVE)
 			HELPER.addStoryBoard(CABlocks.ELECTRIC_MOTOR.asItem(), "cc_electric_motor", PonderScenes::ccMotor, AllCreatePonderTags.KINETIC_SOURCES, ELECTRIC);

@@ -15,6 +15,7 @@ public class CATransfer {
 		EnergyStorage.SIDED.registerForBlockEntities(
 				CATransfer::findEnergy,
 				CABlockEntities.ELECTRIC_MOTOR,
+				CABlockEntities.ELECTRIC_PUMP,
 				CABlockEntities.SERVO_MOTOR,
 				CABlockEntities.ALTERNATOR,
 				CABlockEntities.CREATIVE_ENERGY,

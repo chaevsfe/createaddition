@@ -1,12 +1,17 @@
 package com.mrh0.createaddition.ponder;
 
+import com.mrh0.createaddition.blocks.connector.SmallConnectorBlockEntity;
 import com.mrh0.createaddition.blocks.connector.base.AbstractConnectorBlock;
 import com.mrh0.createaddition.blocks.connector.base.ConnectorMode;
+import com.mrh0.createaddition.blocks.electric_pump.ElectricPumpBlockEntity;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceBlockEntity;
 import com.mrh0.createaddition.blocks.tesla_coil.TeslaCoilBlock;
+import com.mrh0.createaddition.energy.IWireNode;
+import com.mrh0.createaddition.energy.WireType;
 import com.mrh0.createaddition.index.CABlocks;
 import com.mrh0.createaddition.index.CAFluids;
 import com.mrh0.createaddition.index.CAItems;
+import com.zurrtum.create.AllBlocks;
 import com.zurrtum.create.AllItems;
 import com.zurrtum.create.catnip.math.Pointing;
 import com.zurrtum.create.client.foundation.ponder.CreateSceneBuilder;
@@ -16,10 +21,14 @@ import com.zurrtum.create.client.ponder.api.element.WorldSectionElement;
 import com.zurrtum.create.client.ponder.api.scene.SceneBuilder;
 import com.zurrtum.create.client.ponder.api.scene.SceneBuildingUtil;
 import com.zurrtum.create.client.ponder.api.scene.Selection;
+import com.zurrtum.create.content.fluids.pump.PumpBlock;
 import com.zurrtum.create.content.processing.burner.BlazeBurnerBlock;
+import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ServerScrollValueBehaviour;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FaceAttachedHorizontalDirectionalBlock;
 import net.minecraft.world.level.block.LeverBlock;
@@ -568,5 +577,130 @@ public class PonderScenes {
 
 		scene.idle(20);
 		scene.markAsFinished();
+	}
+
+	public static void electricPumpFlow(SceneBuilder builder, SceneBuildingUtil util) {
+		CreateSceneBuilder scene = new CreateSceneBuilder(builder);
+		scene.title("electric_pump_flow", "Fluid Transportation using Electric Pumps");
+		scene.configureBasePlate(0, 0, 5);
+		scene.showBasePlate();
+		scene.world().multiplyKineticSpeed(util.select().everywhere(), -1);
+		scene.idle(5);
+
+		BlockPos pumpPos = util.grid().at(2, 1, 1);
+		Selection tank1 = util.select().fromTo(0, 2, 3, 0, 1, 3);
+		Selection tank2 = util.select().fromTo(4, 2, 3, 4, 1, 3);
+		Selection pipes = util.select().fromTo(3, 1, 3, 1, 1, 1);
+		Selection pump = util.select().position(pumpPos);
+		BlockPos connectorPos = pumpPos.above();
+		Selection connector = util.select().position(connectorPos);
+		BlockPos connector2Pos = connectorPos.offset(2, 0, -1);
+		BlockPos accumulatorPos = connector2Pos.below();
+		Selection connector2 = util.select().position(connector2Pos);
+		Selection accumulator = util.select().position(accumulatorPos);
+
+		scene.world().setBlock(pumpPos, AllBlocks.FLUID_PIPE.getAxisState(Axis.X), false);
+
+		scene.world().showSection(tank1, Direction.DOWN);
+		scene.idle(5);
+		scene.world().showSection(tank2, Direction.DOWN);
+		scene.idle(5);
+		scene.world().showSection(pipes, Direction.NORTH);
+		scene.idle(5);
+
+		scene.world().destroyBlock(pumpPos);
+		scene.world().restoreBlocks(pump);
+		scene.world().modifyBlock(pumpPos, s -> s.setValue(PumpBlock.FACING, s.getValue(PumpBlock.FACING).getOpposite()), false);
+		scene.world().setKineticSpeed(pump, 0);
+
+		scene.idle(15);
+
+		scene.overlay().showText(60)
+			.text("Electric Pumps govern the flow of their attached pipe networks")
+			.attachKeyFrame()
+			.placeNearTarget()
+			.pointAt(util.vector().topOf(pumpPos));
+
+		scene.idle(70);
+		scene.world().showSection(connector, Direction.DOWN);
+		scene.world().showSection(connector2, Direction.DOWN);
+		scene.world().showSection(accumulator, Direction.DOWN);
+		scene.world().modifyBlockEntity(connectorPos, SmallConnectorBlockEntity.class, be -> {
+			Level level = be.getLevel();
+			if (level != null)
+				IWireNode.connect(level, connectorPos, be.getAvailableNode(), connector2Pos, 0, WireType.COPPER);
+		});
+		scene.idle(15);
+		scene.world().setKineticSpeed(pump, 64);
+		scene.world().modifyBlockEntity(pumpPos, ElectricPumpBlockEntity.class, be -> {
+			ServerScrollValueBehaviour speed = be.getBehaviour(ServerScrollValueBehaviour.TYPE);
+			if (speed != null)
+				speed.setValue(64);
+			be.setActive(true);
+		});
+		scene.world().propagatePipeChange(pumpPos);
+		scene.effects().rotationDirectionIndicator(pumpPos.north());
+		scene.idle(15);
+
+		scene.overlay().showText(60)
+			.text("Their arrow indicates the direction of flow")
+			.attachKeyFrame()
+			.placeNearTarget()
+			.pointAt(util.vector().topOf(pumpPos).subtract(0.5f, 0.125f, 0));
+
+		AABB bb1 = new AABB(Vec3.ZERO, Vec3.ZERO).inflate(.25, .25, 0).move(0, 0, .25);
+		AABB bb2 = new AABB(Vec3.ZERO, Vec3.ZERO).inflate(.25, .25, 1.25);
+		scene.idle(65);
+
+		Object in = new Object();
+		Object out = new Object();
+
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.INPUT, in, bb1.move(util.vector().centerOf(3, 1, 3)), 3);
+		scene.idle(2);
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.INPUT, in, bb2.move(util.vector().centerOf(3, 1, 2)), 50);
+		scene.idle(10);
+
+		scene.overlay().showText(50)
+			.text("The network behind is now pulling fluids...")
+			.attachKeyFrame()
+			.placeNearTarget()
+			.colored(PonderPalette.INPUT)
+			.pointAt(util.vector().centerOf(3, 1, 2));
+
+		scene.idle(60);
+
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.OUTPUT, out, bb1.move(util.vector().centerOf(1, 1, 1).add(0, 0, -.5)), 3);
+		scene.idle(2);
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.OUTPUT, out, bb2.move(util.vector().centerOf(1, 1, 2)), 50);
+		scene.idle(10);
+
+		scene.overlay().showText(50)
+			.text("...while the network in front is transferring it outward")
+			.placeNearTarget()
+			.colored(PonderPalette.OUTPUT)
+			.pointAt(util.vector().centerOf(1, 1, 2));
+
+		scene.idle(25);
+
+		scene.overlay().showControls(util.vector().topOf(pumpPos), Pointing.DOWN, 40).rightClick()
+			.withItem(AllItems.WRENCH.getDefaultInstance());
+		scene.idle(7);
+		scene.world().modifyBlock(pumpPos, s -> s.setValue(PumpBlock.FACING, Direction.EAST), true);
+		scene.overlay().showText(70)
+			.attachKeyFrame()
+			.pointAt(util.vector().centerOf(2, 1, 1))
+			.placeNearTarget()
+			.text("A Wrench can be used to reverse the direction");
+		scene.world().propagatePipeChange(pumpPos);
+		scene.idle(40);
+
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.INPUT, in, bb1.move(util.vector().centerOf(3, 1, 3)), 3);
+		scene.idle(2);
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.INPUT, in, bb2.move(util.vector().centerOf(3, 1, 2)), 30);
+		scene.idle(15);
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.OUTPUT, out, bb1.move(util.vector().centerOf(1, 1, 1).add(0, 0, -.5)), 3);
+		scene.idle(2);
+		scene.overlay().chaseBoundingBoxOutline(PonderPalette.OUTPUT, out, bb2.move(util.vector().centerOf(1, 1, 2)), 30);
+		scene.idle(25);
 	}
 }

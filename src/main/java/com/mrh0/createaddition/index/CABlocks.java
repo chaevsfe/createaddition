@@ -10,6 +10,7 @@ import com.mrh0.createaddition.blocks.connector.SmallLightConnectorBlock;
 import com.mrh0.createaddition.blocks.creative_energy.CreativeEnergyBlock;
 import com.mrh0.createaddition.blocks.digital_adapter.DigitalAdapterBlock;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlock;
+import com.mrh0.createaddition.blocks.electric_pump.ElectricPumpBlock;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerBlock;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlock;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockItem;
@@ -43,6 +44,9 @@ public class CABlocks {
 
 	public static final ElectricMotorBlock ELECTRIC_MOTOR = registerBlock("electric_motor", ElectricMotorBlock::new,
 			BlockBehaviour.Properties.ofFullCopy(Blocks.GOLD_BLOCK));
+
+	public static final ElectricPumpBlock ELECTRIC_PUMP = registerBlock("electric_pump", ElectricPumpBlock::new,
+			BlockBehaviour.Properties.ofFullCopy(Blocks.GOLD_BLOCK).noOcclusion());
 
 	public static final ServoMotorBlock SERVO_MOTOR = registerBlock("servo_motor", ServoMotorBlock::new,
 			BlockBehaviour.Properties.ofFullCopy(Blocks.GOLD_BLOCK).noOcclusion());

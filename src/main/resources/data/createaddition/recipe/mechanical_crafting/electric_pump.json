@@ -1,0 +1,21 @@
+{
+  "type": "create:mechanical_crafting",
+  "accept_mirrored": true,
+  "category": "misc",
+  "key": {
+    "C": "createaddition:capacitor",
+    "K": "minecraft:dried_kelp",
+    "P": "create:mechanical_pump",
+    "S": "createaddition:copper_spool"
+  },
+  "pattern": [
+    " K ",
+    "SPS",
+    " K ",
+    " C "
+  ],
+  "result": {
+    "count": 1,
+    "id": "createaddition:electric_pump"
+  }
+}

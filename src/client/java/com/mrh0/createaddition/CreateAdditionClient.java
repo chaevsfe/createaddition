@@ -3,6 +3,9 @@ package com.mrh0.createaddition;
 import com.mrh0.createaddition.blocks.alternator.AlternatorRenderer;
 import com.mrh0.createaddition.blocks.alternator.AlternatorVisual;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorRenderer;
+import com.mrh0.createaddition.blocks.electric_pump.ElectricPumpRenderer;
+import com.mrh0.createaddition.blocks.electric_pump.ElectricPumpScrollValueBehaviour;
+import com.mrh0.createaddition.blocks.electric_pump.ElectricPumpVisual;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorVisual;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerRenderer;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerVisual;
@@ -22,6 +25,7 @@ import com.mrh0.createaddition.trains.schedule.condition.EnergyThresholdConditio
 import com.mrh0.createaddition.client.goggles.AlternatorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.ConnectorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.ElectricMotorTooltipBehaviour;
+import com.mrh0.createaddition.client.goggles.ElectricPumpTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.LiquidBlazeBurnerTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.ModularAccumulatorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.RedstoneRelayTooltipBehaviour;
@@ -95,6 +99,7 @@ public class CreateAdditionClient implements ClientModInitializer {
 		AllBlockEntityRenders.render(CABlockEntities.MODULAR_ACCUMULATOR, ModularAccumulatorRenderer::new);
 
 		AllBlockEntityRenders.visual(CABlockEntities.ELECTRIC_MOTOR, ElectricMotorRenderer::new, ElectricMotorVisual::new);
+		AllBlockEntityRenders.visual(CABlockEntities.ELECTRIC_PUMP, ElectricPumpRenderer::new, ElectricPumpVisual::new);
 		AllBlockEntityRenders.visual(CABlockEntities.ALTERNATOR, AlternatorRenderer::new, AlternatorVisual::new);
 		AllBlockEntityRenders.visual(CABlockEntities.ROLLING_MILL, RollingMillRenderer::new, RollingMillVisual::new);
 
@@ -139,6 +144,10 @@ public class CreateAdditionClient implements ClientModInitializer {
 			CABlockEntities.ELECTRIC_MOTOR,
 			ElectricMotorScrollValueBehaviour::new,
 			ElectricMotorTooltipBehaviour::new);
+		AllBlockEntityBehaviours.add(
+			CABlockEntities.ELECTRIC_PUMP,
+			ElectricPumpScrollValueBehaviour::new,
+			ElectricPumpTooltipBehaviour::new);
 		AllBlockEntityBehaviours.add(
 			CABlockEntities.SERVO_MOTOR,
 			ServoMotorClientBehaviours::speed,

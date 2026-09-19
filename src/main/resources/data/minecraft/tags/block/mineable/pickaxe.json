@@ -1,6 +1,7 @@
 {
   "values": [
     "createaddition:electric_motor",
+    "createaddition:electric_pump",
     "createaddition:servo_motor",
     "createaddition:alternator",
     "createaddition:rolling_mill",

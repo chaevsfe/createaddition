@@ -17,6 +17,12 @@ public class CACommonConfig extends ConfigBase {
     public final ConfigInt ELECTRIC_MOTOR_MAX_INPUT = i(5000, 0, Integer.MAX_VALUE, "motor_max_input", "Electric Motor max input in FE (Energy transfer not consumption).");
     public final ConfigInt ELECTRIC_MOTOR_CAPACITY = i(5000, 0, Integer.MAX_VALUE, "motor_capacity", "Electric Motor internal capacity in FE.");
 
+    public final ConfigGroup electricPump = group(0, "electric_pump", "Electric Pump");
+    public final ConfigInt ELECTRIC_PUMP_RPM_RANGE = i(256, 1, Integer.MAX_VALUE, "pump_rpm_range", "Electric Pump min/max pump strength (equivalent to the Mechanical Pumps RPM).");
+    public final ConfigInt ELECTRIC_PUMP_FE_RPM = i(120, 1, Integer.MAX_VALUE, "pump_fe_at_max_rpm", "Electric Pump energy consumption in FE/t at max pump strength (256).");
+    public final ConfigInt ELECTRIC_PUMP_MAX_INPUT = i(5000, 0, Integer.MAX_VALUE, "pump_max_input", "Electric Pump max input in FE (Energy transfer not consumption).");
+    public final ConfigInt ELECTRIC_PUMP_CAPACITY = i(5000, 0, Integer.MAX_VALUE, "pump_capacity", "Electric Pump internal capacity in FE.");
+
     public final ConfigGroup alternator = group(0, "alternator", "Alternator");
     public final ConfigInt ALTERNATOR_MAX_OUTPUT = i(5000, 0, Integer.MAX_VALUE, "generator_max_output", "Alternator max input in FE (Energy transfer, not generation).");
     public final ConfigInt ALTERNATOR_CAPACITY = i(5000, 0, Integer.MAX_VALUE, "generator_capacity", "Alternator internal capacity in FE.");
@@ -63,7 +69,7 @@ public class CACommonConfig extends ConfigBase {
     public final ConfigInt TESLA_COIL_HURT_FIRE_COOLDOWN = i(20, 1, Integer.MAX_VALUE, "tesla_coil_fire_cooldown", "Tesla Coil fire interval (in ticks).");
 
     public final ConfigGroup liquidBlazeBurner = group(0, "liquid_blaze_burner", "Liquid Blaze Burner");
-    public final ConfigInt LIQUID_BLAZE_BURNER_MAX_LIQUID_CAPACITY = i(4000, 100, Integer.MAX_VALUE, "liquid_blaze_burner_max_liquid_capacity", "Liquid Blaze Burner internal liquid storage capacity (in mB). A value less than 1000 prevents players from refilling with a bucket.");
+    public final ConfigInt LIQUID_BLAZE_BURNER_MAX_LIQUID_CAPACITY = i(1000, 100, Integer.MAX_VALUE, "liquid_blaze_burner_max_liquid_capacity", "Liquid Blaze Burner internal liquid storage capacity (in mB). A value less than 1000 prevents players from refilling with a bucket.");
     public final ConfigInt LIQUID_BLAZE_BURNER_MAX_HEAT_CAPACITY = i(10000, 0, Integer.MAX_VALUE, "liquid_blaze_burner_max_heat_capacity", "Liquid Blaze Burner internal heat capacity (in ticks).");
 
     public final ConfigGroup misc = group(0, "misc", "Misc");

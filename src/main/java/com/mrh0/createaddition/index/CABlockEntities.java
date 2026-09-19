@@ -7,6 +7,7 @@ import com.mrh0.createaddition.blocks.connector.SmallConnectorBlockEntity;
 import com.mrh0.createaddition.blocks.connector.SmallLightConnectorBlockEntity;
 import com.mrh0.createaddition.blocks.creative_energy.CreativeEnergyBlockEntity;
 import com.mrh0.createaddition.blocks.digital_adapter.DigitalAdapterBlockEntity;
+import com.mrh0.createaddition.blocks.electric_pump.ElectricPumpBlockEntity;
 import com.mrh0.createaddition.blocks.electric_motor.ElectricMotorBlockEntity;
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerBlockEntity;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockEntity;
@@ -30,6 +31,11 @@ public class CABlockEntities {
 			"electric_motor",
 			(pos, state) -> new ElectricMotorBlockEntity(CABlockEntities.ELECTRIC_MOTOR, pos, state),
 			CABlocks.ELECTRIC_MOTOR);
+
+	public static final BlockEntityType<ElectricPumpBlockEntity> ELECTRIC_PUMP = register(
+			"electric_pump",
+			(pos, state) -> new ElectricPumpBlockEntity(CABlockEntities.ELECTRIC_PUMP, pos, state),
+			CABlocks.ELECTRIC_PUMP);
 
 	public static final BlockEntityType<ServoMotorBlockEntity> SERVO_MOTOR = register(
 			"servo_motor",
