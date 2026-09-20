@@ -1,3 +1,5 @@
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 import javax.imageio.ImageIO
 
 plugins {
@@ -171,4 +173,72 @@ tasks.jar {
 tasks.named<Jar>("sourcesJar") {
     from("LICENSE")
     from("NOTICE")
+}
+
+val allowedJarPrefixes = listOf(
+    "com/mrh0/createaddition/",
+    "assets/createaddition/",
+    "data/createaddition/",
+    "data/c/",
+    "data/minecraft/",
+    "data/create/recipe/",
+    "META-INF/jars/",
+)
+
+val allowedJarFiles = listOf(
+    "META-INF/MANIFEST.MF",
+    "fabric.mod.json",
+    "createaddition.mixins.json",
+    "createaddition.accesswidener",
+    "icon_fly_port.png",
+    "assets/minecraft/atlases/blocks.json",
+    "LICENSE",
+    "NOTICE",
+)
+
+val foreignTag = Regex("^data/[a-z0-9_.-]+/tags/.+\\.json$")
+
+afterEvaluate {
+    val checkForeignNamespaces = tasks.register("checkForeignNamespaces") {
+        val jarNames = listOf("remapJar", "remapSourcesJar", "jar", "sourcesJar")
+            .filter { tasks.names.contains(it) }
+            .let { names -> if (names.contains("remapJar")) names.filter { it.startsWith("remap") } else names }
+        require(jarNames.isNotEmpty()) { "checkForeignNamespaces found no jar task to inspect" }
+        val jarTasks = jarNames.map { tasks.named<Jar>(it).get() }
+        dependsOn(jarTasks)
+        val archives: List<Provider<RegularFile>> = jarTasks.map { it.archiveFile }
+        val prefixes = allowedJarPrefixes
+        val files = allowedJarFiles
+        doLast {
+            val bad = mutableListOf<String>()
+            var checked = 0
+            for (provider in archives) {
+                val jar: File = provider.get().asFile
+                if (!jar.exists()) continue
+                checked++
+                val zip = ZipFile(jar)
+                try {
+                    val entries = zip.entries()
+                    while (entries.hasMoreElements()) {
+                        val entry: ZipEntry = entries.nextElement()
+                        if (entry.isDirectory) continue
+                        val name: String = entry.name
+                        if (name in files) continue
+                        if (prefixes.any { p -> name.startsWith(p) }) continue
+                        if (foreignTag.matches(name)) continue
+                        bad.add(jar.name + "!" + name)
+                    }
+                } finally {
+                    zip.close()
+                }
+            }
+            if (checked == 0) {
+                throw GradleException("checkForeignNamespaces inspected no archives")
+            }
+            if (bad.isNotEmpty()) {
+                throw GradleException("Foreign namespace entries in published artifacts:\n" + bad.joinToString("\n"))
+            }
+        }
+    }
+    tasks.named("check") { dependsOn(checkForeignNamespaces) }
 }
