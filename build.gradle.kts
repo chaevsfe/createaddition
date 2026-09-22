@@ -26,15 +26,6 @@ repositories {
     maven("https://maven.squiddev.cc") {
         content { includeGroup("cc.tweaked") }
     }
-    maven("https://maven.blamejared.com/") {
-        content { includeGroup("mezz.jei") }
-    }
-    maven("https://maven.shedaniel.me/") {
-        content {
-            includeGroup("me.shedaniel.cloth")
-            includeGroup("me.shedaniel.cloth.api")
-        }
-    }
 }
 
 // The recipe viewer is nested into this jar and compiled against: CI downloads its release
@@ -74,15 +65,8 @@ dependencies {
 
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
     compileOnly("cc.tweaked:cc-tweaked-26.1.2-fabric-api:1.119.0")
-    "clientCompileOnly"("mezz.jei:jei-26.1.2-fabric:29.6.2.31")
-    compileOnly("maven.modrinth:rei:${property("rei_version")}")
-    compileOnly("maven.modrinth:architectury-api:${property("architectury_version")}")
-    compileOnly("me.shedaniel.cloth:basic-math:${property("basic_math_version")}")
     compileOnly(recipeViewer)
     include(recipeViewer)
-    "clientCompileOnly"("maven.modrinth:rei:${property("rei_version")}")
-    "clientCompileOnly"("maven.modrinth:architectury-api:${property("architectury_version")}")
-    "clientCompileOnly"("me.shedaniel.cloth:basic-math:${property("basic_math_version")}")
     "clientCompileOnly"(recipeViewer)
 }
 

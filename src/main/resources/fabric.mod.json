@@ -33,14 +33,11 @@
     "client": [
       "com.mrh0.createaddition.CreateAdditionClient"
     ],
-    "jei_mod_plugin": [
-      "com.mrh0.createaddition.compat.jei.CreateAdditionJEI"
+    "createreiviewer": [
+      "com.mrh0.createaddition.compat.viewer.CAViewerPlugin"
     ],
-    "rei_common": [
-      "com.mrh0.createaddition.compat.rei.CAReiCommonPlugin"
-    ],
-    "rei_client": [
-      "com.mrh0.createaddition.compat.rei.CAReiClientPlugin"
+    "createreiviewer_client": [
+      "com.mrh0.createaddition.compat.viewer.CAViewerClientPlugin"
     ]
   },
   "mixins": [
