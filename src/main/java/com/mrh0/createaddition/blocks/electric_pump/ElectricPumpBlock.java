@@ -6,6 +6,7 @@ import com.zurrtum.create.catnip.math.VoxelShaper;
 import com.zurrtum.create.content.fluids.pump.PumpBlock;
 import com.zurrtum.create.content.fluids.pump.PumpBlockEntity;
 import com.zurrtum.create.foundation.advancement.AdvancementBehaviour;
+import com.zurrtum.create.foundation.block.RedStoneConnectBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -27,7 +28,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class ElectricPumpBlock extends PumpBlock {
+public class ElectricPumpBlock extends PumpBlock implements RedStoneConnectBlock {
 
 	public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
@@ -100,6 +101,11 @@ public class ElectricPumpBlock extends PumpBlock {
 			if (current.hasProperty(POWERED) && current.getValue(POWERED) != neighborSignal)
 				world.setBlock(pos, current.setValue(POWERED, neighborSignal), Block.UPDATE_ALL);
 		}
+	}
+
+	@Override
+	public boolean canConnectRedstone(BlockState state, @Nullable Direction side) {
+		return true;
 	}
 
 	@Override
