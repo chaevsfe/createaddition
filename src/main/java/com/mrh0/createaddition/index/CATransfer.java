@@ -2,7 +2,9 @@ package com.mrh0.createaddition.index;
 
 import com.mrh0.createaddition.transfer.EnergyTransferable;
 import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
+import com.zurrtum.create.foundation.blockEntity.behaviour.CachedFluidInventoryBehaviour;
 import com.zurrtum.create.foundation.blockEntity.behaviour.CachedInventoryBehaviour;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -27,6 +29,8 @@ public class CATransfer {
 				CABlockEntities.PORTABLE_ENERGY_INTERFACE);
 		BlockEntityBehaviour.add(CABlockEntities.ROLLING_MILL, be -> new CachedInventoryBehaviour<>(be, mill -> mill.capability));
 		ItemStorage.SIDED.registerForBlockEntity(CachedInventoryBehaviour::get, CABlockEntities.ROLLING_MILL);
+		BlockEntityBehaviour.add(CABlockEntities.LIQUID_BLAZE_BURNER, be -> new CachedFluidInventoryBehaviour<>(be, burner -> burner.getTank().getCapability()));
+		FluidStorage.SIDED.registerForBlockEntity(CachedFluidInventoryBehaviour::get, CABlockEntities.LIQUID_BLAZE_BURNER);
 	}
 
 	@Nullable
