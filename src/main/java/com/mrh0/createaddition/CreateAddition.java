@@ -1,6 +1,7 @@
 package com.mrh0.createaddition;
 
 import com.mrh0.createaddition.compat.computercraft.Peripherals;
+import com.mrh0.createaddition.compat.fabric.RecipeCommonPlugin;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.event.GameEvents;
 import com.mrh0.createaddition.commands.CCApiCommand;
@@ -42,6 +43,7 @@ public class CreateAddition implements ModInitializer {
         CASounds.register();
         CADamageTypes.register();
         CARecipes.register();
+        if (FabricLoader.getInstance().isModLoaded("jei") || FabricLoader.getInstance().isModLoaded("rrv")) RecipeCommonPlugin.register();
         CATransfer.register();
         CARegistration.register();
         CASchedule.register();
