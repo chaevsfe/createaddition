@@ -9,6 +9,7 @@ import com.zurrtum.create.AllItems;
 import com.zurrtum.create.client.foundation.gui.AllGuiTextures;
 import com.zurrtum.create.content.processing.recipe.HeatCondition;
 import dev.chaevsfe.createreiviewer.api.ViewerRecipe;
+import dev.chaevsfe.createreiviewer.api.client.CreateViewerCategories;
 import dev.chaevsfe.createreiviewer.api.client.CreateViewerClientPlugin;
 import dev.chaevsfe.createreiviewer.api.client.ViewerCanvas;
 import dev.chaevsfe.createreiviewer.api.client.ViewerCategory;
@@ -52,6 +53,7 @@ public class CAViewerClientPlugin implements CreateViewerClientPlugin {
             .workstations(AllItems.BLAZE_BURNER)
             .layout(CAViewerClientPlugin::liquidBurning)
             .build());
+        registry.addWorkstations(CreateViewerCategories.SANDPAPER_POLISHING, CAItems.DIAMOND_GRIT_SANDPAPER);
     }
 
     private static String titleKey(String path) {
