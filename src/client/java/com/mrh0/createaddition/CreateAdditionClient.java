@@ -29,6 +29,7 @@ import com.mrh0.createaddition.client.goggles.ElectricPumpTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.LiquidBlazeBurnerTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.ModularAccumulatorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.RedstoneRelayTooltipBehaviour;
+import com.mrh0.createaddition.client.goggles.ServoMotorTooltipBehaviour;
 import com.mrh0.createaddition.client.goggles.TeslaCoilTooltipBehaviour;
 import com.mrh0.createaddition.event.ClientEventHandler;
 import com.mrh0.createaddition.index.CABlockEntities;
@@ -59,7 +60,6 @@ import com.zurrtum.create.client.AllItemTooltips;
 import com.zurrtum.create.client.AllFluidConfigs;
 import com.zurrtum.create.client.AllModels;
 import com.zurrtum.create.client.AllScheduleRenders;
-import com.zurrtum.create.client.foundation.blockEntity.behaviour.tooltip.GeneratingKineticTooltipBehaviour;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.tooltip.KineticTooltipBehaviour;
 import com.zurrtum.create.client.infrastructure.model.CTModel;
 import com.zurrtum.create.client.ponder.foundation.PonderIndex;
@@ -154,7 +154,7 @@ public class CreateAdditionClient implements ClientModInitializer {
 			ServoMotorClientBehaviours::movementMode,
 			ServoMotorClientBehaviours::maxAngle,
 			ServoMotorClientBehaviours::minAngle,
-			GeneratingKineticTooltipBehaviour::new);
+			ServoMotorTooltipBehaviour::new);
 		AllBlockEntityBehaviours.add(CABlockEntities.ALTERNATOR, AlternatorTooltipBehaviour::new);
 		AllBlockEntityBehaviours.add(CABlockEntities.ROLLING_MILL, KineticTooltipBehaviour::new);
 
