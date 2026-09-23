@@ -259,8 +259,8 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		specialTick();
 
-		if (getMode() == ConnectorMode.None) return;
 		super.tick();
+		if (getMode() == ConnectorMode.None) return;
 
 		if(level == null) return;
 		if(level.isClientSide()) return;
