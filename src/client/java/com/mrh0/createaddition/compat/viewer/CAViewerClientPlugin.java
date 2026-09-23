@@ -78,7 +78,7 @@ public class CAViewerClientPlugin implements CreateViewerClientPlugin {
         }
         canvas.texture(AllGuiTextures.JEI_HEAT_BAR, 4, 30);
         canvas.texture(AllGuiTextures.JEI_LIGHT, 81, 38);
-        ViewerLayouts.blazeBurner(canvas, heat, 91, 14);
+        ViewerLayouts.blazeBurner(canvas, heat, 91, 19);
         canvas.texture(AllGuiTextures.JEI_DOWN_ARROW, 91, 8);
         canvas.text(ViewerLayouts.heatLabel(heat), 9, 36, heat.getColor(), true);
         canvas.text(Component.literal(Util.formatTime(recipe.duration())), 136, 36, TEXT_COLOR, true);
