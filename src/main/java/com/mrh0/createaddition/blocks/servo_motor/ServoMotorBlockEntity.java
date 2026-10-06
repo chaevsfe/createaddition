@@ -23,7 +23,6 @@ import com.zurrtum.create.foundation.blockEntity.behaviour.scrollValue.ServerScr
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -171,10 +170,28 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity implemen
 	@Override
 	public float getInterpolatedAngle(float partialTicks) {
 		if (!running)
-			return angle;
+			return toContraptionAngle(angle);
 		if (movedContraption != null)
 			return movedContraption.getAngle(partialTicks + 1f);
-		return angle;
+		return toContraptionAngle(angle);
+	}
+
+	private float toContraptionAngle(float servoAngle) {
+		BlockState state = getBlockState();
+		if (!state.hasProperty(ServoMotorBlock.FACING))
+			return servoAngle;
+		return state.getValue(ServoMotorBlock.FACING).getAxisDirection() == Direction.AxisDirection.POSITIVE
+				? servoAngle : -servoAngle;
+	}
+
+	@Override
+	protected void applyRotation() {
+		if (movedContraption == null)
+			return;
+		movedContraption.setAngle(toContraptionAngle(angle));
+		BlockState state = getBlockState();
+		if (state.hasProperty(ServoMotorBlock.FACING))
+			movedContraption.setRotationAxis(state.getValue(ServoMotorBlock.FACING).getAxis());
 	}
 
 	@Override
@@ -278,9 +295,8 @@ public class ServoMotorBlockEntity extends MechanicalBearingBlockEntity implemen
 		super.tick();
 
 		if (!level.isClientSide() && active) {
-			Direction facing = getBlockState().getValue(ServoMotorBlock.FACING);
-			Direction maxFace = facing.getAxis() == Axis.Y ? Direction.EAST : Direction.UP;
-			Direction minFace = facing.getAxis() == Axis.Y ? Direction.WEST : Direction.DOWN;
+			Direction maxFace = ServoMotorBlock.getTop(getBlockState());
+			Direction minFace = maxFace.getOpposite();
 			int maxSignal = level.getSignal(worldPosition.relative(maxFace), maxFace);
 			int minSignal = level.getSignal(worldPosition.relative(minFace), minFace);
 			int net = maxSignal - minSignal;
