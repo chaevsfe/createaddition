@@ -155,6 +155,14 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 			if (!simulate) burnerBE.applyCreativeFuel();
 			return InteractionResult.SUCCESS.heldItemTransformedTo(ItemStack.EMPTY);
 		}
+
+		ItemStack emptied = burnerBE.tryEmptyFluidContainer(stack, simulate);
+		if (emptied != null) {
+			if (doNotConsume) return InteractionResult.SUCCESS.heldItemTransformedTo(ItemStack.EMPTY);
+			if (!level.isClientSide()) stack.shrink(1);
+			return InteractionResult.SUCCESS.heldItemTransformedTo(emptied);
+		}
+
 		if (!burnerBE.tryUpdateFuel(stack, forceOverflow, simulate)) return InteractionResult.FAIL;
 
 		if (!doNotConsume) {
