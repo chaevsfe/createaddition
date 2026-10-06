@@ -10,7 +10,6 @@ import com.mrh0.createaddition.network.ObservePacketPayload;
 import com.mrh0.createaddition.network.TimeRemainingPacketPayload;
 import com.mrh0.createaddition.recipe.FluidRecipeWrapper;
 import com.mrh0.createaddition.recipe.liquid_burning.LiquidBurningRecipe;
-import com.zurrtum.create.AllFluidItemInventory;
 import com.zurrtum.create.AllItemTags;
 import com.zurrtum.create.AllItems;
 import com.zurrtum.create.api.behaviour.BlockEntityBehaviour;
@@ -22,6 +21,7 @@ import com.zurrtum.create.content.processing.basin.BasinBlock;
 import com.zurrtum.create.content.processing.burner.BlazeBurnerBlock;
 import com.zurrtum.create.foundation.blockEntity.SmartBlockEntity;
 import com.zurrtum.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
+import com.zurrtum.create.foundation.fluid.FluidHelper;
 import com.zurrtum.create.infrastructure.fluids.FluidItemInventory;
 import com.zurrtum.create.infrastructure.fluids.FluidStack;
 
@@ -231,24 +231,31 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IO
 		notifyUpdate();
 	}
 
-	private boolean tryUpdateLiquid(ItemStack itemStack, boolean simulate) {
-		if (level == null) return false;
-		FluidItemInventory itemInventory = AllFluidItemInventory.of(itemStack);
-		if (itemInventory == null) return false;
-		try (itemInventory) {
-			FluidStack stack = itemInventory.getStack(0);
-			if (stack.isEmpty()) return false;
-			if (find(stack, level).isEmpty()) return false;
+	@Nullable
+	protected ItemStack tryEmptyFluidContainer(ItemStack itemStack, boolean simulate) {
+		if (isCreative || level == null) return null;
+		try (FluidItemInventory itemInventory = FluidHelper.getFluidInventory(itemStack.copyWithCount(1))) {
+			if (itemInventory == null) return null;
+			for (int slot = 0, size = itemInventory.size(); slot < size; slot++) {
+				FluidStack contained = itemInventory.getStack(slot);
+				if (contained.isEmpty()) continue;
+				if (find(contained, level).isEmpty()) return null;
 
-			FluidStack toFill = new FluidStack(stack.getFluid(), BUCKET_AMOUNT);
-			if (tank.getPrimaryHandler().countSpace(toFill) < BUCKET_AMOUNT) return false;
+				int accepted = tank.getPrimaryHandler().countSpace(contained);
+				if (accepted <= 0) return null;
+				FluidStack drained = accepted >= contained.getAmount()
+					? contained.copyWithAmount(itemInventory.extract(contained))
+					: itemInventory.removeStack(slot, accepted);
+				if (drained.isEmpty()) return null;
 
-			if (!simulate) {
-				tank.getPrimaryHandler().insert(toFill);
-				level.playSound(null, getBlockPos(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS,
-					.125f + level.getRandom().nextFloat() * .125f, .75f - level.getRandom().nextFloat() * .25f);
+				if (!simulate && !level.isClientSide()) {
+					tank.getPrimaryHandler().insert(drained);
+					level.playSound(null, getBlockPos(), SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS,
+						.125f + level.getRandom().nextFloat() * .125f, .75f - level.getRandom().nextFloat() * .25f);
+				}
+				return itemInventory.getContainer().copy();
 			}
-			return true;
+			return null;
 		}
 	}
 
@@ -257,8 +264,6 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IO
 
 		FuelType newFuel = FuelType.NONE;
 		int newBurnTime;
-
-		if (tryUpdateLiquid(itemStack, simulate)) return true;
 
 		if (itemStack.is(AllItemTags.BLAZE_BURNER_FUEL_SPECIAL)) {
 			newBurnTime = 3200;
