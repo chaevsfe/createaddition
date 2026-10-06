@@ -9,6 +9,8 @@ import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorMove
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyInterfaceMovement;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.NodeMovementBehaviour;
+import com.mrh0.createaddition.recipe.charging.ChargingRecipe;
+import com.zurrtum.create.AllAssemblyRecipeNames;
 import com.zurrtum.create.api.behaviour.display.DisplaySource;
 import com.zurrtum.create.api.behaviour.movement.MovementBehaviour;
 import com.zurrtum.create.api.boiler.BoilerHeater;
@@ -39,6 +41,11 @@ public class CARegistration {
 		registerArmInteractionPointTypes();
 		registerBoilerHeaters();
 		registerMovementChecks();
+		registerAssemblyRecipeNames();
+	}
+
+	private static void registerAssemblyRecipeNames() {
+		AllAssemblyRecipeNames.register(CARecipes.CHARGING_TYPE, ChargingRecipe::getDescriptionForAssembly);
 	}
 
 	private static void registerStressValues() {

@@ -1,12 +1,18 @@
 package com.mrh0.createaddition.recipe.charging;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.index.CARecipes;
+import com.mrh0.createaddition.util.Util;
 import com.zurrtum.create.content.processing.recipe.ProcessingOutput;
 import com.zurrtum.create.foundation.recipe.CreateSingleStackRollableRecipe;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
@@ -15,6 +21,7 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 
 import java.util.List;
+import java.util.Optional;
 
 public record ChargingRecipe(Ingredient ingredient, List<ProcessingOutput> results, int energy,
                              int maxChargeRate) implements CreateSingleStackRollableRecipe {
@@ -47,6 +54,13 @@ public record ChargingRecipe(Ingredient ingredient, List<ProcessingOutput> resul
 
     public ItemStack getResultStack() {
         return results.getFirst().create();
+    }
+
+    public static Component getDescriptionForAssembly(DynamicOps<JsonElement> ops, JsonObject object) {
+        return Optional.ofNullable(object.get("energy"))
+            .flatMap(energy -> Codec.INT.parse(ops, energy).result())
+            .map(energy -> (Component) Component.translatable(CreateAddition.MODID + ".recipe.charging.sequence", Util.format(energy)))
+            .orElseGet(() -> Component.literal("Invalid"));
     }
 
     @Override
