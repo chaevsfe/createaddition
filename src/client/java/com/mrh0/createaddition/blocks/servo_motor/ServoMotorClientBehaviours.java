@@ -53,23 +53,17 @@ public class ServoMotorClientBehaviours {
 	}
 
 	private static boolean isModeSide(BlockState state, Direction side) {
-		Axis facingAxis = state.getValue(ServoMotorBlock.FACING).getAxis();
 		Axis sideAxis = side.getAxis();
-		if (facingAxis == Axis.Y)
-			return sideAxis == Axis.Z;
-		return sideAxis != facingAxis && sideAxis != Axis.Y;
+		return sideAxis != state.getValue(ServoMotorBlock.FACING).getAxis()
+				&& sideAxis != ServoMotorBlock.getTop(state).getAxis();
 	}
 
 	private static boolean isMaxAngleSide(BlockState state, Direction side) {
-		if (state.getValue(ServoMotorBlock.FACING).getAxis() == Axis.Y)
-			return side == Direction.EAST;
-		return side == Direction.UP;
+		return side == ServoMotorBlock.getTop(state);
 	}
 
 	private static boolean isMinAngleSide(BlockState state, Direction side) {
-		if (state.getValue(ServoMotorBlock.FACING).getAxis() == Axis.Y)
-			return side == Direction.WEST;
-		return side == Direction.DOWN;
+		return side == ServoMotorBlock.getTop(state).getOpposite();
 	}
 
 	public static class ServoSpeedScroll extends KineticScrollValueBehaviour {
