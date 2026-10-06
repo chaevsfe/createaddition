@@ -13,19 +13,22 @@ import dev.chaevsfe.createreiviewer.api.ViewerRecipeRegistry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.material.Fluid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class CAViewerPlugin implements CreateViewerPlugin {
     public static final Identifier CHARGING = CreateAddition.asResource("charging");
     public static final Identifier ROLLING = CreateAddition.asResource("rolling");
     public static final Identifier LIQUID_BURNING = CreateAddition.asResource("liquid_burning");
+    private static final Pattern SEQUENCE_STEP = Pattern.compile("sequenced_assembly_\\d+_.+_\\d+");
 
     @Override
     public void registerRecipes(ViewerRecipeRegistry registry) {
-        registry.add(CHARGING, CARecipes.CHARGING_TYPE, ChargingRecipe.class, (holder, builder) -> builder
+        registry.add(CHARGING, CARecipes.CHARGING_TYPE, ChargingRecipe.class, CAViewerPlugin::standalone, (holder, builder) -> builder
             .input(holder.value().ingredient())
             .results(holder.value().results())
             .duration(holder.value().energy())
@@ -44,6 +47,11 @@ public class CAViewerPlugin implements CreateViewerPlugin {
                 .heat(holder.value().superheated() ? HeatCondition.SUPERHEATED : HeatCondition.HEATED)
                 .build());
         registry.synchronize(CARecipes.CHARGING, CARecipes.ROLLING, CARecipes.LIQUID_BURNING);
+    }
+
+    private static boolean standalone(RecipeHolder<?> holder) {
+        Identifier id = holder.id().identifier();
+        return !id.getNamespace().equals("create") || !SEQUENCE_STEP.matcher(id.getPath()).matches();
     }
 
     private static List<ItemStack> buckets(LiquidBurningRecipe recipe) {

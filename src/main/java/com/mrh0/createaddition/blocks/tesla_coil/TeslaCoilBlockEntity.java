@@ -224,7 +224,7 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 
 	private boolean chargeRecipe(ItemStack stack, TransportedItemStack transported, TransportedItemStackHandlerBehaviour handler) {
 		if(this.getLevel() == null) return false;
-		if(!inputInv.getItem(0).is(stack.getItem())) {
+		if(!ItemStack.isSameItemSameComponents(inputInv.getItem(0), stack)) {
 			inputInv.setItem(0, stack);
 			recipeCache = find(new SingleRecipeInput(stack), this.getLevel());
 			chargeAccumulator = 0;
@@ -241,11 +241,13 @@ public class TeslaCoilBlockEntity extends AbstractElectricBlockEntity implements
 			chargeAccumulator += energyRemoved;
 			if(chargeAccumulator >= recipe.getEnergy()) {
 				TransportedItemStack remainingStack = transported.copy();
-				TransportedItemStack result = transported.copy();
-				result.stack = recipe.getResultStack();
 				remainingStack.stack.shrink(1);
 				List<TransportedItemStack> outList = new ArrayList<>();
-				outList.add(result);
+				for(ItemStack out : recipe.assemble(new SingleRecipeInput(stack), level.getRandom())) {
+					TransportedItemStack result = transported.copy();
+					result.stack = out;
+					outList.add(result);
+				}
 				handler.handleProcessingOnItem(transported, TransportedItemStackHandlerBehaviour.TransportedResult.convertToAndLeaveHeld(outList, remainingStack));
 				chargeAccumulator = 0;
 
