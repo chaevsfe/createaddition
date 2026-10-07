@@ -2,13 +2,14 @@ package com.mrh0.createaddition.event;
 
 import com.mrh0.createaddition.blocks.liquid_blaze_burner.LiquidBlazeBurnerBlock;
 import com.mrh0.createaddition.blocks.portable_energy_interface.PortableEnergyManager;
-import com.mrh0.createaddition.energy.network.EnergyNetworkManager;
+import com.mrh0.createaddition.energy.network.WireGraph;
 import com.mrh0.createaddition.index.CABlocks;
 import com.mrh0.createaddition.index.CAItems;
 import com.zurrtum.create.AllBlocks;
 
 import com.zurrtum.create.content.processing.burner.BlazeBurnerBlock;
 import com.zurrtum.create.content.processing.burner.BlazeBurnerBlockEntity;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -21,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class GameEvents {
@@ -28,13 +30,13 @@ public class GameEvents {
 	public static void initCommon() {
 		ServerTickEvents.START_LEVEL_TICK.register(GameEvents::levelTickEvent);
 		ServerTickEvents.START_SERVER_TICK.register(GameEvents::serverTickEvent);
-		ServerLevelEvents.LOAD.register(GameEvents::loadEvent);
+		ServerChunkEvents.CHUNK_LOAD.register(GameEvents::chunkLoadEvent);
 		ServerLevelEvents.UNLOAD.register(GameEvents::unloadEvent);
 		UseBlockCallback.EVENT.register(GameEvents::interact);
 	}
 
 	public static void levelTickEvent(ServerLevel level) {
-		EnergyNetworkManager.tickWorld(level);
+		WireGraph.tick(level);
 	}
 
 	public static void serverTickEvent(MinecraftServer server) {
@@ -42,12 +44,12 @@ public class GameEvents {
 		PortableEnergyManager.tick();
 	}
 
-	public static void loadEvent(MinecraftServer server, ServerLevel level) {
-		new EnergyNetworkManager(level);
+	public static void chunkLoadEvent(ServerLevel level, LevelChunk chunk, boolean generated) {
+		WireGraph.chunkLoaded(level, chunk);
 	}
 
 	public static void unloadEvent(MinecraftServer server, ServerLevel level) {
-		EnergyNetworkManager.instances.remove(level);
+		WireGraph.levelUnloaded(level);
 	}
 
 	public static InteractionResult interact(Player player, Level level, InteractionHand hand, BlockHitResult hitResult) {

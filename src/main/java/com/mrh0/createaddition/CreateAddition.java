@@ -5,6 +5,7 @@ import com.mrh0.createaddition.compat.fabric.RecipeCommonPlugin;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.event.GameEvents;
 import com.mrh0.createaddition.commands.CCApiCommand;
+import com.mrh0.createaddition.commands.WireGraphCommand;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CACreativeTabs;
 import com.mrh0.createaddition.index.CADamageTypes;
@@ -51,6 +52,7 @@ public class CreateAddition implements ModInitializer {
         GameEvents.initCommon();
         if (CC_ACTIVE) Peripherals.register();
         CCApiCommand.register();
+        WireGraphCommand.register();
         LOGGER.info("Create Crafts & Additions Initialized!");
     }
 

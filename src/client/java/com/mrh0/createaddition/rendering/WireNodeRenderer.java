@@ -34,6 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import org.joml.Matrix4f;
@@ -75,15 +76,13 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 			if (!node.hasConnection(i))
 				continue;
 			IWireNode remote = node.getWireNode(i);
-			if (remote == null)
-				continue;
 			BlockPos remotePos = node.getNodePos(i);
 			WireType type = node.getNodeType(i);
 			if (remotePos == null || type == null)
 				continue;
 
 			Vec3 localOffset = node.getNodeOffset(i);
-			Vec3 remoteOffset = remote.getNodeOffset(node.getOtherNodeIndex(i));
+			Vec3 remoteOffset = remote != null ? remote.getNodeOffset(node.getOtherNodeIndex(i)) : Vec3.ZERO;
 			if (localOffset == null || remoteOffset == null)
 				continue;
 
@@ -134,6 +133,39 @@ public class WireNodeRenderer<T extends BlockEntity> implements BlockEntityRende
 	@Override
 	public int getViewDistance() {
 		return 256;
+	}
+
+	@Override
+	public boolean shouldRender(T be, Vec3 cameraPos) {
+		double distance = getViewDistance();
+		return renderBounds(be).distanceToSqr(cameraPos) < distance * distance;
+	}
+
+	private static AABB renderBounds(BlockEntity be) {
+		BlockPos pos = be.getBlockPos();
+		int minX = pos.getX(), minY = pos.getY(), minZ = pos.getZ();
+		int maxX = minX, maxY = minY, maxZ = minZ;
+		if (be instanceof IWireNode node) {
+			for (int i = 0; i < node.getNodeCount(); i++) {
+				BlockPos other = node.getNodePos(i);
+				if (other == null)
+					continue;
+				minX = Math.min(minX, other.getX());
+				minY = Math.min(minY, other.getY());
+				minZ = Math.min(minZ, other.getZ());
+				maxX = Math.max(maxX, other.getX());
+				maxY = Math.max(maxY, other.getY());
+				maxZ = Math.max(maxZ, other.getZ());
+			}
+		}
+		AABB box = new AABB(minX - 1, minY - 1, minZ - 1, maxX + 2, maxY + 2, maxZ + 2);
+		LocalPlayer player = Minecraft.getInstance().player;
+		if (player != null) {
+			Util.Triple<BlockPos, Integer, WireType> held = Util.getWireNodeOfSpools(player.getInventory().getSelectedItem());
+			if (held != null && held.a.equals(pos))
+				box = box.minmax(player.getBoundingBox());
+		}
+		return box;
 	}
 
 	private static WireRenderState buildHeldWire(Level level, BlockState blockState, IWireNode node, BlockPos pos, float tickProgress) {
