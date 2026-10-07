@@ -99,6 +99,13 @@ public class EnergyNetwork {
 
 	void absorb(EnergyNetwork other) {
 		restore(other.inBuff, other.outBuff);
+		other.drain();
+	}
+
+	void drain() {
+		inBuff = 0;
+		outBuff = 0;
+		outBuffRetained = 0;
 	}
 
 	void restore(long in, long out) {

@@ -591,7 +591,10 @@ public class WireGraph extends SavedData {
 	public void rebuild() {
 		ListTag buffers = writeBuffers();
 		List<IWireNode> loaded = new ArrayList<>(loadedNodes.values());
-		for (EnergyNetwork network : networks) network.invalidate();
+		for (EnergyNetwork network : networks) {
+			network.drain();
+			network.invalidate();
+		}
 		vertices.clear();
 		inbound.clear();
 		watched.clear();

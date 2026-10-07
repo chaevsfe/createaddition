@@ -75,6 +75,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		public long insert(long maxAmount, TransactionContext transaction) {
 			if(!CACommonConfig.COMMON.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
 			if(getMode() != ConnectorMode.Pull) return 0;
+			EnergyNetwork network = liveNetwork();
 			if (network == null) return 0;
 			maxAmount = Math.min(maxAmount, getMaxIn() - pendingIn);
 			if (maxAmount <= 0) return 0;
@@ -89,6 +90,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		public long extract(long maxAmount, TransactionContext transaction) {
 			if(!CACommonConfig.COMMON.CONNECTOR_ALLOW_PASSIVE_IO.get()) return 0;
 			if(getMode() != ConnectorMode.Push) return 0;
+			EnergyNetwork network = liveNetwork();
 			if (network == null) return 0;
 			maxAmount = Math.min(maxAmount, getMaxOut() - pendingOut);
 			if (maxAmount <= 0) return 0;
@@ -112,6 +114,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		@Override
 		protected void onFinalCommit() {
+			EnergyNetwork network = liveNetwork();
 			if (network != null) {
 				if (pendingIn > 0) network.push(pendingIn);
 				if (pendingOut > 0) network.pull(pendingOut);
@@ -122,6 +125,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		@Override
 		public long getAmount() {
+			EnergyNetwork network = liveNetwork();
 			if (network == null) return 0;
 			return Math.min(getCapacity(), network.getBuff());
 		}
@@ -130,6 +134,12 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		public long getCapacity() {
 			return getCapacityOutside();
 		}
+	}
+
+	@Nullable
+	private EnergyNetwork liveNetwork() {
+		if (network != null && !network.isValid() && level != null && !level.isClientSide() && !isRemoved()) awakeNetwork(level);
+		return network != null && network.isValid() ? network : null;
 	}
 
 	@Override
