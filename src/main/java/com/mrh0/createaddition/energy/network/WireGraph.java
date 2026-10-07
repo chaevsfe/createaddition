@@ -17,6 +17,9 @@ import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.energy.IWireNode;
 import com.mrh0.createaddition.energy.LocalNode;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -44,6 +47,7 @@ public class WireGraph extends SavedData {
 			Identifier.fromNamespaceAndPath(CreateAddition.MODID, "wires"), WireGraph::new, CODEC, null);
 	private static final Map<ServerLevel, WireGraph> GRAPHS = new WeakHashMap<>();
 	private static final Map<ServerLevel, LongOpenHashSet> LOADED_CHUNKS = new WeakHashMap<>();
+	private static final Map<ServerLevel, Long2ObjectOpenHashMap<IntOpenHashSet>> PAID_AT_REMOVAL = new WeakHashMap<>();
 
 	private ServerLevel level;
 	private WireGraphVerifier verifier;
@@ -94,6 +98,7 @@ public class WireGraph extends SavedData {
 	}
 
 	public static void tick(Level level) {
+		if (level instanceof ServerLevel serverLevel) PAID_AT_REMOVAL.remove(serverLevel);
 		WireGraph graph = lookup(level, false);
 		if (graph != null) graph.tick();
 		else if (level instanceof ServerLevel serverLevel) LOADED_CHUNKS.remove(serverLevel);
@@ -122,12 +127,30 @@ public class WireGraph extends SavedData {
 		graph.markMissing(node.getPos().asLong());
 	}
 
+	public static void wirePaidAtRemoval(@Nullable Level level, BlockPos pos, int index) {
+		if (!(level instanceof ServerLevel serverLevel)) return;
+		Long2ObjectOpenHashMap<IntOpenHashSet> paid = PAID_AT_REMOVAL.computeIfAbsent(serverLevel, l -> new Long2ObjectOpenHashMap<>());
+		IntOpenHashSet indices = paid.get(pos.asLong());
+		if (indices == null) {
+			indices = new IntOpenHashSet();
+			paid.put(pos.asLong(), indices);
+		}
+		indices.add(index);
+	}
+
+	public static IntSet takeWiresPaidAtRemoval(ServerLevel level, BlockPos pos) {
+		Long2ObjectOpenHashMap<IntOpenHashSet> paid = PAID_AT_REMOVAL.get(level);
+		IntOpenHashSet indices = paid == null ? null : paid.remove(pos.asLong());
+		return indices == null ? IntSets.EMPTY_SET : indices;
+	}
+
 	public static void chunkLoaded(ServerLevel level, LevelChunk chunk) {
 		LOADED_CHUNKS.computeIfAbsent(level, l -> new LongOpenHashSet()).add(chunk.getPos().pack());
 	}
 
 	public static void levelUnloaded(ServerLevel level) {
 		LOADED_CHUNKS.remove(level);
+		PAID_AT_REMOVAL.remove(level);
 		WireGraph graph = GRAPHS.remove(level);
 		if (graph != null) graph.closed = true;
 	}
