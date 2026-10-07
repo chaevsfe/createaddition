@@ -7,6 +7,7 @@ import java.util.Set;
 import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.*;
 import com.mrh0.createaddition.energy.network.EnergyNetwork;
+import com.mrh0.createaddition.energy.network.WireGraph;
 import com.mrh0.createaddition.network.EnergyNetworkPacketPayload;
 import com.mrh0.createaddition.network.IObserveBlockEntity;
 import com.mrh0.createaddition.network.ObservePacketPayload;
@@ -147,7 +148,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		notifyUpdate();
 
-		if (network != null) network.invalidate();
+		WireGraph.nodeChanged(level, this);
 	}
 
 	@Override
@@ -159,7 +160,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		invalidateNodeCache();
 		notifyUpdate();
 
-		if (network != null) network.invalidate();
+		WireGraph.nodeChanged(level, this);
 		if (dropWire && old != null) this.wireCache.add(old);
 	}
 
@@ -192,11 +193,9 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		invalidateLocalNodes();
 		invalidateNodeCache();
-		boolean hasNodes = false;
 		for (ValueInput node : view.childrenListOrEmpty(LocalNode.NODES)) {
 			LocalNode localNode = new LocalNode(this, node);
 			this.localNodes[localNode.getIndex()] = localNode;
-			hasNodes = true;
 		}
 
 		if (!clientPacket && view.getBooleanOr("contraption", false)) {
@@ -211,7 +210,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 			}
 		}
 
-		if (hasNodes && this.network != null) this.network.invalidate();
+		if (!clientPacket) WireGraph.nodeChanged(level, this);
 	}
 
 	@Override
@@ -232,7 +231,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		if (changed) {
 			invalidateNodeCache();
-			if (this.network != null) this.network.invalidate();
+			WireGraph.nodeChanged(level, this);
 		}
 	}
 
@@ -257,6 +256,8 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		if (!this.wireCache.isEmpty() && !isRemoved()) handleWireCache(level, this.wireCache);
 
+		if (!level.isClientSide()) awakeNetwork(level);
+
 		specialTick();
 
 		super.tick();
@@ -264,7 +265,6 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		if(level == null) return;
 		if(level.isClientSide()) return;
-		if(awakeNetwork(level)) notifyUpdate();
 
 		networkTick(network);
 	}
@@ -273,6 +273,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 		ConnectorMode mode = getMode();
 		if(level == null) return;
 		if(level.isClientSide()) return;
+		if(network == null) return;
 
 		EnergyStorage externalStorage = getExternalEnergyStorage();
 		if(externalStorage == null) {
@@ -301,6 +302,18 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 	}
 
 	@Override
+	public void initialize() {
+		super.initialize();
+		WireGraph.nodeLoaded(level, this);
+	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		WireGraph.nodeUnloaded(level, this);
+	}
+
+	@Override
 	public void remove() {
 		if(level == null) return;
 		if (level.isClientSide()) return;
@@ -308,9 +321,14 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 			LocalNode localNode = getLocalNode(i);
 			if (localNode == null) continue;
 			IWireNode otherNode = getWireNode(i);
-			if(otherNode == null) continue;
+			if(otherNode == null) {
+				if (!localNode.isInvalid()) dropWire(level, localNode);
+				continue;
+			}
 
 			int ourNode = localNode.getOtherIndex();
+			LocalNode otherLocal = otherNode.getLocalNode(ourNode);
+			if (otherLocal == null || !otherLocal.getPos().equals(getBlockPos())) continue;
 			if (localNode.isInvalid())
 				otherNode.removeNode(ourNode);
 			else
@@ -319,7 +337,7 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 
 		invalidateNodeCache();
 
-		if (network != null) network.invalidate();
+		WireGraph.nodeRemoved(level, this);
 	}
 
 	public void invalidateLocalNodes() {

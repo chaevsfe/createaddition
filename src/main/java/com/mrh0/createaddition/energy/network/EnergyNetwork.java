@@ -1,12 +1,9 @@
 package com.mrh0.createaddition.energy.network;
 
-import java.util.Map;
+import java.util.Collections;
+import java.util.Set;
 
 import com.mrh0.createaddition.config.CACommonConfig;
-import com.mrh0.createaddition.energy.IWireNode;
-
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 
 public class EnergyNetwork {
 	private int id;
@@ -22,24 +19,19 @@ public class EnergyNetwork {
 	private long pulled = 0;
 	private long pushed = 0;
 
-	private int nodeCount = 0;
+	Set<PortKey> members = Collections.emptySet();
 
-	public EnergyNetwork(Level world) {
+	public EnergyNetwork() {
 		this.inBuff = 0;
 		this.outBuff = 0;
 		this.outBuffRetained = 0;
 		this.inDemand = 0;
 		this.outDemand = 0;
 		this.valid = true;
-
-		EnergyNetworkManager manager = EnergyNetworkManager.instances.get(world);
-		if (manager == null)
-			manager = new EnergyNetworkManager(world);
-		manager.add(this);
 	}
 
 	public long getMaxBuff() {
-		return Math.min(nodeCount * (outDemand + inDemand * 2 + 10), CACommonConfig.COMMON.CONNECTOR_NETWORK_INTERNAL_BUFFER.get());
+		return Math.min(members.size() * (outDemand + inDemand * 2 + 10), CACommonConfig.COMMON.CONNECTOR_NETWORK_INTERNAL_BUFFER.get());
 	}
 
 	public void tick(int index) {
@@ -105,25 +97,26 @@ public class EnergyNetwork {
 		return pull(max, false);
 	}
 
-	public static EnergyNetwork nextNode(Level level, EnergyNetwork en, Map<String, IWireNode> visited, IWireNode current, int index) {
-		if (visited.containsKey(posKey(current.getPos(), index))) return null; // should never matter?
-		EnergyNetwork previous = current.getNetwork(index);
-		if (previous != null && previous != en) previous.invalidate();
-		current.setNetwork(index, en);
-		visited.put(posKey(current.getPos(), index), current);
-		en.nodeCount++;
-
-		for (int i = 0; i < current.getNodeCount(); i++) {
-			IWireNode next = current.getWireNode(i);
-			if (next == null) continue;
-			if (!current.isNodeIndeciesConnected(index, i)) continue;
-			nextNode(level, en, visited, next, current.getOtherNodeIndex(i));
-		}
-		return en;
+	void absorb(EnergyNetwork other) {
+		restore(other.inBuff, other.outBuff);
 	}
 
-	private static String posKey(BlockPos pos, int index) {
-		return pos.getX()+","+pos.getY()+","+pos.getZ()+":"+index;
+	void restore(long in, long out) {
+		inBuff += in;
+		outBuff += out;
+		outBuffRetained = outBuff;
+	}
+
+	boolean hasStoredEnergy() {
+		return inBuff > 0 || outBuff > 0;
+	}
+
+	long getStoredIn() {
+		return inBuff;
+	}
+
+	long getStoredOut() {
+		return outBuff;
 	}
 
 	public void invalidate() {
