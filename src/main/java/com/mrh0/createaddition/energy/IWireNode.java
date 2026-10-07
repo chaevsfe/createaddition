@@ -45,7 +45,8 @@ public interface IWireNode {
 	                                 Level level) {
 		if (!obj.hasConnection(index)) return null;
 		IWireNode cached = nodeCache[index];
-		if (cached instanceof BlockEntity be && !be.isRemoved() && be.getBlockPos().equals(localNodes[index].getPos()))
+		if (!(level instanceof ServerLevel) && cached instanceof BlockEntity be && !be.isRemoved()
+				&& be.getBlockPos().equals(localNodes[index].getPos()))
 			return cached;
 		nodeCache[index] = IWireNode.getWireNode(level, localNodes[index].getPos());
 		return nodeCache[index];
