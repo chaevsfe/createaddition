@@ -50,6 +50,9 @@
     "create": "${create_fabric_version_range}",
     "java": ">=25"
   },
+  "breaks": {
+    "createreiviewer": "<1.0.2"
+  },
   "suggests": {
     "computercraft": "*",
     "jei": "*",
