@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +64,7 @@ public class WireGraph extends SavedData {
 	private final LongOpenHashSet bridges = new LongOpenHashSet();
 	private final LongOpenHashSet missing = new LongOpenHashSet();
 	private final Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<WireSlot>> paidCopies = new Long2ObjectOpenHashMap<>();
+	private final Map<PortKey, long[]> pendingBuffers = new LinkedHashMap<>();
 
 	private final Map<PortKey, EnergyNetwork> networkByPort = new HashMap<>();
 	private final Set<EnergyNetwork> networks = new LinkedHashSet<>();
@@ -247,6 +250,7 @@ public class WireGraph extends SavedData {
 	void markMissing(long pos) {
 		missing.add(pos);
 		forgetPaidCopies(pos);
+		dropPendingBuffers(pos);
 		WireVertex old = vertices.get(pos);
 		if (old != null) replaceVertex(pos, old, null);
 		recheckInbound(pos);
@@ -483,6 +487,7 @@ public class WireGraph extends SavedData {
 			old.invalidate();
 			networks.remove(old);
 		}
+		restorePendingBuffers();
 	}
 
 	private boolean exists(PortKey port) {
@@ -678,12 +683,8 @@ public class WireGraph extends SavedData {
 	}
 
 	public void rebuild() {
-		ListTag buffers = writeBuffers();
 		List<IWireNode> loaded = new ArrayList<>(loadedNodes.values());
-		for (EnergyNetwork network : networks) {
-			network.drain();
-			network.invalidate();
-		}
+		List<EnergyNetwork> previous = new ArrayList<>(networks);
 		vertices.clear();
 		inbound.clear();
 		watched.clear();
@@ -699,7 +700,16 @@ public class WireGraph extends SavedData {
 		for (IWireNode node : loaded)
 			if (node instanceof BlockEntity be && !be.isRemoved()) onNodeLoaded(node);
 		rebuildNetworks();
-		restoreBuffers(buffers);
+		for (EnergyNetwork old : previous) {
+			if (old.hasStoredEnergy() && !old.members.isEmpty()) {
+				EnergyNetwork heir = largestShare(old.members);
+				if (heir != null) heir.absorb(old);
+				else keepPendingBuffer(old.members.iterator().next(), old.getStoredIn(), old.getStoredOut());
+			}
+			old.drain();
+			old.invalidate();
+		}
+		restorePendingBuffers();
 		setDirty();
 	}
 
@@ -771,13 +781,50 @@ public class WireGraph extends SavedData {
 			buffer.putLong("Out", network.getStoredOut());
 			buffers.add(buffer);
 		}
+		for (Map.Entry<PortKey, long[]> pending : pendingBuffers.entrySet()) {
+			CompoundTag buffer = new CompoundTag();
+			buffer.putLong("Pos", pending.getKey().pos());
+			buffer.putInt("Port", pending.getKey().port());
+			buffer.putLong("In", pending.getValue()[0]);
+			buffer.putLong("Out", pending.getValue()[1]);
+			buffers.add(buffer);
+		}
 		return buffers;
 	}
 
 	private void restoreBuffers(ListTag buffers) {
 		buffers.compoundStream().forEach(buffer -> {
-			EnergyNetwork network = networkByPort.get(new PortKey(buffer.getLongOr("Pos", 0L), buffer.getIntOr("Port", 0)));
-			if (network != null) network.restore(buffer.getLongOr("In", 0L), buffer.getLongOr("Out", 0L));
+			PortKey port = new PortKey(buffer.getLongOr("Pos", 0L), buffer.getIntOr("Port", 0));
+			long in = buffer.getLongOr("In", 0L);
+			long out = buffer.getLongOr("Out", 0L);
+			EnergyNetwork network = networkByPort.get(port);
+			if (network != null) network.restore(in, out);
+			else keepPendingBuffer(port, in, out);
 		});
+	}
+
+	private void keepPendingBuffer(PortKey port, long in, long out) {
+		if (in <= 0 && out <= 0) return;
+		long[] pending = pendingBuffers.computeIfAbsent(port, p -> new long[2]);
+		pending[0] += in;
+		pending[1] += out;
+		setDirty();
+	}
+
+	private void restorePendingBuffers() {
+		if (pendingBuffers.isEmpty()) return;
+		Iterator<Map.Entry<PortKey, long[]>> it = pendingBuffers.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<PortKey, long[]> pending = it.next();
+			EnergyNetwork network = networkByPort.get(pending.getKey());
+			if (network == null) continue;
+			network.restore(pending.getValue()[0], pending.getValue()[1]);
+			it.remove();
+			setDirty();
+		}
+	}
+
+	private void dropPendingBuffers(long pos) {
+		if (!pendingBuffers.isEmpty() && pendingBuffers.keySet().removeIf(port -> port.pos() == pos)) setDirty();
 	}
 }
