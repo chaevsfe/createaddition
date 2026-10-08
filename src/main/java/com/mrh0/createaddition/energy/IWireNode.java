@@ -369,6 +369,7 @@ public interface IWireNode {
 		WireType type = node.getType();
 		ItemStack wire = type.getDrop();
 		node.invalid();
+		WireGraph.wirePaid(world, getPos(), node.getIndex(), node);
 		dropWire(world, getPos(), wire);
 	}
 
@@ -382,6 +383,10 @@ public interface IWireNode {
 		for (int i = 0; i < getNodeCount(); i++) {
 			LocalNode node = getLocalNode(i);
 			if (node == null) continue;
+			if (node.isInvalid() || !WireGraph.ownsWire(world, this, i, node)) {
+				node.invalid();
+				continue;
+			}
 
 			WireType type = node.getType();
 			int index = type.getIndex();
@@ -389,6 +394,7 @@ public interface IWireNode {
 			if (wires.get(index).isEmpty()) wires.set(index, type.getDrop());
 			else wires.get(index).grow(type.getDrop().getCount());
 			node.invalid();
+			WireGraph.wirePaid(world, getPos(), i, node);
 		}
 		for (ItemStack stack : wires)
 			dropWire(world, getPos(), stack);
@@ -405,6 +411,10 @@ public interface IWireNode {
 		for (int i = 0; i < getNodeCount(); i++) {
 			LocalNode node = getLocalNode(i);
 			if (node == null) continue;
+			if (node.isInvalid() || !WireGraph.ownsWire(world, this, i, node)) {
+				node.invalid();
+				continue;
+			}
 
 			WireType type = node.getType();
 			int index = type.getIndex();
@@ -419,6 +429,7 @@ public interface IWireNode {
 				else wires.get(index).grow(type.getDrop().getCount());
 			}
 			node.invalid();
+			WireGraph.wirePaid(world, getPos(), i, node);
 		}
 		for(ItemStack stack : wireSpools) {
 			if(!stack.isEmpty())
