@@ -16,6 +16,9 @@ import dev.chaevsfe.createreiviewer.api.client.ViewerCanvas;
 import dev.chaevsfe.createreiviewer.api.client.ViewerCategory;
 import dev.chaevsfe.createreiviewer.api.client.ViewerCategoryRegistry;
 import dev.chaevsfe.createreiviewer.api.client.ViewerLayouts;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.VersionParsingException;
+import net.fabricmc.loader.api.metadata.version.VersionPredicate;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -56,7 +59,20 @@ public class CAViewerClientPlugin implements CreateViewerClientPlugin {
             .layout(CAViewerClientPlugin::liquidBurning)
             .build());
         registry.addWorkstations(CreateViewerCategories.SANDPAPER_POLISHING, CAItems.DIAMOND_GRIT_SANDPAPER);
-        registry.addAssemblyStep(BuiltInRegistries.RECIPE_TYPE.getKey(CARecipes.CHARGING_TYPE), CABlocks.TESLA_COIL);
+        if (viewerHasAssemblySteps()) {
+            registry.addAssemblyStep(BuiltInRegistries.RECIPE_TYPE.getKey(CARecipes.CHARGING_TYPE), CABlocks.TESLA_COIL);
+        }
+    }
+
+    private static boolean viewerHasAssemblySteps() {
+        try {
+            VersionPredicate predicate = VersionPredicate.parse(">=1.0.2");
+            return FabricLoader.getInstance().getModContainer("createreiviewer")
+                .map(mod -> predicate.test(mod.getMetadata().getVersion()))
+                .orElse(false);
+        } catch (VersionParsingException e) {
+            return false;
+        }
     }
 
     private static String titleKey(String path) {
