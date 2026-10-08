@@ -332,17 +332,15 @@ public abstract class AbstractConnectorBlockEntity extends SmartBlockEntity impl
 			if (localNode == null) continue;
 			IWireNode otherNode = getWireNode(i);
 			if(otherNode == null) {
-				if (!localNode.isInvalid()) {
-					dropWire(level, localNode);
-					WireGraph.wirePaidAtRemoval(level, getBlockPos(), i);
-				}
+				WireGraph.cutAtRemoval(level, getBlockPos(), i);
+				if (!localNode.isInvalid() && WireGraph.ownsWire(level, this, i, localNode)) dropWire(level, localNode);
 				continue;
 			}
 
 			int ourNode = localNode.getOtherIndex();
 			LocalNode otherLocal = otherNode.getLocalNode(ourNode);
 			if (otherLocal == null || !otherLocal.getPos().equals(getBlockPos())) continue;
-			if (localNode.isInvalid())
+			if (localNode.isInvalid() || !WireGraph.ownsWire(level, this, i, localNode))
 				otherNode.removeNode(ourNode);
 			else
 				otherNode.removeNode(ourNode, true);

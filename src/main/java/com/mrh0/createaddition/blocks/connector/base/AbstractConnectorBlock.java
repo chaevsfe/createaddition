@@ -4,6 +4,7 @@ import com.mrh0.createaddition.config.CACommonConfig;
 import com.mrh0.createaddition.energy.IWireNode;
 import com.mrh0.createaddition.energy.LocalNode;
 import com.mrh0.createaddition.energy.NodeRotation;
+import com.mrh0.createaddition.energy.network.WireGraph;
 
 import com.zurrtum.create.api.contraption.transformable.TransformableBlock;
 import com.zurrtum.create.content.contraptions.StructureTransform;
@@ -98,8 +99,10 @@ public abstract class AbstractConnectorBlock<BE extends AbstractConnectorBlockEn
 						remoteNodes.add(wireNode.getWireNode(i));
 						remoteIndices.add(local.getOtherIndex());
 					}
-					for (int i = 0; i < wireNode.getNodeCount(); i++)
-						wireNode.removeNode(i, !player.isCreative());
+					for (int i = 0; i < wireNode.getNodeCount(); i++) {
+						LocalNode local = wireNode.getLocalNode(i);
+						if (local != null) wireNode.removeNode(i, !player.isCreative() && WireGraph.ownsWire(level, wireNode, i, local));
+					}
 					for (int i = 0; i < remoteNodes.size(); i++) {
 						if (remoteNodes.get(i) != null)
 							remoteNodes.get(i).removeNode(remoteIndices.get(i), false);

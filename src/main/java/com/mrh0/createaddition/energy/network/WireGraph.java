@@ -16,10 +16,13 @@ import com.mojang.serialization.Codec;
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.energy.IWireNode;
 import com.mrh0.createaddition.energy.LocalNode;
+import com.mrh0.createaddition.energy.WireType;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -47,7 +50,7 @@ public class WireGraph extends SavedData {
 			Identifier.fromNamespaceAndPath(CreateAddition.MODID, "wires"), WireGraph::new, CODEC, null);
 	private static final Map<ServerLevel, WireGraph> GRAPHS = new WeakHashMap<>();
 	private static final Map<ServerLevel, LongOpenHashSet> LOADED_CHUNKS = new WeakHashMap<>();
-	private static final Map<ServerLevel, Long2ObjectOpenHashMap<IntOpenHashSet>> PAID_AT_REMOVAL = new WeakHashMap<>();
+	private static final Map<ServerLevel, Long2ObjectOpenHashMap<IntOpenHashSet>> CUT_AT_REMOVAL = new WeakHashMap<>();
 
 	private ServerLevel level;
 	private WireGraphVerifier verifier;
@@ -58,6 +61,7 @@ public class WireGraph extends SavedData {
 	private final Long2ObjectOpenHashMap<IWireNode> loadedNodes = new Long2ObjectOpenHashMap<>();
 	private final LongOpenHashSet bridges = new LongOpenHashSet();
 	private final LongOpenHashSet missing = new LongOpenHashSet();
+	private final Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<WireSlot>> paidCopies = new Long2ObjectOpenHashMap<>();
 
 	private final Map<PortKey, EnergyNetwork> networkByPort = new HashMap<>();
 	private final Set<EnergyNetwork> networks = new LinkedHashSet<>();
@@ -98,7 +102,7 @@ public class WireGraph extends SavedData {
 	}
 
 	public static void tick(Level level) {
-		if (level instanceof ServerLevel serverLevel) PAID_AT_REMOVAL.remove(serverLevel);
+		if (level instanceof ServerLevel serverLevel) CUT_AT_REMOVAL.remove(serverLevel);
 		WireGraph graph = lookup(level, false);
 		if (graph != null) graph.tick();
 		else if (level instanceof ServerLevel serverLevel) LOADED_CHUNKS.remove(serverLevel);
@@ -127,21 +131,46 @@ public class WireGraph extends SavedData {
 		graph.markMissing(node.getPos().asLong());
 	}
 
-	public static void wirePaidAtRemoval(@Nullable Level level, BlockPos pos, int index) {
+	public static void cutAtRemoval(@Nullable Level level, BlockPos pos, int index) {
 		if (!(level instanceof ServerLevel serverLevel)) return;
-		Long2ObjectOpenHashMap<IntOpenHashSet> paid = PAID_AT_REMOVAL.computeIfAbsent(serverLevel, l -> new Long2ObjectOpenHashMap<>());
-		IntOpenHashSet indices = paid.get(pos.asLong());
+		Long2ObjectOpenHashMap<IntOpenHashSet> cut = CUT_AT_REMOVAL.computeIfAbsent(serverLevel, l -> new Long2ObjectOpenHashMap<>());
+		IntOpenHashSet indices = cut.get(pos.asLong());
 		if (indices == null) {
 			indices = new IntOpenHashSet();
-			paid.put(pos.asLong(), indices);
+			cut.put(pos.asLong(), indices);
 		}
 		indices.add(index);
 	}
 
-	public static IntSet takeWiresPaidAtRemoval(ServerLevel level, BlockPos pos) {
-		Long2ObjectOpenHashMap<IntOpenHashSet> paid = PAID_AT_REMOVAL.get(level);
-		IntOpenHashSet indices = paid == null ? null : paid.remove(pos.asLong());
+	public static boolean ownsWire(@Nullable Level level, IWireNode node, int index, LocalNode local) {
+		if (!(level instanceof ServerLevel serverLevel)) return true;
+		WireGraph graph = lookup(serverLevel, false);
+		long pos = node.getPos().asLong();
+		WireSlot slot = slotOf(index, local);
+		if (graph != null && graph.isPaidOut(pos, slot)) return false;
+		IWireNode far = findLoadedNode(serverLevel, local.getPos());
+		if (far != null) {
+			int otherIndex = local.getOtherIndex();
+			LocalNode back = otherIndex >= 0 && otherIndex < far.getNodeCount() ? far.getLocalNode(otherIndex) : null;
+			return back != null && !back.isInvalid() && back.getPos().equals(node.getPos()) && back.getOtherIndex() == index;
+		}
+		return graph == null || graph.farEndHolds(pos, slot);
+	}
+
+	public static void wirePaid(@Nullable Level level, BlockPos pos, int index, LocalNode local) {
+		if (!(level instanceof ServerLevel serverLevel) || findLoadedNode(serverLevel, local.getPos()) != null) return;
+		WireGraph graph = get(serverLevel);
+		if (graph != null) graph.recordPaidCopy(pos.asLong(), slotOf(index, local));
+	}
+
+	public static IntSet takeWiresCutAtRemoval(ServerLevel level, BlockPos pos) {
+		Long2ObjectOpenHashMap<IntOpenHashSet> cut = CUT_AT_REMOVAL.get(level);
+		IntOpenHashSet indices = cut == null ? null : cut.remove(pos.asLong());
 		return indices == null ? IntSets.EMPTY_SET : indices;
+	}
+
+	private static WireSlot slotOf(int index, LocalNode local) {
+		return new WireSlot(index, local.getPos().asLong(), local.getOtherIndex(), local.getType());
 	}
 
 	public static void chunkLoaded(ServerLevel level, LevelChunk chunk) {
@@ -150,7 +179,7 @@ public class WireGraph extends SavedData {
 
 	public static void levelUnloaded(ServerLevel level) {
 		LOADED_CHUNKS.remove(level);
-		PAID_AT_REMOVAL.remove(level);
+		CUT_AT_REMOVAL.remove(level);
 		WireGraph graph = GRAPHS.remove(level);
 		if (graph != null) graph.closed = true;
 	}
@@ -194,7 +223,9 @@ public class WireGraph extends SavedData {
 
 	void sync(IWireNode node) {
 		BlockState state = node instanceof BlockEntity be ? be.getBlockState() : null;
-		markPresent(WireVertex.of(node, state));
+		WireVertex fresh = WireVertex.of(node, state);
+		forgetSettledCopies(fresh);
+		markPresent(fresh);
 	}
 
 	void markPresent(WireVertex fresh) {
@@ -215,6 +246,7 @@ public class WireGraph extends SavedData {
 
 	void markMissing(long pos) {
 		missing.add(pos);
+		forgetPaidCopies(pos);
 		WireVertex old = vertices.get(pos);
 		if (old != null) replaceVertex(pos, old, null);
 		recheckInbound(pos);
@@ -238,7 +270,10 @@ public class WireGraph extends SavedData {
 		for (long pos : expected.toLongArray()) {
 			BlockPos blockPos = BlockPos.of(pos);
 			BlockEntity be = blockEntities.get(blockPos);
-			if (be instanceof IWireNode && !be.isRemoved()) continue;
+			if (be instanceof IWireNode node && !be.isRemoved()) {
+				if (paidCopies.containsKey(pos)) sync(node);
+				continue;
+			}
 			CompoundTag pending = chunk.getBlockEntityNbt(blockPos);
 			if (pending != null && WireNodeKind.fromBlockEntityId(pending.getStringOr("id", "")) != null) continue;
 			markMissing(pos);
@@ -281,16 +316,75 @@ public class WireGraph extends SavedData {
 	}
 
 	private void checkWireEnd(WireVertex vertex, WireSlot slot) {
-		WireVertex partner = vertices.get(slot.otherPos());
-		if (partner != null && partner.pointsTo(slot.otherIndex(), vertex.pos, slot.index())) return;
+		if (linked(vertex, slot)) return;
 		if (isDangling(vertex, slot)) danglingCandidates.add(new WireEnd(vertex.pos, slot));
 		else verifier.request(slot.otherPos());
 	}
 
+	private boolean linked(WireVertex vertex, WireSlot slot) {
+		WireVertex partner = vertices.get(slot.otherPos());
+		return partner != null && partner.pointsTo(slot.otherIndex(), vertex.pos, slot.index()) && !isPaidOut(vertex.pos, slot);
+	}
+
 	private boolean isDangling(WireVertex vertex, WireSlot slot) {
+		if (isPaidOut(vertex.pos, slot)) return true;
 		WireVertex partner = vertices.get(slot.otherPos());
 		if (partner == null) return missing.contains(slot.otherPos());
 		return partner.verified && !partner.pointsTo(slot.otherIndex(), vertex.pos, slot.index());
+	}
+
+	private void recordPaidCopy(long pos, WireSlot slot) {
+		if (missing.contains(slot.otherPos())) return;
+		Int2ObjectOpenHashMap<WireSlot> copies = paidCopies.get(slot.otherPos());
+		if (copies == null) {
+			copies = new Int2ObjectOpenHashMap<>();
+			paidCopies.put(slot.otherPos(), copies);
+		}
+		copies.put(slot.otherIndex(), new WireSlot(slot.otherIndex(), pos, slot.index(), slot.type()));
+		updateWatch(slot.otherPos());
+		setDirty();
+	}
+
+	private boolean farEndHolds(long pos, WireSlot slot) {
+		if (missing.contains(slot.otherPos())) return false;
+		WireVertex partner = vertices.get(slot.otherPos());
+		WireSlot held = partner == null ? null : partner.slots.get(slot.otherIndex());
+		if (held != null) return held.otherPos() == pos && held.otherIndex() == slot.index();
+		return partner == null || !partner.verified;
+	}
+
+	private boolean isPaidOut(long pos, WireSlot slot) {
+		if (paidCopies.isEmpty()) return false;
+		return isPaidCopy(pos, slot) || isPaidCopy(slot.otherPos(), new WireSlot(slot.otherIndex(), pos, slot.index(), slot.type()));
+	}
+
+	private boolean isPaidCopy(long pos, WireSlot slot) {
+		Int2ObjectOpenHashMap<WireSlot> copies = paidCopies.get(pos);
+		return copies != null && slot.equals(copies.get(slot.index()));
+	}
+
+	private void forgetSettledCopies(WireVertex live) {
+		Int2ObjectOpenHashMap<WireSlot> copies = paidCopies.get(live.pos);
+		if (copies == null) return;
+		LevelChunk chunk = level.getChunkSource().getChunkNow(SectionPos.blockToSectionCoord(BlockPos.getX(live.pos)),
+				SectionPos.blockToSectionCoord(BlockPos.getZ(live.pos)));
+		if (chunk == null) return;
+		boolean changed = false;
+		for (int index : copies.keySet().toIntArray())
+			if (!copies.get(index).equals(live.slots.get(index))) {
+				copies.remove(index);
+				changed = true;
+			}
+		if (!changed) return;
+		chunk.markUnsaved();
+		if (copies.isEmpty()) forgetPaidCopies(live.pos);
+		else setDirty();
+	}
+
+	private void forgetPaidCopies(long pos) {
+		if (paidCopies.remove(pos) == null) return;
+		updateWatch(pos);
+		setDirty();
 	}
 
 	private void recheckInbound(long pos) {
@@ -406,9 +500,8 @@ public class WireGraph extends SavedData {
 			component.add(port);
 			WireVertex vertex = vertices.get(port.pos());
 			for (WireSlot slot : vertex.slots.values()) {
-				if (vertex.kind.portOf(slot.index()) != port.port()) continue;
+				if (vertex.kind.portOf(slot.index()) != port.port() || !linked(vertex, slot)) continue;
 				WireVertex other = vertices.get(slot.otherPos());
-				if (other == null || !other.pointsTo(slot.otherIndex(), vertex.pos, slot.index())) continue;
 				PortKey next = other.port(other.kind.portOf(slot.otherIndex()));
 				if (visited.add(next)) queue.add(next);
 			}
@@ -518,7 +611,7 @@ public class WireGraph extends SavedData {
 
 	private void updateWatch(long pos) {
 		long chunk = ChunkPos.pack(SectionPos.blockToSectionCoord(BlockPos.getX(pos)), SectionPos.blockToSectionCoord(BlockPos.getZ(pos)));
-		if (vertices.containsKey(pos) || inbound.containsKey(pos)) {
+		if (vertices.containsKey(pos) || inbound.containsKey(pos) || paidCopies.containsKey(pos)) {
 			positionsAt(watched, chunk).add(pos);
 			return;
 		}
@@ -551,20 +644,16 @@ public class WireGraph extends SavedData {
 	private int countWires() {
 		int ends = 0;
 		for (WireVertex vertex : vertices.values())
-			for (WireSlot slot : vertex.slots.values()) {
-				WireVertex other = vertices.get(slot.otherPos());
-				if (other != null && other.pointsTo(slot.otherIndex(), vertex.pos, slot.index())) ends++;
-			}
+			for (WireSlot slot : vertex.slots.values())
+				if (linked(vertex, slot)) ends++;
 		return ends / 2;
 	}
 
 	private int countOneSidedWires() {
 		int count = 0;
 		for (WireVertex vertex : vertices.values())
-			for (WireSlot slot : vertex.slots.values()) {
-				WireVertex other = vertices.get(slot.otherPos());
-				if (other == null || !other.pointsTo(slot.otherIndex(), vertex.pos, slot.index())) count++;
-			}
+			for (WireSlot slot : vertex.slots.values())
+				if (!linked(vertex, slot)) count++;
 		return count;
 	}
 
@@ -606,6 +695,7 @@ public class WireGraph extends SavedData {
 		dirtyPorts.clear();
 		danglingCandidates.clear();
 		verifier.reset();
+		for (long pos : paidCopies.keySet().toLongArray()) updateWatch(pos);
 		for (IWireNode node : loaded)
 			if (node instanceof BlockEntity be && !be.isRemoved()) onNodeLoaded(node);
 		rebuildNetworks();
@@ -620,6 +710,18 @@ public class WireGraph extends SavedData {
 		for (WireVertex vertex : vertices.values()) list.add(vertex.write());
 		tag.put("Vertices", list);
 		tag.put("Buffers", writeBuffers());
+		ListTag copies = new ListTag();
+		for (Long2ObjectMap.Entry<Int2ObjectOpenHashMap<WireSlot>> entry : paidCopies.long2ObjectEntrySet())
+			for (WireSlot slot : entry.getValue().values()) {
+				CompoundTag copy = new CompoundTag();
+				copy.putLong("Pos", entry.getLongKey());
+				copy.putInt("Index", slot.index());
+				copy.putLong("Other", slot.otherPos());
+				copy.putInt("OtherIndex", slot.otherIndex());
+				copy.putInt("Type", slot.type().getIndex());
+				copies.add(copy);
+			}
+		tag.put("PaidCopies", copies);
 		return tag;
 	}
 
@@ -629,9 +731,24 @@ public class WireGraph extends SavedData {
 			WireVertex vertex = WireVertex.read(t);
 			if (vertex != null) graph.addSavedVertex(vertex);
 		});
+		tag.getListOrEmpty("PaidCopies").compoundStream().forEach(graph::addSavedPaidCopy);
 		graph.rebuildNetworks();
 		graph.restoreBuffers(tag.getListOrEmpty("Buffers"));
 		return graph;
+	}
+
+	private void addSavedPaidCopy(CompoundTag tag) {
+		WireType type = WireType.fromIndex(tag.getIntOr("Type", -1));
+		if (type == null || tag.getLong("Pos").isEmpty() || tag.getLong("Other").isEmpty()) return;
+		long pos = tag.getLongOr("Pos", 0L);
+		int index = tag.getIntOr("Index", 0);
+		Int2ObjectOpenHashMap<WireSlot> copies = paidCopies.get(pos);
+		if (copies == null) {
+			copies = new Int2ObjectOpenHashMap<>();
+			paidCopies.put(pos, copies);
+		}
+		copies.put(index, new WireSlot(index, tag.getLongOr("Other", 0L), tag.getIntOr("OtherIndex", 0), type));
+		updateWatch(pos);
 	}
 
 	private void addSavedVertex(WireVertex vertex) {

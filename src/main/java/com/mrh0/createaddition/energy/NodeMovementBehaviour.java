@@ -32,7 +32,7 @@ public class NodeMovementBehaviour extends MovementBehaviour {
 				if (local != null && !local.isInvalid() && node.getWireNode(i) == null) paid.add(i);
 			}
 		} else {
-			paid.addAll(WireGraph.takeWiresPaidAtRemoval(level, pos));
+			paid.addAll(WireGraph.takeWiresCutAtRemoval(level, pos));
 		}
 		if (paid.isEmpty()) return;
 		ListTag kept = new ListTag();
