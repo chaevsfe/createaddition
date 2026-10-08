@@ -4,6 +4,7 @@ import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.tesla_coil.TeslaCoilBlock;
 import com.mrh0.createaddition.index.CABlocks;
 import com.mrh0.createaddition.index.CAItems;
+import com.mrh0.createaddition.index.CARecipes;
 import com.mrh0.createaddition.util.Util;
 import com.zurrtum.create.AllItems;
 import com.zurrtum.create.client.foundation.gui.AllGuiTextures;
@@ -16,6 +17,7 @@ import dev.chaevsfe.createreiviewer.api.client.ViewerCategory;
 import dev.chaevsfe.createreiviewer.api.client.ViewerCategoryRegistry;
 import dev.chaevsfe.createreiviewer.api.client.ViewerLayouts;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -54,6 +56,7 @@ public class CAViewerClientPlugin implements CreateViewerClientPlugin {
             .layout(CAViewerClientPlugin::liquidBurning)
             .build());
         registry.addWorkstations(CreateViewerCategories.SANDPAPER_POLISHING, CAItems.DIAMOND_GRIT_SANDPAPER);
+        registry.addAssemblyStep(BuiltInRegistries.RECIPE_TYPE.getKey(CARecipes.CHARGING_TYPE), CABlocks.TESLA_COIL);
     }
 
     private static String titleKey(String path) {
