@@ -9,5 +9,6 @@ public class CANetwork {
         PayloadTypeRegistry.clientboundPlay().register(EnergyNetworkPacketPayload.TYPE, EnergyNetworkPacketPayload.STREAM_CODEC);
         PayloadTypeRegistry.clientboundPlay().register(TimeRemainingPacketPayload.TYPE, TimeRemainingPacketPayload.STREAM_CODEC);
         ServerPlayNetworking.registerGlobalReceiver(ObservePacketPayload.TYPE, (payload, context) -> ServerPayloadHandler.handleObservePayload(payload, context.player()));
+        CAHandshake.register();
     }
 }

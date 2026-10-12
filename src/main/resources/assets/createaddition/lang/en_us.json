@@ -1,4 +1,9 @@
 {
+  "createaddition.handshake.client_too_old": "This server runs Crafts & Additions %s and your client runs an older version. Install the same Crafts & Additions version as the server.",
+  "createaddition.handshake.mismatch": "This server runs Crafts & Additions %s and your client runs %s. Install the same Crafts & Additions version as the server.",
+  "createaddition.handshake.mismatch_build": "This server and your client both run Crafts & Additions %s, but their blocks differ. Install the same Crafts & Additions build as the server.",
+  "createaddition.handshake.timeout": "Your client did not report its Crafts & Additions version. Install the same Crafts & Additions version as the server (%s).",
+  "createaddition.handshake.server_too_old": "This server runs an older Crafts & Additions than your client (%s). Use the same Crafts & Additions version on both.",
   "createaddition.tooltip.energy.stored": "Stored Energy:",
   "createaddition.tooltip.energy.capacity": "Capacity:",
   "createaddition.tooltip.energy.consumption": "Energy Usage:",

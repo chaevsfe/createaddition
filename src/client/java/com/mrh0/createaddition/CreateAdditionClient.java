@@ -36,6 +36,7 @@ import com.mrh0.createaddition.index.CABlockEntities;
 import com.mrh0.createaddition.index.CABlocks;
 import com.mrh0.createaddition.index.CAFluids;
 import com.mrh0.createaddition.index.CAPartials;
+import com.mrh0.createaddition.network.CAClientHandshake;
 import com.mrh0.createaddition.network.EnergyNetworkPacketPayload;
 import com.mrh0.createaddition.network.TimeRemainingPacketPayload;
 import com.mrh0.createaddition.blocks.alternator.AlternatorBlockEntity;
@@ -193,5 +194,6 @@ public class CreateAdditionClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(
 			TimeRemainingPacketPayload.TYPE,
 			(payload, context) -> TimeRemainingPacketPayload.updateClientCache(payload.timeRemaining()));
+		CAClientHandshake.register();
 	}
 }
