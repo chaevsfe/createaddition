@@ -1,6 +1,5 @@
 package com.mrh0.createaddition.blocks.liquid_blaze_burner;
 
-import com.mojang.serialization.MapCodec;
 import com.mrh0.createaddition.index.CABlockEntities;
 import com.zurrtum.create.AllItems;
 import com.zurrtum.create.AllShapes;
@@ -42,16 +41,9 @@ import static com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HEAT
 
 public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implements IBE<LiquidBlazeBurnerBlockEntity>, IWrenchable, FluidInventoryProvider<LiquidBlazeBurnerBlockEntity> {
 
-	public static final MapCodec<LiquidBlazeBurnerBlock> CODEC = simpleCodec(LiquidBlazeBurnerBlock::new);
-
 	public LiquidBlazeBurnerBlock(Properties properties) {
 		super(properties);
 		registerDefaultState(defaultBlockState().setValue(HEAT_LEVEL, BlazeBurnerBlock.HeatLevel.NONE));
-	}
-
-	@Override
-	protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-		return CODEC;
 	}
 
 	public static BlazeBurnerBlock.HeatLevel getHeatLevelOf(BlockState blockState) {
