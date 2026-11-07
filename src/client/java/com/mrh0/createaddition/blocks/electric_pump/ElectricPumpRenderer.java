@@ -70,7 +70,7 @@ public class ElectricPumpRenderer implements BlockEntityRenderer<ElectricPumpBlo
 			float scale = state.scales[i];
 			matrices.pushPose();
 			matrices.translate(0.5f, 0.5f, 0.5f);
-			matrices.mulPose(state.rotation);
+			matrices.rotate(state.rotation);
 			matrices.translate(-0.5f, -0.5f, -0.5f);
 			matrices.translate(offset[0], offset[1], offset[2]);
 			matrices.scale(scale, scale, scale);
