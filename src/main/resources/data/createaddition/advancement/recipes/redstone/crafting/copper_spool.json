@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/copper_spool"
+        "recipes": "createaddition:crafting/copper_spool"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

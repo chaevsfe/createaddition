@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/electrum_ingot_from_nugget"
+        "recipes": "createaddition:crafting/electrum_ingot_from_nugget"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

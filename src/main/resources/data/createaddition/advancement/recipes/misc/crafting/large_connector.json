@@ -43,7 +43,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/large_connector"
+        "recipes": "createaddition:crafting/large_connector"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -43,7 +43,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/modular_accumulator"
+        "recipes": "createaddition:crafting/modular_accumulator"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -33,7 +33,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/servo_motor"
+        "recipes": "createaddition:crafting/servo_motor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

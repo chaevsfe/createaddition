@@ -33,7 +33,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/capacitor_2"
+        "recipes": "createaddition:crafting/capacitor_2"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

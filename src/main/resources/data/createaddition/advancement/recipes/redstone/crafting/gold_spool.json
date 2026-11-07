@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/gold_spool"
+        "recipes": "createaddition:crafting/gold_spool"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

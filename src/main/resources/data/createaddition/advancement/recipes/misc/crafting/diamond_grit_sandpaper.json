@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/diamond_grit_sandpaper"
+        "recipes": "createaddition:crafting/diamond_grit_sandpaper"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

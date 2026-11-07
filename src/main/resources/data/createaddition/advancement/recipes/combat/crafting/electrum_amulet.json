@@ -43,7 +43,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/electrum_amulet"
+        "recipes": "createaddition:crafting/electrum_amulet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

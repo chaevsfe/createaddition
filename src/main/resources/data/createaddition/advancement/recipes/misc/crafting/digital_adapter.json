@@ -33,7 +33,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/digital_adapter"
+        "recipes": "createaddition:crafting/digital_adapter"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -43,7 +43,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/festive_spool"
+        "recipes": "createaddition:crafting/festive_spool"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

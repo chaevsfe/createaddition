@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/barbed_wire"
+        "recipes": "createaddition:crafting/barbed_wire"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

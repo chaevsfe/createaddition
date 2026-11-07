@@ -33,7 +33,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/spool"
+        "recipes": "createaddition:crafting/spool"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

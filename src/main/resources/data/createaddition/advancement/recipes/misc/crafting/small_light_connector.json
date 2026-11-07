@@ -43,7 +43,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/small_light_connector"
+        "recipes": "createaddition:crafting/small_light_connector"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

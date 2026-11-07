@@ -53,7 +53,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/redstone_relay"
+        "recipes": "createaddition:crafting/redstone_relay"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

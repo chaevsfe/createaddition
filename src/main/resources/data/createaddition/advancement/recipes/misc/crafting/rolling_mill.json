@@ -53,7 +53,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/rolling_mill"
+        "recipes": "createaddition:crafting/rolling_mill"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

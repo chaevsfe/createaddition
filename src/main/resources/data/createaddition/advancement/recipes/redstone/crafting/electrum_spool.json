@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/electrum_spool"
+        "recipes": "createaddition:crafting/electrum_spool"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -23,7 +23,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:smoking/cake_base_baked"
+        "recipes": "createaddition:smoking/cake_base_baked"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -43,7 +43,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/portable_energy_interface"
+        "recipes": "createaddition:crafting/portable_energy_interface"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

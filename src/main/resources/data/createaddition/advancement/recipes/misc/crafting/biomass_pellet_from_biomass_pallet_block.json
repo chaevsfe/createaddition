@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "createaddition:crafting/biomass_pellet_from_biomass_pallet_block"
+        "recipes": "createaddition:crafting/biomass_pellet_from_biomass_pallet_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
