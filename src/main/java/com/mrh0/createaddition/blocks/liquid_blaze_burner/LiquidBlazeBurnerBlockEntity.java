@@ -27,6 +27,7 @@ import com.zurrtum.create.infrastructure.fluids.FluidStack;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -34,7 +35,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.SlotProvider;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CookingFuel;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -42,12 +46,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ResolvableInt;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import static com.zurrtum.create.content.processing.burner.BlazeBurnerBlock.HEAT_LEVEL;
 
-public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IObserveBlockEntity {
+public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IObserveBlockEntity, SlotProvider {
 
 	public static final int BUCKET_AMOUNT = 81000;
 	public static final int BURN_CONSUMPTION = 8100;
@@ -259,6 +268,20 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IO
 		}
 	}
 
+	@Override
+	public @Nullable SlotAccess getSlot(int slot) {
+		return null;
+	}
+
+	private LootContext getLootContext(ServerLevel serverLevel) {
+		return new LootContext.Builder(new LootParams.Builder(serverLevel)
+			.withParameter(LootContextParams.BLOCK_STATE, getBlockState())
+			.withParameter(LootContextParams.BLOCK_ENTITY, this)
+			.withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(getBlockPos()))
+			.withParameter(LootContextParams.CONTAINER, this)
+			.create(LootContextParamSets.CONTAINER_PROCESS)).create(Optional.empty());
+	}
+
 	protected boolean tryUpdateFuel(ItemStack itemStack, boolean forceOverflow, boolean simulate) {
 		if (isCreative) return false;
 
@@ -269,8 +292,10 @@ public class LiquidBlazeBurnerBlockEntity extends SmartBlockEntity implements IO
 			newBurnTime = 3200;
 			newFuel = FuelType.SPECIAL;
 		} else {
-			newBurnTime = level == null ? 0 : level.fuelValues().burnDuration(itemStack);
-			if (newBurnTime > 0)
+			newBurnTime = level instanceof ServerLevel serverLevel
+				? ResolvableInt.getFromItem(itemStack, DataComponents.COOKING_FUEL, CookingFuel::burnTime, getLootContext(serverLevel), 0)
+				: 0;
+			if (newBurnTime > 0 || (level != null && level.isClientSide() && itemStack.has(DataComponents.COOKING_FUEL)))
 				newFuel = FuelType.NORMAL;
 			else if (itemStack.is(AllItemTags.BLAZE_BURNER_FUEL_REGULAR)) {
 				newBurnTime = 1600;
