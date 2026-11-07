@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -69,13 +70,13 @@ public class WireSpool extends Item {
 					c.getItemInHand().shrink(1);
 					ItemStack stack = connectionType.getSourceDrop();
 					boolean shouldDrop = !c.getPlayer().addItem(stack);
-					if(shouldDrop) c.getPlayer().drop(stack, false);
+					if(shouldDrop) c.getPlayer().drop(stack, false, Prediction.SERVER_ONLY);
 				}
 				else if(result.isLinked()) {
 					c.getItemInHand().shrink(1);
 					ItemStack stack = new ItemStack(CAItems.SPOOL, 1);
 					boolean shouldDrop = !c.getPlayer().addItem(stack);
-					if(shouldDrop) c.getPlayer().drop(stack, false);
+					if(shouldDrop) c.getPlayer().drop(stack, false, Prediction.SERVER_ONLY);
 				}
 			}
 			c.getItemInHand().remove(DataComponents.CUSTOM_DATA);

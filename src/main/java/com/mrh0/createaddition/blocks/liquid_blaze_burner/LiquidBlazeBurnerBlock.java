@@ -15,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Prediction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -126,7 +127,7 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 				if (stack.isEmpty()) {
 					player.setItemInHand(hand, leftover);
 				} else if (!player.getInventory().add(leftover)) {
-					player.drop(leftover, false);
+					player.drop(leftover, false, Prediction.SERVER_ONLY);
 				}
 			}
 		}
