@@ -10,18 +10,21 @@ import com.mrh0.createaddition.item.WireSpool;
 import java.util.function.Function;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.component.BlockTransformers;
 
 public class CAItems {
 
 	public static final CapacitorItem CAPACITOR = registerItem("capacitor", CapacitorItem::new);
 
 	public static final Item DIAMOND_GRIT = registerItem("diamond_grit", Item::new);
-	public static final DiamondGritSandpaperItem DIAMOND_GRIT_SANDPAPER = registerItem("diamond_grit_sandpaper", DiamondGritSandpaperItem::new);
+	public static final DiamondGritSandpaperItem DIAMOND_GRIT_SANDPAPER = registerItem("diamond_grit_sandpaper", DiamondGritSandpaperItem::new,
+		new Item.Properties().delayedComponent(DataComponents.BLOCK_TRANSFORMER, context -> context.getOrThrow(BlockTransformers.AXE)));
 
 	public static final Item BIOMASS = registerItem("biomass", Item::new, new Item.Properties().stacksTo(16));
 	public static final BiomassPelletItem BIOMASS_PELLET = registerItem("biomass_pellet", BiomassPelletItem::new, new Item.Properties().cookingFuel(BiomassPelletItem.BURN_TIME));
