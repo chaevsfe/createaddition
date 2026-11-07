@@ -4,6 +4,7 @@
     "package": "com.mrh0.createaddition.mixin",
     "compatibilityLevel": "JAVA_25",
     "mixins": [
+        "AbstractFurnaceBlockEntityMixin",
         "BaseFireBlockMixin",
         "FireBlockInvoker",
         "FireBlockMixin",
