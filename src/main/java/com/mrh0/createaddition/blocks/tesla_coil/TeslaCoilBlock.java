@@ -5,7 +5,6 @@ import com.mrh0.createaddition.shapes.CAShapes;
 import com.zurrtum.create.catnip.math.VoxelShaper;
 import com.zurrtum.create.content.equipment.wrench.IWrenchable;
 import com.zurrtum.create.foundation.block.IBE;
-import com.zurrtum.create.foundation.block.RedStoneConnectBlock;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,7 +22,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.Nullable;
 
-public class TeslaCoilBlock extends Block implements IBE<TeslaCoilBlockEntity>, IWrenchable, RedStoneConnectBlock {
+public class TeslaCoilBlock extends Block implements IBE<TeslaCoilBlockEntity>, IWrenchable {
 
 	public static final VoxelShaper TESLA_COIL_SHAPE = CAShapes.shape(0, 0, 0, 16, 10, 16).add(1, 0, 1, 15, 12, 15).forDirectional();
 	public static final EnumProperty<Direction> FACING = BlockStateProperties.FACING;
@@ -64,7 +63,7 @@ public class TeslaCoilBlock extends Block implements IBE<TeslaCoilBlockEntity>, 
 	}
 
 	@Override
-	public boolean canConnectRedstone(BlockState state, @Nullable Direction side) {
+	protected boolean shouldRedstoneWireConnectTo(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction side) {
 		return true;
 	}
 }
