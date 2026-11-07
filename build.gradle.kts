@@ -3,7 +3,7 @@ import java.util.zip.ZipFile
 import javax.imageio.ImageIO
 
 plugins {
-    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
+    id("net.fabricmc.fabric-loom") version "1.19-SNAPSHOT"
     `maven-publish`
 }
 
