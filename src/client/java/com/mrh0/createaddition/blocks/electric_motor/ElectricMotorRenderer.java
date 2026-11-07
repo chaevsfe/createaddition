@@ -44,7 +44,9 @@ public class ElectricMotorRenderer implements BlockEntityRenderer<ElectricMotorB
 		state.model = CachedBuffers.partialFacing(AllPartialModels.SHAFT_HALF, blockState, facing)
 			.cardinalLighting(level).light(state.lightCoords).color(KineticBlockEntityRenderer.getTintColor(be))
 			.extractRenderState();
-		state.angle = KineticBlockEntityRenderer.getRotateAngleForBe(facing.getAxis(), facing.getAxis().getPositive(), be, state, level);
+		Direction.Axis axis = facing.getAxis();
+		state.axis = axis;
+		state.angle = KineticBlockEntityRenderer.getDegrees(axis, be, state, level);
 	}
 
 	@Override
