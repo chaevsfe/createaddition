@@ -24,7 +24,7 @@ public class CAItems {
 	public static final DiamondGritSandpaperItem DIAMOND_GRIT_SANDPAPER = registerItem("diamond_grit_sandpaper", DiamondGritSandpaperItem::new);
 
 	public static final Item BIOMASS = registerItem("biomass", Item::new, new Item.Properties().stacksTo(16));
-	public static final BiomassPelletItem BIOMASS_PELLET = registerItem("biomass_pellet", BiomassPelletItem::new);
+	public static final BiomassPelletItem BIOMASS_PELLET = registerItem("biomass_pellet", BiomassPelletItem::new, new Item.Properties().cookingFuel(BiomassPelletItem.BURN_TIME));
 
 	public static final ElectrumAmuletItem ELECTRUM_AMULET = registerItem("electrum_amulet", ElectrumAmuletItem::new);
 

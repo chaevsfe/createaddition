@@ -1,20 +1,15 @@
 package com.mrh0.createaddition.item;
 
-import com.mrh0.createaddition.index.CABlocks;
-import com.mrh0.createaddition.index.CAItems;
+import com.mrh0.createaddition.CreateAddition;
 
-import net.fabricmc.fabric.api.registry.FuelValueEvents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
 
 public class BiomassPelletItem extends Item {
-	public static final int BURN_TIME = 6400;
-
-	static {
-		FuelValueEvents.BUILD.register((builder, context) -> {
-			builder.add(CAItems.BIOMASS_PELLET, BURN_TIME);
-			builder.add(CABlocks.BIOMASS_PALLET, BURN_TIME * 9);
-		});
-	}
+	public static final ResourceKey<ContextIntProvider> BURN_TIME = ResourceKey.create(Registries.CONTEXT_INT_PROVIDER, CreateAddition.asResource("cooking/time_biomass_pellet"));
+	public static final ResourceKey<ContextIntProvider> BLOCK_BURN_TIME = ResourceKey.create(Registries.CONTEXT_INT_PROVIDER, CreateAddition.asResource("cooking/time_biomass_pellet_block"));
 
 	public BiomassPelletItem(Properties props) {
 		super(props);

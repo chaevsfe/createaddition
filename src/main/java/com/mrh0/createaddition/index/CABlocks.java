@@ -20,6 +20,7 @@ import com.mrh0.createaddition.blocks.rolling_mill.RollingMillBlock;
 import com.mrh0.createaddition.blocks.servo_motor.ServoMotorBlock;
 import com.mrh0.createaddition.blocks.tesla_coil.TeslaCoilBlock;
 import com.mrh0.createaddition.item.BiomassPelletBlockItem;
+import com.mrh0.createaddition.item.BiomassPelletItem;
 import com.zurrtum.create.content.processing.AssemblyOperatorBlockItem;
 
 import java.util.function.BiFunction;
@@ -98,7 +99,7 @@ public class CABlocks {
 
 	public static final Block BIOMASS_PALLET = registerBlock("biomass_pellet_block", Block::new,
 			BlockBehaviour.Properties.ofFullCopy(Blocks.DRIED_KELP_BLOCK).mapColor(MapColor.COLOR_GREEN),
-			BiomassPelletBlockItem::new, new Item.Properties());
+			BiomassPelletBlockItem::new, new Item.Properties().cookingFuel(BiomassPelletItem.BLOCK_BURN_TIME));
 
 	public static final Block ELECTRUM_BLOCK = registerBlock("electrum_block", Block::new,
 			BlockBehaviour.Properties.ofFullCopy(Blocks.GOLD_BLOCK).mapColor(MapColor.TERRACOTTA_YELLOW));
