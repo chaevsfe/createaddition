@@ -63,7 +63,7 @@ dependencies {
     implementation(include("teamreborn:energy:${property("team_reborn_energy_version")}")!!)
 
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-    compileOnly("cc.tweaked:cc-tweaked-26.2-fabric-api:1.120.2")
+    compileOnly("cc.tweaked:cc-tweaked-26.3-fabric-api:1.121.0")
     compileOnly(recipeViewer)
     include(recipeViewer)
     "clientCompileOnly"(recipeViewer)
