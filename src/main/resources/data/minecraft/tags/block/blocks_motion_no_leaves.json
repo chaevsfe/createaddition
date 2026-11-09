@@ -1,0 +1,21 @@
+{
+  "values": [
+    "createaddition:alternator",
+    "createaddition:barbed_wire",
+    "createaddition:biomass_pellet_block",
+    "createaddition:chocolate_cake",
+    "createaddition:creative_energy",
+    "createaddition:digital_adapter",
+    "createaddition:electric_motor",
+    "createaddition:electric_pump",
+    "createaddition:electrum_block",
+    "createaddition:honey_cake",
+    "createaddition:liquid_blaze_burner",
+    "createaddition:modular_accumulator",
+    "createaddition:portable_energy_interface",
+    "createaddition:redstone_relay",
+    "createaddition:rolling_mill",
+    "createaddition:servo_motor",
+    "createaddition:tesla_coil"
+  ]
+}
