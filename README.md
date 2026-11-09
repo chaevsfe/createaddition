@@ -11,9 +11,9 @@ Brings the electrical age to Create: generate, store and move energy with electr
 
 | Component | Version |
 | --- | --- |
-| Minecraft | `26.2` |
-| Mod loader | Fabric Loader `0.19.3` or newer |
-| Create Fly | `6.0.9-1` or newer |
+| Minecraft | `26.1`, `26.1.1` or `26.1.2` |
+| Mod loader | Fabric Loader `0.19.2` or newer |
+| Create Fly | `6.0.9-4` or newer |
 | Fabric API | required |
 | Java | `25` or newer |
 | Environments | Client and server |
