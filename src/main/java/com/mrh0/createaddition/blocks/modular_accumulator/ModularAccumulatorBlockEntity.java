@@ -91,17 +91,17 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements E
 	public void tick() {
 		super.tick();
 
+		if (lastKnownPos == null) lastKnownPos = getBlockPos();
+		else if (!lastKnownPos.equals(worldPosition) && worldPosition != null) {
+			onPositionChanged();
+			return;
+		}
+
 		tickOutput();
 
 		if (syncCooldown > 0) {
 			syncCooldown--;
 			if (syncCooldown == 0 && queuedSync) sendData();
-		}
-
-		if (lastKnownPos == null) lastKnownPos = getBlockPos();
-		else if (!lastKnownPos.equals(worldPosition) && worldPosition != null) {
-			onPositionChanged();
-			return;
 		}
 
 		if (updateCapability) {
