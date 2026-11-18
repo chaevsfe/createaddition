@@ -210,6 +210,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements E
 		if (isController()) return this;
 		if (level == null) return this;
 		if (!level.isLoaded(getBlockPos())) return this;
+		if (!isRemoved() && !level.isLoaded(controller)) return null;
 		BlockEntity blockEntity = level.getBlockEntity(controller);
 		if (blockEntity instanceof ModularAccumulatorBlockEntity)
 			return (ModularAccumulatorBlockEntity) blockEntity;
