@@ -272,10 +272,10 @@
 	"createaddition.schedule.condition.threshold.unit": "K⚡",
 	"createaddition.schedule.condition.threshold.energy": "Energia",
 
-	"death.attack.barbed_wire": "%1$s tentou passar arame farpado",
-	"death.attack.barbed_wire.player": "%1$s tentou passar arame farpado enquanto fugia de %2$s",
+	"death.attack.createaddition.barbed_wire": "%1$s tentou passar arame farpado",
+	"death.attack.createaddition.barbed_wire.player": "%1$s tentou passar arame farpado enquanto fugia de %2$s",
 	"effect.createaddition.shocking": "Choque eléctrico",
-	"death.attack.tesla_coil": "%1$s foi chocado por uma bobina de Tesla",
-	"death.attack.tesla_coil.player": "%1$s foi chocado por uma bobina de Tesla enquanto fugia de %2$s",
+	"death.attack.createaddition.tesla_coil": "%1$s foi chocado por uma bobina de Tesla",
+	"death.attack.createaddition.tesla_coil.player": "%1$s foi chocado por uma bobina de Tesla enquanto fugia de %2$s",
 	"effect.createaddition.shocking.description": "Causa paralisia"
 }

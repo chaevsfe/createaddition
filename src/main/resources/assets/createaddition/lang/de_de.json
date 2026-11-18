@@ -307,12 +307,12 @@
 	"createaddition.schedule.condition.threshold.unit": "K⚡",
 	"createaddition.schedule.condition.threshold.energy": "Energie",
 
-	"death.attack.barbed_wire": "%1$s versuchte über Stacheldraht zu klettern",
-  	"death.attack.barbed_wire.player": "%1$s versuchte auf der Flucht vor %2$s über Stacheldraht zu klettern",
+	"death.attack.createaddition.barbed_wire": "%1$s versuchte über Stacheldraht zu klettern",
+  	"death.attack.createaddition.barbed_wire.player": "%1$s versuchte auf der Flucht vor %2$s über Stacheldraht zu klettern",
 
 	"effect.createaddition.shocking": "Unter Strom",
-	"death.attack.tesla_coil": "%1$s erhielt einen tödlichen Stromschlag",
-  	"death.attack.tesla_coil.player": "%1$s erhielt einen tödlichen Stromschlag während einem Kampf mit %2$s",
+	"death.attack.createaddition.tesla_coil": "%1$s erhielt einen tödlichen Stromschlag",
+  	"death.attack.createaddition.tesla_coil.player": "%1$s erhielt einen tödlichen Stromschlag während einem Kampf mit %2$s",
   	"effect.createaddition.shocking.description": "Verursacht stark verminderte Bewegungsgeschwindigkeit",
 
 	"createaddition.subtitle.loud_zap": "Teslaspule knackt",
