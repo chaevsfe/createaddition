@@ -5,7 +5,6 @@ import java.util.List;
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockEntity;
 import com.mrh0.createaddition.client.CALang;
-import com.mrh0.createaddition.network.EnergyNetworkPacketPayload;
 import com.mrh0.createaddition.network.ObservePacketPayload;
 import com.mrh0.createaddition.util.Util;
 import com.zurrtum.create.client.api.goggles.IHaveGoggleInformation;
@@ -35,7 +34,7 @@ public class ModularAccumulatorTooltipBehaviour extends TooltipBehaviour<Modular
 			.add(Component.translatable(CreateAddition.MODID + ".tooltip.energy.stored").withStyle(ChatFormatting.GRAY))
 			.forGoggles(tooltip);
 		CALang.builder()
-			.add(Component.literal(" ").append(Util.format(EnergyNetworkPacketPayload.clientBuff)).append("⚡")
+			.add(Component.literal(" ").append(Util.format(controller.getEnergy().getAmount())).append("⚡")
 				.withStyle(ChatFormatting.AQUA))
 			.forGoggles(tooltip);
 
