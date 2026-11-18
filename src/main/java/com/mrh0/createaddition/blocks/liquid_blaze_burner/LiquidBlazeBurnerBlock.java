@@ -167,9 +167,7 @@ public class LiquidBlazeBurnerBlock extends HorizontalDirectionalBlock implement
 
 		if (!doNotConsume) {
 			ItemStackTemplate container = stack.getItem().getCraftingRemainder();
-			if (!level.isClientSide()) {
-				stack.shrink(1);
-			}
+			if (!level.isClientSide()) stack.shrink(1);
 			return InteractionResult.SUCCESS.heldItemTransformedTo(container != null ? container.create() : ItemStack.EMPTY);
 		}
 		return InteractionResult.SUCCESS.heldItemTransformedTo(ItemStack.EMPTY);
