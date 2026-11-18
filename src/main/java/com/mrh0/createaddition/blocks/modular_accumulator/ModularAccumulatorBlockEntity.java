@@ -318,6 +318,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements E
 		controller = view.read("Controller", BlockPos.CODEC).orElse(null);
 
 		if (isController()) {
+			if (controllerBefore != null && !controllerBefore.equals(worldPosition)) energyCapability = createEnergyStorage();
 			width = view.getIntOr("Size", 0);
 			height = view.getIntOr("Height", 0);
 			energyCapability.setCapacity((long) getTotalAccumulatorSize() * getCapacityMultiplier());
