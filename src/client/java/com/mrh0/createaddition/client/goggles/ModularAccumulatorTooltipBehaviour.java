@@ -5,7 +5,6 @@ import java.util.List;
 import com.mrh0.createaddition.CreateAddition;
 import com.mrh0.createaddition.blocks.modular_accumulator.ModularAccumulatorBlockEntity;
 import com.mrh0.createaddition.client.CALang;
-import com.mrh0.createaddition.network.ObservePacketPayload;
 import com.mrh0.createaddition.util.Util;
 import com.zurrtum.create.client.api.goggles.IHaveGoggleInformation;
 import com.zurrtum.create.client.foundation.blockEntity.behaviour.tooltip.TooltipBehaviour;
@@ -23,8 +22,6 @@ public class ModularAccumulatorTooltipBehaviour extends TooltipBehaviour<Modular
 	public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
 		ModularAccumulatorBlockEntity controller = blockEntity.getControllerBE();
 		if (controller == null) return false;
-
-		ObservePacketPayload.send(blockEntity.getController(), 0);
 
 		CALang.builder()
 			.add(Component.translatable(CreateAddition.MODID + ".tooltip.accumulator.info").withStyle(ChatFormatting.WHITE))
