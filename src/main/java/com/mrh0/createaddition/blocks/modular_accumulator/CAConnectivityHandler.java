@@ -243,16 +243,14 @@ public class CAConnectivityHandler {
 
 		BlockPos origin = be.getBlockPos();
 		List<T> frontier = new ArrayList<>();
+		List<InternalEnergyStorage> tanks = new ArrayList<>();
 		Direction.Axis axis = be.getMainConnectionAxis();
 
+		InternalEnergyStorage shared = null;
 		long toDistribute = 0;
-		long maxCapacity = 0;
 		if (be instanceof ModularAccumulatorBlockEntity ienergyBE && ienergyBE.hasAccumulator()) {
-			toDistribute = ienergyBE.getEnergy().getAmount();
-			maxCapacity = ienergyBE.getSize(0);
-
-			if (!be.isRemoved())
-				ienergyBE.getEnergy().internalConsumeEnergy(maxCapacity);
+			shared = ienergyBE.getEnergy();
+			toDistribute = shared.getAmount();
 			ienergyBE.setSize(0, 1);
 		}
 
@@ -274,14 +272,9 @@ public class CAConnectivityHandler {
 					partAt.setExtraData((controllerBE == null ? null : controllerBE.getExtraData()));
 					partAt.removeController(true);
 
-					if (partAt != be) {
-						InternalEnergyStorage tank =
-							(partAt instanceof ModularAccumulatorBlockEntity ienergyPart ? ienergyPart.getEnergy() : null);
-						long split = Math.min(maxCapacity, toDistribute);
-						toDistribute -= split;
-						if (tank != null)
-							tank.internalProduceEnergy(split);
-					}
+					if (partAt != be && partAt instanceof ModularAccumulatorBlockEntity ienergyPart
+						&& ienergyPart.getEnergy() != shared)
+						tanks.add(ienergyPart.getEnergy());
 					if (tryReconnect) {
 						frontier.add(partAt);
 						partAt.preventConnectivityUpdate();
@@ -291,8 +284,14 @@ public class CAConnectivityHandler {
 			}
 		}
 
-		if (be instanceof ModularAccumulatorBlockEntity ienergyBE && ienergyBE.hasAccumulator()) {
-			ienergyBE.getEnergy().setEnergy(toDistribute);
+		if (shared != null) {
+			int receivers = tanks.size() + (be.isRemoved() ? 0 : 1);
+			for (InternalEnergyStorage tank : tanks) {
+				long before = tank.getAmount();
+				tank.internalProduceEnergy(toDistribute / receivers--);
+				toDistribute -= tank.getAmount() - before;
+			}
+			shared.setEnergy(be.isRemoved() ? toDistribute : Math.min(toDistribute, shared.getCapacity()));
 		}
 
 		if (tryReconnect) formMulti(be.getType(), level, cache == null ? new SearchCache<>() : cache, frontier);
