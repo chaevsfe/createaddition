@@ -309,7 +309,12 @@
   "createaddition.schedule.condition.threshold.unit": "K⚡",
   "createaddition.schedule.condition.threshold.energy": "Energía",
 
+  "death.attack.createaddition.barbed_wire": "%1$s intentó cruzar alambre de púas",
+  "death.attack.createaddition.barbed_wire.player": "%1$s intentó cruzar alambre de púas mientras luchaba contra %2$s",
+
   "effect.createaddition.shocking": "Electrocutado",
+  "death.attack.createaddition.tesla_coil": "%1$s recibió una descarga eléctrica mortal",
+  "death.attack.createaddition.tesla_coil.player": "%1$s recibió una descarga eléctrica mortal mientras luchaba contra %2$s",
   "effect.createaddition.shocking.description": "Causa una reducción severa en la velocidad de movimiento",
 
   "createaddition.subtitle.loud_zap": "Chispazo de bobina de Tesla",
