@@ -227,6 +227,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements E
 		if (level == null) return;
 		if (level.isClientSide()) return;
 		if (!level.isLoaded(getBlockPos())) return;
+		if (!isController()) energyCapability = createEnergyStorage();
 		updateConnectivity = true;
 		if (!keepEnergy) applySize(1);
 		controller = null;
@@ -325,6 +326,7 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements E
 			if (overflow > 0) energyCapability.internalConsumeEnergy(overflow);
 		}
 
+		if (!clientPacket) refreshCapability();
 		updateCapability = true;
 
 		if (!clientPacket) return;
