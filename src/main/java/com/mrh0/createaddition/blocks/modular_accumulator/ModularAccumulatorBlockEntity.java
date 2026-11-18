@@ -327,7 +327,8 @@ public class ModularAccumulatorBlockEntity extends SmartBlockEntity implements E
 			if (overflow > 0) energyCapability.internalConsumeEnergy(overflow);
 		}
 
-		if (!clientPacket) refreshCapability();
+		if (!clientPacket && !isController())
+			energyCapability = new InternalEnergyStorage(0, CACommonConfig.COMMON.ACCUMULATOR_MAX_INPUT.get(), CACommonConfig.COMMON.ACCUMULATOR_MAX_OUTPUT.get());
 		updateCapability = true;
 
 		if (!clientPacket) return;
