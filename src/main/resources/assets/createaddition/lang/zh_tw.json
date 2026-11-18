@@ -301,11 +301,11 @@
   "createaddition.schedule.condition.threshold.unit": "Kfe",
   "createaddition.schedule.condition.threshold.energy": "能量",
 
-  "death.attack.barbed_wire": "%1$s試圖穿越帶刺鐵絲",
-  "death.attack.barbed_wire.player": "%1$s在與%2$s戰鬥時試圖穿越帶刺鐵絲",
+  "death.attack.createaddition.barbed_wire": "%1$s試圖穿越帶刺鐵絲",
+  "death.attack.createaddition.barbed_wire.player": "%1$s在與%2$s戰鬥時試圖穿越帶刺鐵絲",
 
   "effect.createaddition.shocking": "觸電",
-  "death.attack.tesla_coil": "%1$s受到致命的電擊",
-  "death.attack.tesla_coil.player": "%1$s在與%2$s戰鬥時受到致命的電擊",
+  "death.attack.createaddition.tesla_coil": "%1$s受到致命的電擊",
+  "death.attack.createaddition.tesla_coil.player": "%1$s在與%2$s戰鬥時受到致命的電擊",
   "effect.createaddition.shocking.description": "導致嚴重降低移動速度"
 }

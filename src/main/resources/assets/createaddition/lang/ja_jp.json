@@ -307,12 +307,12 @@
 	"createaddition.schedule.condition.threshold.unit": "KFE",
 	"createaddition.schedule.condition.threshold.energy": "エネルギー",
 
-	"death.attack.barbed_wire": "%1$sは有刺鉄線を越えようとした",
-	"death.attack.barbed_wire.player": "%1$sは%2$sとの戦闘中に有刺鉄線を越えようとした",
+	"death.attack.createaddition.barbed_wire": "%1$sは有刺鉄線を越えようとした",
+	"death.attack.createaddition.barbed_wire.player": "%1$sは%2$sとの戦闘中に有刺鉄線を越えようとした",
 
 	"effect.createaddition.shocking": "感電",
-	"death.attack.tesla_coil": "%1$sは感電死した",
-	"death.attack.tesla_coil.player": "%1$sは%2$sとの戦闘中に感電死した",
+	"death.attack.createaddition.tesla_coil": "%1$sは感電死した",
+	"death.attack.createaddition.tesla_coil.player": "%1$sは%2$sとの戦闘中に感電死した",
 	"effect.createaddition.shocking.description": "移動速度が大幅に低下します",
 
 	"createaddition.subtitle.loud_zap": "テスラコイルの電気ショック",
