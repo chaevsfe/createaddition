@@ -316,12 +316,12 @@
 	"createaddition.schedule.condition.threshold.unit": "kFE",
 	"createaddition.schedule.condition.threshold.energy": "电能",
 
-	"death.attack.barbed_wire": "%1$s尝试越过铁丝网",
-  	"death.attack.barbed_wire.player": "%1$s在与%2$s的战斗中挂在了铁丝网上",
+	"death.attack.createaddition.barbed_wire": "%1$s尝试越过铁丝网",
+  	"death.attack.createaddition.barbed_wire.player": "%1$s在与%2$s的战斗中挂在了铁丝网上",
 
 	"effect.createaddition.shocking":"触电",
-	"death.attack.tesla_coil": "%1$s被电糊了",
-  	"death.attack.tesla_coil.player": "%1$s在与%2$s的战斗中不小心碰到了通电的线圈",
+	"death.attack.createaddition.tesla_coil": "%1$s被电糊了",
+  	"death.attack.createaddition.tesla_coil.player": "%1$s在与%2$s的战斗中不小心碰到了通电的线圈",
   	"effect.createaddition.shocking.description": "导致移动速度大幅下降",
 
 	"createaddition.subtitle.loud_zap": "特斯拉线圈：啪!",

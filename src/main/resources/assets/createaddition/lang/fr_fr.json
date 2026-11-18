@@ -309,11 +309,11 @@
 	"createaddition.schedule.condition.threshold.unit": "Kfe",
 	"createaddition.schedule.condition.threshold.energy": "Énergie",
 
-	"death.attack.barbed_wire": "%1$s a essayé de traverser des barbelés",
-	"death.attack.barbed_wire.player": "%1$s a essayé de traverser des barbelés en combattant %2$s",
+	"death.attack.createaddition.barbed_wire": "%1$s a essayé de traverser des barbelés",
+	"death.attack.createaddition.barbed_wire.player": "%1$s a essayé de traverser des barbelés en combattant %2$s",
 
 	"effect.createaddition.shocking": "Choc électrique",
-	"death.attack.tesla_coil": "%1$s a reçu un choc électrique mortel",
-	"death.attack.tesla_coil.player": "%1$s a reçu un choc électrique mortel alors qu'il combattait %2$s",
+	"death.attack.createaddition.tesla_coil": "%1$s a reçu un choc électrique mortel",
+	"death.attack.createaddition.tesla_coil.player": "%1$s a reçu un choc électrique mortel alors qu'il combattait %2$s",
 	"effect.createaddition.shocking.description": "Immobilise l'entité ou joueur affecté"
 }

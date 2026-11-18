@@ -206,10 +206,10 @@
 	"createaddition.schedule.condition.energy_threshold": "Condizione Carico Energia",
 	"createaddition.schedule.condition.threshold.unit": "Kfe",
 	"createaddition.schedule.condition.threshold.energy": "Energia",
-	"death.attack.barbed_wire": "%1$s ha provato ad attraversare del filo spinato",
-	"death.attack.barbed_wire.player": "%1$s ha provato ad attraversare del filo spinato mentre combatteva con %2$s",
+	"death.attack.createaddition.barbed_wire": "%1$s ha provato ad attraversare del filo spinato",
+	"death.attack.createaddition.barbed_wire.player": "%1$s ha provato ad attraversare del filo spinato mentre combatteva con %2$s",
 	"effect.createaddition.shocking": "Shockato",
-	"death.attack.tesla_coil": "%1$s ha ricevuto uno shock elettrico letale",
-	"death.attack.tesla_coil.player": "%1$s ha ricevuto un uno shock elettrico letale mentre combatteva con %2$s",
+	"death.attack.createaddition.tesla_coil": "%1$s ha ricevuto uno shock elettrico letale",
+	"death.attack.createaddition.tesla_coil.player": "%1$s ha ricevuto un uno shock elettrico letale mentre combatteva con %2$s",
 	"effect.createaddition.shocking.description": "Cause un grave rallentamento della velocità di movimento"
 }
