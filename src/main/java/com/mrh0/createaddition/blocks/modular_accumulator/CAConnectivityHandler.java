@@ -197,6 +197,7 @@ public class CAConnectivityHandler {
 					if (part == be) continue;
 
 					extraData = be.modifyExtraData(extraData);
+					splitMultiAndInvalidate(part, cache, false);
 
 					if (part instanceof ModularAccumulatorBlockEntity ienergyPart && ienergyPart.hasAccumulator()) {
 						InternalEnergyStorage storageAt = ienergyPart.getEnergy();
@@ -210,7 +211,6 @@ public class CAConnectivityHandler {
 						storageAt.internalConsumeEnergy(storageAt.getCapacity());
 					}
 
-					splitMultiAndInvalidate(part, cache, false);
 					part.setController(origin);
 					part.preventConnectivityUpdate();
 					cache.put(pos, be);
